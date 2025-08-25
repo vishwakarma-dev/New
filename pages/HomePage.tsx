@@ -58,7 +58,7 @@ const HomePage: React.FC = () => {
       description: 'Optimized performance with modern web technologies for blazing-fast loading times.'
     },
     {
-      icon: <Mobile />,
+      icon: <PhoneIphone />,
       title: 'Mobile Responsive',
       description: 'All websites are automatically optimized for mobile, tablet, and desktop devices.'
     },
