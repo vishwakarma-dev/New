@@ -47,10 +47,10 @@ import {
     Slideshow,
     // New Advanced Component Icons
     BarChart,
-    Form,
+    Assignment,
     Tab,
     OpenInNew,
-    Drawer,
+    Menu,
     SwipeUp,
     Add,
     Tune,
