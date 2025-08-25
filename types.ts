@@ -233,6 +233,179 @@ export interface DataGridProps extends BaseProps {
     striped?: boolean;
 }
 
+// Advanced App Component Interfaces
+export interface ChartProps extends BaseProps {
+    type?: 'line' | 'bar' | 'pie' | 'doughnut' | 'area';
+    data?: any;
+    dataSourceId?: string;
+    title?: string;
+    legend?: boolean;
+}
+
+export interface FormProps extends BaseProps {
+    children?: string[];
+    method?: 'GET' | 'POST';
+    action?: string;
+    validation?: boolean;
+}
+
+export interface TabsProps extends BaseProps {
+    children?: string[];
+    variant?: 'standard' | 'scrollable' | 'fullWidth';
+    orientation?: 'horizontal' | 'vertical';
+}
+
+export interface ModalProps extends BaseProps {
+    children?: string[];
+    title?: string;
+    trigger?: string;
+    size?: 'small' | 'medium' | 'large' | 'fullscreen';
+}
+
+export interface DrawerProps extends BaseProps {
+    children?: string[];
+    anchor?: 'left' | 'right' | 'top' | 'bottom';
+    variant?: 'temporary' | 'persistent' | 'permanent';
+}
+
+export interface BottomSheetProps extends BaseProps {
+    children?: string[];
+    title?: string;
+    expandable?: boolean;
+}
+
+export interface FloatingActionButtonProps extends BaseProps {
+    icon?: string;
+    color?: 'primary' | 'secondary' | 'inherit';
+    size?: 'small' | 'medium' | 'large';
+    position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left';
+}
+
+export interface SegmentedControlProps extends BaseProps {
+    options?: string[];
+    selected?: number;
+    color?: 'primary' | 'secondary';
+}
+
+export interface SearchBarProps extends BaseProps {
+    placeholder?: string;
+    showFilter?: boolean;
+    suggestions?: string[];
+}
+
+export interface AppBarProps extends BaseProps {
+    children?: string[];
+    title?: string;
+    showBackButton?: boolean;
+    actions?: string[];
+}
+
+export interface NavigationBarProps extends BaseProps {
+    items?: { label: string; icon: string; badge?: number }[];
+    variant?: 'bottom' | 'side';
+    showLabels?: boolean;
+}
+
+export interface StatusCardProps extends BaseProps {
+    title?: string;
+    value?: string;
+    trend?: 'up' | 'down' | 'neutral';
+    icon?: string;
+    color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+}
+
+export interface TimelineProps extends BaseProps {
+    items?: { title: string; description: string; date: string; status?: 'completed' | 'active' | 'pending' }[];
+    orientation?: 'vertical' | 'horizontal';
+}
+
+export interface StepperProps extends BaseProps {
+    steps?: string[];
+    activeStep?: number;
+    orientation?: 'horizontal' | 'vertical';
+}
+
+export interface RatingProps extends BaseProps {
+    value?: number;
+    max?: number;
+    readOnly?: boolean;
+    size?: 'small' | 'medium' | 'large';
+}
+
+export interface ChipProps extends BaseProps {
+    label?: string;
+    variant?: 'filled' | 'outlined';
+    color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error';
+    deletable?: boolean;
+}
+
+export interface BadgeProps extends BaseProps {
+    children?: string[];
+    content?: string | number;
+    color?: 'primary' | 'secondary' | 'error' | 'warning' | 'success';
+    variant?: 'standard' | 'dot';
+}
+
+export interface ToggleProps extends BaseProps {
+    options?: string[];
+    selected?: string;
+    exclusive?: boolean;
+}
+
+export interface SliderProps extends BaseProps {
+    value?: number;
+    min?: number;
+    max?: number;
+    step?: number;
+    marks?: boolean;
+    orientation?: 'horizontal' | 'vertical';
+}
+
+export interface DatePickerProps extends BaseProps {
+    value?: string;
+    format?: string;
+    disablePast?: boolean;
+    disableFuture?: boolean;
+}
+
+export interface TimePickerProps extends BaseProps {
+    value?: string;
+    format?: '12h' | '24h';
+}
+
+export interface FileUploadProps extends BaseProps {
+    accept?: string;
+    multiple?: boolean;
+    maxSize?: number;
+    dragDrop?: boolean;
+}
+
+export interface MapViewProps extends BaseProps {
+    center?: { lat: number; lng: number };
+    zoom?: number;
+    markers?: { lat: number; lng: number; title?: string }[];
+}
+
+export interface VideoPlayerProps extends BaseProps {
+    src?: string;
+    controls?: boolean;
+    autoPlay?: boolean;
+    loop?: boolean;
+    muted?: boolean;
+}
+
+export interface QRCodeProps extends BaseProps {
+    value?: string;
+    size?: number;
+    level?: 'L' | 'M' | 'Q' | 'H';
+}
+
+export interface LoadingSpinnerProps extends BaseProps {
+    size?: 'small' | 'medium' | 'large';
+    color?: 'primary' | 'secondary' | 'inherit';
+    variant?: 'circular' | 'linear';
+}
+
 export interface Layout {
     name: string;
     rows: number;
