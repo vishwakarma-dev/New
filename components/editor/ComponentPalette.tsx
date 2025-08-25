@@ -94,9 +94,14 @@ const LAYOUTS: LayoutWithIcon[] = [
 
 const ComponentPalette: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const [expandedCategory, setExpandedCategory] = useState<string>('mobile-native');
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
+    };
+
+    const handleCategoryChange = (categoryId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+        setExpandedCategory(isExpanded ? categoryId : '');
     };
 
     const handleDragStart = (e: React.DragEvent, type: 'component' | 'layout' | 'template', data: any) => {
