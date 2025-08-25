@@ -103,7 +103,7 @@ const HomePage: React.FC = () => {
               <Web />
             </Avatar>
             <Typography variant="h6" color="primary" fontWeight="bold">
-              WebBuilder
+              AppBuilder
             </Typography>
           </Box>
           <Stack direction="row" spacing={2}>
@@ -166,16 +166,16 @@ const HomePage: React.FC = () => {
           <Grid container spacing={6} alignItems="center">
             <Grid item xs={12} md={6}>
               <Typography variant="h2" fontWeight="bold" gutterBottom>
-                Build Stunning Websites with AI
+                Build Amazing Apps with AI
               </Typography>
               <Typography variant="h5" sx={{ mb: 4, opacity: 0.9 }}>
-                Transform your ideas into beautiful, responsive websites in minutes.
+                Transform your ideas into powerful mobile and web applications in minutes.
                 No coding skills required.
               </Typography>
               <Stack direction="row" spacing={2} sx={{ mb: 4 }}>
                 <Chip label="🚀 AI-Powered" color="secondary" />
                 <Chip label="⚡ Fast Setup" color="secondary" />
-                <Chip label="📱 Mobile Ready" color="secondary" />
+                <Chip label="📱 Cross-Platform" color="secondary" />
               </Stack>
               <Stack direction="row" spacing={2}>
                 <Button
@@ -189,7 +189,7 @@ const HomePage: React.FC = () => {
                     '&:hover': { bgcolor: 'grey.100' }
                   }}
                 >
-                  Start Building Now
+                  Start Creating Apps
                 </Button>
                 <Button
                   variant="outlined"
