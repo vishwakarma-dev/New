@@ -1,7 +1,7 @@
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project, Page, EditorElement } from '../types';
+import { Project, Page, EditorElement, AppModule } from '../types';
 import { createInitialPage } from './editorSlice';
+import { ModuleManager, DEFAULT_APP_MODULES } from '../lib/moduleUtils';
 
 interface ProjectsState {
     projects: Project[];
@@ -15,7 +15,10 @@ const mockProjects: Project[] = [
         createdAt: 'Aug 2, 2025',
         imageUrl: 'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&q=80',
         status: 'Active',
-        pages: [createInitialPage('page-1', 'Landing Page')]
+        pages: [createInitialPage('page-1', 'Landing Page')],
+        projectType: 'web',
+        platform: 'react',
+        modules: []
     },
     {
         id: '2',
@@ -27,7 +30,10 @@ const mockProjects: Project[] = [
         pages: [
             createInitialPage('page-2-home', 'Home'),
             createInitialPage('page-2-about', 'About Us')
-        ]
+        ],
+        projectType: 'web',
+        platform: 'react',
+        modules: []
     },
 ];
 
