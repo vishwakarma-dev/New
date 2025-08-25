@@ -1,7 +1,7 @@
-
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project, Page, EditorElement } from '../types';
+import { Project, Page, EditorElement, AppModule } from '../types';
 import { createInitialPage } from './editorSlice';
+import { ModuleManager, DEFAULT_APP_MODULES } from '../lib/moduleUtils';
 
 interface ProjectsState {
     projects: Project[];
@@ -15,7 +15,10 @@ const mockProjects: Project[] = [
         createdAt: 'Aug 2, 2025',
         imageUrl: 'https://images.unsplash.com/photo-1558591710-4b4a1ae0f04d?w=800&q=80',
         status: 'Active',
-        pages: [createInitialPage('page-1', 'Landing Page')]
+        pages: [createInitialPage('page-1', 'Landing Page')],
+        projectType: 'web',
+        platform: 'react',
+        modules: []
     },
     {
         id: '2',
@@ -27,7 +30,10 @@ const mockProjects: Project[] = [
         pages: [
             createInitialPage('page-2-home', 'Home'),
             createInitialPage('page-2-about', 'About Us')
-        ]
+        ],
+        projectType: 'web',
+        platform: 'react',
+        modules: []
     },
 ];
 
@@ -40,6 +46,9 @@ type NewProjectPayload = {
     name: string;
     description: string;
     imageUrl: string;
+    projectType?: 'web' | 'mobile' | 'desktop' | 'hybrid';
+    platform?: 'react' | 'react-native' | 'flutter' | 'pwa';
+    modules?: string[]; // Array of module IDs to initialize with
 };
 
 type ProjectUpdatePayload = {
@@ -62,23 +71,61 @@ type GeneratedProjectPayload = {
     }[];
 };
 
+type AddModulePayload = {
+    projectId: string;
+    module: AppModule;
+};
+
+type RemoveModulePayload = {
+    projectId: string;
+    moduleId: string;
+};
+
+type UpdateModulePayload = {
+    projectId: string;
+    moduleId: string;
+    changes: Partial<AppModule>;
+};
+
+type AssignPageToModulePayload = {
+    projectId: string;
+    pageId: string;
+    moduleId: string;
+};
+
+type RemovePageFromModulePayload = {
+    projectId: string;
+    pageId: string;
+    moduleId: string;
+};
+
 const projectsSlice = createSlice({
     name: 'projects',
     initialState,
     reducers: {
         addProject: (state, action: PayloadAction<NewProjectPayload>) => {
-            const { name, description, imageUrl } = action.payload;
+            const { name, description, imageUrl, projectType, platform, modules } = action.payload;
             const newProjectId = `proj-${Date.now()}`;
             const newPageId = `page-${Date.now()}`;
-            const newProject: Project = {
+
+            let newProject: Project = {
                 id: newProjectId,
                 name: name,
                 description: description || 'No description provided.',
                 createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 imageUrl: imageUrl || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
                 status: 'New',
-                pages: [createInitialPage(newPageId, 'New Page')]
+                pages: [createInitialPage(newPageId, 'New Page')],
+                projectType: projectType || 'web',
+                platform: platform || 'react',
+                modules: []
             };
+
+            // Initialize with selected modules if provided
+            if (modules && modules.length > 0) {
+                newProject = ModuleManager.initializeProjectWithModules(newProject, modules);
+            }
+
             state.projects.unshift(newProject);
         },
         addGeneratedProject: (state, action: PayloadAction<GeneratedProjectPayload>) => {
@@ -209,8 +256,106 @@ const projectsSlice = createSlice({
                 }
             }
         },
+
+        // Module Management Actions
+        addModule: (state, action: PayloadAction<AddModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                if (!project.modules) {
+                    project.modules = [];
+                }
+                project.modules.push(action.payload.module);
+            }
+        },
+
+        removeModule: (state, action: PayloadAction<RemoveModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project && project.modules) {
+                project.modules = project.modules.filter(m => m.id !== action.payload.moduleId);
+
+                // Remove module reference from pages
+                project.pages.forEach(page => {
+                    if (page.moduleId === action.payload.moduleId) {
+                        page.moduleId = undefined;
+                    }
+                });
+            }
+        },
+
+        updateModule: (state, action: PayloadAction<UpdateModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project && project.modules) {
+                const moduleIndex = project.modules.findIndex(m => m.id === action.payload.moduleId);
+                if (moduleIndex !== -1) {
+                    project.modules[moduleIndex] = {
+                        ...project.modules[moduleIndex],
+                        ...action.payload.changes
+                    };
+                }
+            }
+        },
+
+        assignPageToModule: (state, action: PayloadAction<AssignPageToModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                // Update page to reference the module
+                const page = project.pages.find(p => p.id === action.payload.pageId);
+                if (page) {
+                    // Remove from previous module if assigned
+                    if (page.moduleId && project.modules) {
+                        const prevModule = project.modules.find(m => m.id === page.moduleId);
+                        if (prevModule) {
+                            prevModule.pages = prevModule.pages.filter(pid => pid !== action.payload.pageId);
+                        }
+                    }
+
+                    page.moduleId = action.payload.moduleId;
+                }
+
+                // Add page to new module
+                if (project.modules) {
+                    const module = project.modules.find(m => m.id === action.payload.moduleId);
+                    if (module && !module.pages.includes(action.payload.pageId)) {
+                        module.pages.push(action.payload.pageId);
+                    }
+                }
+            }
+        },
+
+        removePageFromModule: (state, action: PayloadAction<RemovePageFromModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                // Remove module reference from page
+                const page = project.pages.find(p => p.id === action.payload.pageId);
+                if (page && page.moduleId === action.payload.moduleId) {
+                    page.moduleId = undefined;
+                }
+
+                // Remove page from module
+                if (project.modules) {
+                    const module = project.modules.find(m => m.id === action.payload.moduleId);
+                    if (module) {
+                        module.pages = module.pages.filter(pid => pid !== action.payload.pageId);
+                    }
+                }
+            }
+        },
     },
 });
 
-export const { addProject, deleteProject, updateProject, addPage, deletePage, updatePageName, updatePageContent, addGeneratedProject } = projectsSlice.actions;
+export const {
+    addProject,
+    deleteProject,
+    updateProject,
+    addPage,
+    deletePage,
+    updatePageName,
+    updatePageContent,
+    addGeneratedProject,
+    addModule,
+    removeModule,
+    updateModule,
+    assignPageToModule,
+    removePageFromModule
+} = projectsSlice.actions;
 export default projectsSlice.reducer;

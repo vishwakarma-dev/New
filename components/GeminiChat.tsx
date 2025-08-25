@@ -43,16 +43,37 @@ const GeminiChat: React.FC<GeminiChatProps> = ({ open, onClose, onProjectGenerat
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const [ai, setAi] = useState<GoogleGenAI | null>(null);
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    useEffect(() => {
+        const apiKey = process.env.API_KEY;
+        if (apiKey && apiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
+            try {
+                setAi(new GoogleGenAI({ apiKey }));
+            } catch (error) {
+                console.error('Failed to initialize GoogleGenAI:', error);
+                setAi(null);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (open) {
-            setMessages([{ sender: 'ai', text: "Hello! Describe the website you'd like to create. For example, 'a portfolio for a photographer' or 'a landing page for a new mobile app'." }]);
+            if (!ai) {
+                setMessages([{
+                    sender: 'ai',
+                    text: "⚠️ API key not configured. Please set your Gemini API key in the environment variables to use AI features."
+                }]);
+            } else {
+                setMessages([{
+                    sender: 'ai',
+                    text: "Hello! Describe the website you'd like to create. For example, 'a portfolio for a photographer' or 'a landing page for a new mobile app'."
+                }]);
+            }
             setInput('');
             setIsLoading(false);
         }
-    }, [open]);
+    }, [open, ai]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -60,6 +81,15 @@ const GeminiChat: React.FC<GeminiChatProps> = ({ open, onClose, onProjectGenerat
 
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
+
+        if (!ai) {
+            setMessages(prev => [...prev,
+                { sender: 'user', text: input },
+                { sender: 'ai', text: "Sorry, AI functionality is not available. Please configure your Gemini API key." }
+            ]);
+            setInput('');
+            return;
+        }
 
         const userMessage: Message = { sender: 'user', text: input };
         setMessages(prev => [...prev, userMessage]);

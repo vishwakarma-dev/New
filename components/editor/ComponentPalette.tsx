@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, Typography, Paper } from '@mui/material';
+import { Box, Tabs, Tab, Typography, Paper, Accordion, AccordionSummary, AccordionDetails, Chip } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { ElementType, Template, Layout } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Widgets, GridView, ViewQuilt } from '@mui/icons-material';
+import { APP_COMPONENT_CATEGORIES, getComponentsByCategory } from '../../lib/componentCategories';
+import { Widgets, GridView, ViewQuilt, ExpandMore, Apps } from '@mui/icons-material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -93,9 +94,14 @@ const LAYOUTS: LayoutWithIcon[] = [
 
 const ComponentPalette: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const [expandedCategory, setExpandedCategory] = useState<string>('mobile-native');
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
+    };
+
+    const handleCategoryChange = (categoryId: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+        setExpandedCategory(isExpanded ? categoryId : '');
     };
 
     const handleDragStart = (e: React.DragEvent, type: 'component' | 'layout' | 'template', data: any) => {
@@ -112,50 +118,118 @@ const ComponentPalette: React.FC = () => {
     return (
         <Box>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Component palette tabs" variant="fullWidth">
-                    <Tab icon={<Widgets />} iconPosition="start" label="Components" id="palette-tab-0" sx={{minHeight: 48}} />
-                    <Tab icon={<GridView />} iconPosition="start" label="Layouts" id="palette-tab-1" sx={{minHeight: 48}} />
-                    <Tab icon={<ViewQuilt />} iconPosition="start" label="Templates" id="palette-tab-2" sx={{minHeight: 48}} />
+                <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Component palette tabs" variant="scrollable" scrollButtons="auto">
+                    <Tab icon={<Apps />} iconPosition="start" label="App Components" id="palette-tab-0" sx={{minHeight: 48}} />
+                    <Tab icon={<Widgets />} iconPosition="start" label="All Components" id="palette-tab-1" sx={{minHeight: 48}} />
+                    <Tab icon={<GridView />} iconPosition="start" label="Layouts" id="palette-tab-2" sx={{minHeight: 48}} />
+                    <Tab icon={<ViewQuilt />} iconPosition="start" label="Templates" id="palette-tab-3" sx={{minHeight: 48}} />
                 </Tabs>
             </Box>
 
+            {/* Categorized App Components Tab */}
             <TabPanel value={tabIndex} index={0}>
+                <Box sx={{ maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}>
+                    {APP_COMPONENT_CATEGORIES.map((category) => {
+                        const categoryComponents = getComponentsByCategory(category.id);
+                        const availableComponents = AVAILABLE_COMPONENTS.filter(comp =>
+                            categoryComponents.includes(comp.type)
+                        );
+
+                        if (availableComponents.length === 0) return null;
+
+                        return (
+                            <Accordion
+                                key={category.id}
+                                expanded={expandedCategory === category.id}
+                                onChange={handleCategoryChange(category.id)}
+                                sx={{ mb: 1, '&:before': { display: 'none' } }}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMore />}
+                                    sx={{
+                                        bgcolor: 'grey.50',
+                                        borderLeft: 4,
+                                        borderLeftColor: category.color,
+                                        '&:hover': { bgcolor: 'grey.100' }
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                                        <Box sx={{ color: category.color, display: 'flex', alignItems: 'center' }}>
+                                            {category.icon}
+                                        </Box>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Typography variant="subtitle2" fontWeight="medium">
+                                                {category.name}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {category.description}
+                                            </Typography>
+                                        </Box>
+                                        <Chip
+                                            label={availableComponents.length}
+                                            size="small"
+                                            sx={{ bgcolor: category.color, color: 'white', minWidth: 24 }}
+                                        />
+                                    </Box>
+                                </AccordionSummary>
+                                <AccordionDetails sx={{ pt: 1 }}>
+                                    <Grid container spacing={1.5}>
+                                        {availableComponents.map(comp => (
+                                            <DraggableItem
+                                                key={comp.type}
+                                                name={comp.name}
+                                                icon={comp.icon}
+                                                onDragStart={(e) => handleDragStart(e, 'component', comp.type)}
+                                            />
+                                        ))}
+                                    </Grid>
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+                    })}
+                </Box>
+            </TabPanel>
+
+            {/* All Components Tab */}
+            <TabPanel value={tabIndex} index={1}>
                  <Grid container spacing={1.5}>
                     {AVAILABLE_COMPONENTS.map(comp => (
-                        <DraggableItem 
-                            key={comp.type} 
-                            name={comp.name} 
-                            icon={comp.icon} 
-                            onDragStart={(e) => handleDragStart(e, 'component', comp.type)} 
+                        <DraggableItem
+                            key={comp.type}
+                            name={comp.name}
+                            icon={comp.icon}
+                            onDragStart={(e) => handleDragStart(e, 'component', comp.type)}
                         />
                     ))}
                 </Grid>
             </TabPanel>
 
-            <TabPanel value={tabIndex} index={1}>
+            {/* Layouts Tab */}
+            <TabPanel value={tabIndex} index={2}>
                  <Grid container spacing={1.5}>
                     {LAYOUTS.map(layout => {
                         const { icon, ...layoutData } = layout;
                         return (
-                             <DraggableItem 
-                                key={layout.name} 
-                                name={layout.name} 
-                                icon={icon} 
-                                onDragStart={(e) => handleDragStart(e, 'layout', layoutData)} 
+                             <DraggableItem
+                                key={layout.name}
+                                name={layout.name}
+                                icon={icon}
+                                onDragStart={(e) => handleDragStart(e, 'layout', layoutData)}
                             />
                         )
                     })}
                  </Grid>
             </TabPanel>
 
-             <TabPanel value={tabIndex} index={2}>
+             {/* Templates Tab */}
+             <TabPanel value={tabIndex} index={3}>
                 <Grid container spacing={1.5}>
                     {AVAILABLE_TEMPLATES.map(template => (
-                         <DraggableItem 
-                            key={template.name} 
-                            name={template.name} 
-                            icon={template.icon} 
-                            onDragStart={(e) => handleDragStart(e, 'template', template)} 
+                         <DraggableItem
+                            key={template.name}
+                            name={template.name}
+                            icon={template.icon}
+                            onDragStart={(e) => handleDragStart(e, 'template', template)}
                         />
                     ))}
                 </Grid>

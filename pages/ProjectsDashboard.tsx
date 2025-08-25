@@ -1,15 +1,45 @@
-
-
 import React, { useState } from 'react';
 import ProjectCard from '../components/ProjectCard';
 import { Project } from '../types';
-import { Grid, Container, Box, Typography, Button, Checkbox, TextField, InputAdornment, Modal, Backdrop, Fade, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Grid,
+  Container,
+  Box,
+  Typography,
+  Button,
+  Checkbox,
+  TextField,
+  InputAdornment,
+  Modal,
+  Backdrop,
+  Fade,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  AppBar,
+  Toolbar,
+  Avatar,
+  IconButton,
+  Menu,
+  Divider,
+  ListItemIcon,
+  ListItemText
+} from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import SearchIcon from '@mui/icons-material/Search';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import {
+  Search as SearchIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Web,
+  AccountCircle,
+  Logout,
+  Settings,
+  Person
+} from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { deleteProject, updateProject, addProject, addGeneratedProject } from '../store/projectsSlice';
+import { useAuth } from '../contexts/AuthContext';
 import GeminiChat from '../components/GeminiChat';
 
 const style = {
@@ -29,6 +59,7 @@ const style = {
 const ProjectsDashboard: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const projects = useSelector((state: RootState) => state.projects.projects);
+    const { user, logout } = useAuth();
 
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editFormData, setEditFormData] = useState({
@@ -46,6 +77,7 @@ const ProjectsDashboard: React.FC = () => {
     });
 
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
     const handleOpenEditModal = (project: Project) => {
         setEditingProject(project);
@@ -111,8 +143,114 @@ const ProjectsDashboard: React.FC = () => {
         setIsChatOpen(false);
     };
 
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setUserMenuAnchor(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setUserMenuAnchor(null);
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleUserMenuClose();
+    };
+
     return (
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ flexGrow: 1 }}>
+            {/* Navigation Header */}
+            <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #667eea, #764ba2)' }}>
+                <Toolbar>
+                    <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+                        <Avatar sx={{ mr: 2, bgcolor: 'rgba(255, 255, 255, 0.2)' }}>
+                            <Web />
+                        </Avatar>
+                        <Typography variant="h6" fontWeight="bold" color="white">
+                            AppBuilder
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Typography variant="body2" color="white" sx={{ mr: 1 }}>
+                            Welcome, {user?.name}!
+                        </Typography>
+                        <IconButton
+                            size="large"
+                            aria-label="account of current user"
+                            aria-controls="user-menu"
+                            aria-haspopup="true"
+                            onClick={handleUserMenuOpen}
+                            color="inherit"
+                        >
+                            <Avatar
+                                src={user?.avatar}
+                                alt={user?.name}
+                                sx={{ width: 32, height: 32 }}
+                            >
+                                {user?.name?.charAt(0)}
+                            </Avatar>
+                        </IconButton>
+                    </Box>
+                </Toolbar>
+            </AppBar>
+
+            {/* User Menu */}
+            <Menu
+                id="user-menu"
+                anchorEl={userMenuAnchor}
+                open={Boolean(userMenuAnchor)}
+                onClose={handleUserMenuClose}
+                onClick={handleUserMenuClose}
+                PaperProps={{
+                    elevation: 0,
+                    sx: {
+                        overflow: 'visible',
+                        filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.32))',
+                        mt: 1.5,
+                        '& .MuiAvatar-root': {
+                            width: 32,
+                            height: 32,
+                            ml: -0.5,
+                            mr: 1,
+                        },
+                        '&:before': {
+                            content: '""',
+                            display: 'block',
+                            position: 'absolute',
+                            top: 0,
+                            right: 14,
+                            width: 10,
+                            height: 10,
+                            bgcolor: 'background.paper',
+                            transform: 'translateY(-50%) rotate(45deg)',
+                            zIndex: 0,
+                        },
+                    },
+                }}
+                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+            >
+                <MenuItem onClick={handleUserMenuClose}>
+                    <ListItemIcon>
+                        <Person fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Profile</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleUserMenuClose}>
+                    <ListItemIcon>
+                        <Settings fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Settings</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleLogout}>
+                    <ListItemIcon>
+                        <Logout fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Logout</ListItemText>
+                </MenuItem>
+            </Menu>
+
+            <Container maxWidth="xl" sx={{ py: 4 }}>
             <Box component="header" display="flex" alignItems="center" justifyContent="space-between" mb={4}>
                 <Box display="flex" alignItems="center" gap={1}>
                     <Checkbox aria-label="Select all projects" />
@@ -246,7 +384,8 @@ const ProjectsDashboard: React.FC = () => {
                 </Fade>
             </Modal>
 
-        </Container>
+            </Container>
+        </Box>
     );
 };
 
