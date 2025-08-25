@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Project } from '../types';
@@ -59,8 +58,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, onEdit, onDelete }) 
             <CardContent>
                 <Typography variant="body2" color="text.secondary" sx={{
                     display: '-webkit-box',
-                    '-webkit-line-clamp': '2',
-                    '-webkit-box-orient': 'vertical',
+                    WebkitLineClamp: '2',
+                    WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     minHeight: '2.5rem'
