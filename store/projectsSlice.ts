@@ -71,6 +71,34 @@ type GeneratedProjectPayload = {
     }[];
 };
 
+type AddModulePayload = {
+    projectId: string;
+    module: AppModule;
+};
+
+type RemoveModulePayload = {
+    projectId: string;
+    moduleId: string;
+};
+
+type UpdateModulePayload = {
+    projectId: string;
+    moduleId: string;
+    changes: Partial<AppModule>;
+};
+
+type AssignPageToModulePayload = {
+    projectId: string;
+    pageId: string;
+    moduleId: string;
+};
+
+type RemovePageFromModulePayload = {
+    projectId: string;
+    pageId: string;
+    moduleId: string;
+};
+
 const projectsSlice = createSlice({
     name: 'projects',
     initialState,
