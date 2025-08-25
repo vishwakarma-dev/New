@@ -21,7 +21,7 @@ import {
   Web,
   Palette,
   Speed,
-  Mobile,
+  PhoneIphone,
   Cloud,
   ArrowForward,
   Star,
