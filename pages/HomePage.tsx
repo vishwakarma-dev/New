@@ -214,8 +214,8 @@ const HomePage: React.FC = () => {
                 }}
               >
                 <img
-                  src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=600&h=400&fit=crop"
-                  alt="Website Builder Interface"
+                  src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=600&h=400&fit=crop"
+                  alt="App Builder Interface"
                 />
               </Box>
             </Grid>
@@ -230,7 +230,7 @@ const HomePage: React.FC = () => {
             Everything You Need
           </Typography>
           <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
-            Powerful features that make website building simple, fast, and enjoyable
+            Powerful features that make app development simple, fast, and enjoyable
           </Typography>
         </Box>
         
@@ -327,10 +327,10 @@ const HomePage: React.FC = () => {
       >
         <Container maxWidth="md" sx={{ textAlign: 'center' }}>
           <Typography variant="h3" fontWeight="bold" gutterBottom>
-            Ready to Build Your Dream Website?
+            Ready to Build Your Dream App?
           </Typography>
           <Typography variant="h6" sx={{ mb: 4, opacity: 0.9 }}>
-            Join thousands of users who've already created amazing websites with WebBuilder
+            Join thousands of users who've already created amazing apps with AppBuilder
           </Typography>
           <Button
             variant="contained"
