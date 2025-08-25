@@ -46,6 +46,9 @@ type NewProjectPayload = {
     name: string;
     description: string;
     imageUrl: string;
+    projectType?: 'web' | 'mobile' | 'desktop' | 'hybrid';
+    platform?: 'react' | 'react-native' | 'flutter' | 'pwa';
+    modules?: string[]; // Array of module IDs to initialize with
 };
 
 type ProjectUpdatePayload = {
