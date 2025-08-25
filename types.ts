@@ -456,6 +456,8 @@ export interface Page {
     rootElementId: string;
     theme?: ThemeSettings;
     dataSources: DataSource[];
+    moduleId?: string; // Which module this page belongs to
+    pageType?: 'screen' | 'modal' | 'dialog' | 'component'; // Type of page for apps
 }
 
 export interface Project {
@@ -466,6 +468,9 @@ export interface Project {
     imageUrl: string;
     status: 'Active' | 'Inactive' | 'New';
     pages: Page[];
+    modules?: AppModule[]; // App modules
+    projectType?: 'web' | 'mobile' | 'desktop' | 'hybrid'; // Type of application
+    platform?: 'react' | 'react-native' | 'flutter' | 'pwa'; // Target platform
 }
 
 export interface Template {
