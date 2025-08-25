@@ -943,5 +943,112 @@ export const AVAILABLE_TEMPLATES: Template[] = [
             'blog-image': { id: 'blog-image', name: 'Featured Image', type: ElementType.Image, props: { src: 'https://picsum.photos/seed/blog/800/400', borderRadius: '16px' } },
             'blog-intro-p': { id: 'blog-intro-p', name: 'Intro Paragraph', type: ElementType.Text, props: { content: 'Welcome to our deep dive into the world of no-code. In this article, we will explore the benefits, the tools, and the future of building applications without writing a single line of code. Whether you are a seasoned developer or a complete beginner, there is something here for you.' } },
         }
+    },
+
+    // APP-FOCUSED TEMPLATES
+    // Template: Mobile App Screen
+    {
+        name: 'Mobile App Screen',
+        icon: <PhoneIphone />,
+        rootElementId: 'mobile-screen-root',
+        elements: {
+            'mobile-screen-root': { id: 'mobile-screen-root', name: 'Screen Container', type: ElementType.Container, props: { children: ['app-bar', 'content-area', 'nav-bar'], direction: 'col', width: '100%', height: '100vh', gap: 0 } },
+            'app-bar': { id: 'app-bar', name: 'App Bar', type: ElementType.AppBar, props: { title: 'My App', showBackButton: false, actions: ['menu'] } },
+            'content-area': { id: 'content-area', name: 'Content Area', type: ElementType.Container, props: { children: ['welcome-card'], direction: 'col', gap: 2, padding: 4, flex: 1 } },
+            'welcome-card': { id: 'welcome-card', name: 'Welcome Card', type: ElementType.StatusCard, props: { title: 'Welcome', value: 'Get Started', trend: 'up', icon: 'waving_hand', color: 'primary' } },
+            'nav-bar': { id: 'nav-bar', name: 'Navigation Bar', type: ElementType.NavigationBar, props: { items: [{ label: 'Home', icon: 'home' }, { label: 'Search', icon: 'search' }, { label: 'Profile', icon: 'person' }], variant: 'bottom', showLabels: true } },
+        }
+    },
+
+    // Template: Dashboard Module
+    {
+        name: 'Analytics Dashboard',
+        icon: <Assessment />,
+        rootElementId: 'dashboard-root',
+        elements: {
+            'dashboard-root': { id: 'dashboard-root', name: 'Dashboard Container', type: ElementType.Container, props: { children: ['dashboard-header', 'stats-grid', 'charts-section'], direction: 'col', gap: 3, padding: 4 } },
+            'dashboard-header': { id: 'dashboard-header', name: 'Dashboard Header', type: ElementType.Text, props: { content: 'Analytics Dashboard', fontSize: 'h4', fontWeight: 'bold' } },
+            'stats-grid': { id: 'stats-grid', name: 'Stats Grid', type: ElementType.Grid, props: { children: ['stat-users', 'stat-revenue', 'stat-growth'], spacing: 3 } },
+            'stat-users': { id: 'stat-users', name: 'Users Card', type: ElementType.StatusCard, props: { title: 'Total Users', value: '12,345', trend: 'up', icon: 'people', color: 'primary', xs: 12, md: 4 } },
+            'stat-revenue': { id: 'stat-revenue', name: 'Revenue Card', type: ElementType.StatusCard, props: { title: 'Revenue', value: '$45,678', trend: 'up', icon: 'attach_money', color: 'success', xs: 12, md: 4 } },
+            'stat-growth': { id: 'stat-growth', name: 'Growth Card', type: ElementType.StatusCard, props: { title: 'Growth', value: '+23%', trend: 'up', icon: 'trending_up', color: 'warning', xs: 12, md: 4 } },
+            'charts-section': { id: 'charts-section', name: 'Charts Section', type: ElementType.Chart, props: { type: 'line', title: 'Monthly Revenue', legend: true, height: '400px' } },
+        }
+    },
+
+    // Template: User Profile Module
+    {
+        name: 'User Profile',
+        icon: <Person />,
+        rootElementId: 'profile-root',
+        elements: {
+            'profile-root': { id: 'profile-root', name: 'Profile Container', type: ElementType.Container, props: { children: ['profile-header', 'profile-tabs'], direction: 'col', gap: 3, padding: 4 } },
+            'profile-header': { id: 'profile-header', name: 'Profile Header', type: ElementType.Container, props: { children: ['profile-avatar', 'profile-info'], direction: 'row', align: 'center', gap: 3, padding: 4, backgroundColor: 'grey.100', borderRadius: '12px' } },
+            'profile-avatar': { id: 'profile-avatar', name: 'Profile Avatar', type: ElementType.Avatar, props: { src: 'https://i.pravatar.cc/150?u=user', width: '80px', height: '80px' } },
+            'profile-info': { id: 'profile-info', name: 'Profile Info', type: ElementType.Container, props: { children: ['profile-name', 'profile-email', 'profile-badge'], direction: 'col', gap: 1 } },
+            'profile-name': { id: 'profile-name', name: 'Profile Name', type: ElementType.Text, props: { content: 'John Doe', fontSize: 'h5', fontWeight: 'bold' } },
+            'profile-email': { id: 'profile-email', name: 'Profile Email', type: ElementType.Text, props: { content: 'john.doe@example.com', color: 'text.secondary' } },
+            'profile-badge': { id: 'profile-badge', name: 'Status Badge', type: ElementType.Chip, props: { label: 'Premium User', color: 'primary', variant: 'filled' } },
+            'profile-tabs': { id: 'profile-tabs', name: 'Profile Tabs', type: ElementType.Tabs, props: { children: ['tab-settings', 'tab-activity'], variant: 'fullWidth' } },
+            'tab-settings': { id: 'tab-settings', name: 'Settings Tab', type: ElementType.Text, props: { content: 'Settings content goes here...' } },
+            'tab-activity': { id: 'tab-activity', name: 'Activity Tab', type: ElementType.Text, props: { content: 'Activity timeline goes here...' } },
+        }
+    },
+
+    // Template: E-commerce Product List
+    {
+        name: 'Product Catalog',
+        icon: <ShoppingCart />,
+        rootElementId: 'catalog-root',
+        elements: {
+            'catalog-root': { id: 'catalog-root', name: 'Catalog Container', type: ElementType.Container, props: { children: ['catalog-header', 'catalog-filters', 'product-grid'], direction: 'col', gap: 3, padding: 4 } },
+            'catalog-header': { id: 'catalog-header', name: 'Catalog Header', type: ElementType.Container, props: { children: ['catalog-title', 'catalog-search'], direction: 'row', justify: 'space-between', align: 'center' } },
+            'catalog-title': { id: 'catalog-title', name: 'Catalog Title', type: ElementType.Text, props: { content: 'Products', fontSize: 'h4', fontWeight: 'bold' } },
+            'catalog-search': { id: 'catalog-search', name: 'Search Bar', type: ElementType.SearchBar, props: { placeholder: 'Search products...', showFilter: true, width: '300px' } },
+            'catalog-filters': { id: 'catalog-filters', name: 'Filter Chips', type: ElementType.Container, props: { children: ['filter-all', 'filter-electronics', 'filter-clothing'], direction: 'row', gap: 1 } },
+            'filter-all': { id: 'filter-all', name: 'All Filter', type: ElementType.Chip, props: { label: 'All', variant: 'filled', color: 'primary' } },
+            'filter-electronics': { id: 'filter-electronics', name: 'Electronics Filter', type: ElementType.Chip, props: { label: 'Electronics', variant: 'outlined' } },
+            'filter-clothing': { id: 'filter-clothing', name: 'Clothing Filter', type: ElementType.Chip, props: { label: 'Clothing', variant: 'outlined' } },
+            'product-grid': { id: 'product-grid', name: 'Product Grid', type: ElementType.DataGrid, props: { columns: [{ field: 'name', headerName: 'Product' }, { field: 'price', headerName: 'Price' }, { field: 'category', headerName: 'Category' }], rows: [{ id: 1, name: 'Smartphone', price: '$599', category: 'Electronics' }, { id: 2, name: 'T-Shirt', price: '$29', category: 'Clothing' }], striped: true } },
+        }
+    },
+
+    // Template: Onboarding Flow
+    {
+        name: 'App Onboarding',
+        icon: <Stairs />,
+        rootElementId: 'onboarding-root',
+        elements: {
+            'onboarding-root': { id: 'onboarding-root', name: 'Onboarding Container', type: ElementType.Container, props: { children: ['onboarding-stepper', 'onboarding-content', 'onboarding-actions'], direction: 'col', gap: 4, padding: 4, height: '100vh', justify: 'center' } },
+            'onboarding-stepper': { id: 'onboarding-stepper', name: 'Progress Stepper', type: ElementType.Stepper, props: { steps: ['Welcome', 'Setup', 'Complete'], activeStep: 0, orientation: 'horizontal' } },
+            'onboarding-content': { id: 'onboarding-content', name: 'Content Area', type: ElementType.Container, props: { children: ['onb-image', 'onb-title', 'onb-description'], direction: 'col', align: 'center', gap: 3, padding: 4 } },
+            'onb-image': { id: 'onb-image', name: 'Onboarding Image', type: ElementType.Image, props: { src: 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=400&h=300&fit=crop', width: '300px', height: '200px', borderRadius: '16px' } },
+            'onb-title': { id: 'onb-title', name: 'Welcome Title', type: ElementType.Text, props: { content: 'Welcome to Our App', fontSize: 'h3', fontWeight: 'bold', textAlign: 'center' } },
+            'onb-description': { id: 'onb-description', name: 'Description', type: ElementType.Text, props: { content: 'Discover amazing features that will transform your workflow and boost your productivity.', textAlign: 'center', color: 'text.secondary' } },
+            'onboarding-actions': { id: 'onboarding-actions', name: 'Action Buttons', type: ElementType.Container, props: { children: ['onb-skip', 'onb-next'], direction: 'row', justify: 'space-between' } },
+            'onb-skip': { id: 'onb-skip', name: 'Skip Button', type: ElementType.Button, props: { text: 'Skip', variant: 'text' } },
+            'onb-next': { id: 'onb-next', name: 'Next Button', type: ElementType.Button, props: { text: 'Next', variant: 'contained' } },
+        }
+    },
+
+    // Template: Settings Module
+    {
+        name: 'App Settings',
+        icon: <Tune />,
+        rootElementId: 'settings-root',
+        elements: {
+            'settings-root': { id: 'settings-root', name: 'Settings Container', type: ElementType.Container, props: { children: ['settings-header', 'settings-sections'], direction: 'col', gap: 3, padding: 4 } },
+            'settings-header': { id: 'settings-header', name: 'Settings Header', type: ElementType.Text, props: { content: 'Settings', fontSize: 'h4', fontWeight: 'bold' } },
+            'settings-sections': { id: 'settings-sections', name: 'Settings Sections', type: ElementType.Container, props: { children: ['notif-section', 'privacy-section', 'appearance-section'], direction: 'col', gap: 2 } },
+            'notif-section': { id: 'notif-section', name: 'Notifications Section', type: ElementType.Card, props: { children: ['notif-title', 'notif-toggle'], padding: 3 } },
+            'notif-title': { id: 'notif-title', name: 'Notifications Title', type: ElementType.Text, props: { content: 'Notifications', fontSize: 'h6', fontWeight: 'medium' } },
+            'notif-toggle': { id: 'notif-toggle', name: 'Notification Toggle', type: ElementType.Switch, props: { checked: true } },
+            'privacy-section': { id: 'privacy-section', name: 'Privacy Section', type: ElementType.Card, props: { children: ['privacy-title', 'privacy-rating'], padding: 3 } },
+            'privacy-title': { id: 'privacy-title', name: 'Privacy Title', type: ElementType.Text, props: { content: 'Privacy Level', fontSize: 'h6', fontWeight: 'medium' } },
+            'privacy-rating': { id: 'privacy-rating', name: 'Privacy Rating', type: ElementType.Rating, props: { value: 4, max: 5, readOnly: false } },
+            'appearance-section': { id: 'appearance-section', name: 'Appearance Section', type: ElementType.Card, props: { children: ['appearance-title', 'theme-slider'], padding: 3 } },
+            'appearance-title': { id: 'appearance-title', name: 'Appearance Title', type: ElementType.Text, props: { content: 'Theme Brightness', fontSize: 'h6', fontWeight: 'medium' } },
+            'theme-slider': { id: 'theme-slider', name: 'Theme Slider', type: ElementType.Slider, props: { value: 70, min: 0, max: 100, marks: true } },
+        }
     }
 ];
