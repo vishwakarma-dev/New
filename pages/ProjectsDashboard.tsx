@@ -59,6 +59,7 @@ const style = {
 const ProjectsDashboard: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const projects = useSelector((state: RootState) => state.projects.projects);
+    const { user, logout } = useAuth();
 
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editFormData, setEditFormData] = useState({
@@ -76,6 +77,7 @@ const ProjectsDashboard: React.FC = () => {
     });
 
     const [isChatOpen, setIsChatOpen] = useState(false);
+    const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(null);
 
     const handleOpenEditModal = (project: Project) => {
         setEditingProject(project);
