@@ -166,7 +166,7 @@ const ProjectsDashboard: React.FC = () => {
                             <Web />
                         </Avatar>
                         <Typography variant="h6" fontWeight="bold" color="white">
-                            WebBuilder
+                            AppBuilder
                         </Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
