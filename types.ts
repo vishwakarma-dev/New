@@ -1,5 +1,3 @@
-
-
 export enum ElementType {
     Container = 'Container',
     Text = 'Text',
@@ -22,6 +20,33 @@ export enum ElementType {
     Slide = 'Slide',
     Header = 'Header',
     DataGrid = 'DataGrid',
+    // Advanced App Components
+    Chart = 'Chart',
+    Form = 'Form',
+    Tabs = 'Tabs',
+    Modal = 'Modal',
+    Drawer = 'Drawer',
+    BottomSheet = 'BottomSheet',
+    FloatingActionButton = 'FloatingActionButton',
+    SegmentedControl = 'SegmentedControl',
+    SearchBar = 'SearchBar',
+    AppBar = 'AppBar',
+    NavigationBar = 'NavigationBar',
+    StatusCard = 'StatusCard',
+    Timeline = 'Timeline',
+    Stepper = 'Stepper',
+    Rating = 'Rating',
+    Chip = 'Chip',
+    Badge = 'Badge',
+    Toggle = 'Toggle',
+    Slider = 'Slider',
+    DatePicker = 'DatePicker',
+    TimePicker = 'TimePicker',
+    FileUpload = 'FileUpload',
+    MapView = 'MapView',
+    VideoPlayer = 'VideoPlayer',
+    QRCode = 'QRCode',
+    LoadingSpinner = 'LoadingSpinner',
 }
 
 export type ViewMode = 'desktop' | 'tablet' | 'mobile';
