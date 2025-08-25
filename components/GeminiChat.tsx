@@ -43,8 +43,19 @@ const GeminiChat: React.FC<GeminiChatProps> = ({ open, onClose, onProjectGenerat
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
+    const [ai, setAi] = useState<GoogleGenAI | null>(null);
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    useEffect(() => {
+        const apiKey = process.env.API_KEY;
+        if (apiKey && apiKey !== 'YOUR_GEMINI_API_KEY_HERE') {
+            try {
+                setAi(new GoogleGenAI({ apiKey }));
+            } catch (error) {
+                console.error('Failed to initialize GoogleGenAI:', error);
+                setAi(null);
+            }
+        }
+    }, []);
 
     useEffect(() => {
         if (open) {
