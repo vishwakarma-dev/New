@@ -104,18 +104,28 @@ const projectsSlice = createSlice({
     initialState,
     reducers: {
         addProject: (state, action: PayloadAction<NewProjectPayload>) => {
-            const { name, description, imageUrl } = action.payload;
+            const { name, description, imageUrl, projectType, platform, modules } = action.payload;
             const newProjectId = `proj-${Date.now()}`;
             const newPageId = `page-${Date.now()}`;
-            const newProject: Project = {
+
+            let newProject: Project = {
                 id: newProjectId,
                 name: name,
                 description: description || 'No description provided.',
                 createdAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
                 imageUrl: imageUrl || 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&q=80',
                 status: 'New',
-                pages: [createInitialPage(newPageId, 'New Page')]
+                pages: [createInitialPage(newPageId, 'New Page')],
+                projectType: projectType || 'web',
+                platform: platform || 'react',
+                modules: []
             };
+
+            // Initialize with selected modules if provided
+            if (modules && modules.length > 0) {
+                newProject = ModuleManager.initializeProjectWithModules(newProject, modules);
+            }
+
             state.projects.unshift(newProject);
         },
         addGeneratedProject: (state, action: PayloadAction<GeneratedProjectPayload>) => {
