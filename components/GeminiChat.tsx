@@ -59,11 +59,21 @@ const GeminiChat: React.FC<GeminiChatProps> = ({ open, onClose, onProjectGenerat
 
     useEffect(() => {
         if (open) {
-            setMessages([{ sender: 'ai', text: "Hello! Describe the website you'd like to create. For example, 'a portfolio for a photographer' or 'a landing page for a new mobile app'." }]);
+            if (!ai) {
+                setMessages([{
+                    sender: 'ai',
+                    text: "⚠️ API key not configured. Please set your Gemini API key in the environment variables to use AI features."
+                }]);
+            } else {
+                setMessages([{
+                    sender: 'ai',
+                    text: "Hello! Describe the website you'd like to create. For example, 'a portfolio for a photographer' or 'a landing page for a new mobile app'."
+                }]);
+            }
             setInput('');
             setIsLoading(false);
         }
-    }, [open]);
+    }, [open, ai]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
