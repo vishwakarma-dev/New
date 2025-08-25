@@ -224,7 +224,7 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
     {
         name: 'Form',
         type: ElementType.Form,
-        icon: <Form />,
+        icon: <Assignment />,
         defaultProps: {
             ...commonDefaultProps,
             children: [],
