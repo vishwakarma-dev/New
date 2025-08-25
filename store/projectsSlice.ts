@@ -343,5 +343,19 @@ const projectsSlice = createSlice({
     },
 });
 
-export const { addProject, deleteProject, updateProject, addPage, deletePage, updatePageName, updatePageContent, addGeneratedProject } = projectsSlice.actions;
+export const {
+    addProject,
+    deleteProject,
+    updateProject,
+    addPage,
+    deletePage,
+    updatePageName,
+    updatePageContent,
+    addGeneratedProject,
+    addModule,
+    removeModule,
+    updateModule,
+    assignPageToModule,
+    removePageFromModule
+} = projectsSlice.actions;
 export default projectsSlice.reducer;
