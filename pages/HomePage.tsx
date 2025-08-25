@@ -40,7 +40,7 @@ const HomePage: React.FC = () => {
     {
       icon: <AutoAwesome />,
       title: 'AI-Powered Builder',
-      description: 'Create websites with natural language. Just describe what you want, and our AI builds it.'
+      description: 'Create mobile and web apps with natural language. Just describe what you want, and our AI builds it.'
     },
     {
       icon: <Web />,
@@ -50,7 +50,7 @@ const HomePage: React.FC = () => {
     {
       icon: <Palette />,
       title: 'Custom Themes',
-      description: 'Beautiful pre-designed themes and the ability to customize every aspect of your site.'
+      description: 'Beautiful pre-designed themes and the ability to customize every aspect of your app.'
     },
     {
       icon: <Speed />,
@@ -60,7 +60,7 @@ const HomePage: React.FC = () => {
     {
       icon: <PhoneIphone />,
       title: 'Mobile Responsive',
-      description: 'All websites are automatically optimized for mobile, tablet, and desktop devices.'
+      description: 'All apps are automatically optimized for mobile, tablet, and desktop platforms.'
     },
     {
       icon: <Cloud />,
@@ -74,14 +74,14 @@ const HomePage: React.FC = () => {
       name: 'Sarah Johnson',
       role: 'Small Business Owner',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b743?w=150&h=150&fit=crop&crop=face',
-      comment: 'I built my entire e-commerce site in under an hour. The AI understood exactly what I wanted!',
+      comment: 'I built my entire e-commerce app in under an hour. The AI understood exactly what I wanted!',
       rating: 5
     },
     {
       name: 'Mike Chen',
       role: 'Freelance Designer',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
-      comment: 'This tool has revolutionized my workflow. I can prototype and deliver websites 10x faster.',
+      comment: 'This tool has revolutionized my workflow. I can prototype and deliver apps 10x faster.',
       rating: 5
     },
     {
