@@ -355,7 +355,7 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
     {
         name: 'Drawer',
         type: ElementType.Drawer,
-        icon: <Drawer />,
+        icon: <Menu />,
         defaultProps: {
             ...commonDefaultProps,
             children: [],
