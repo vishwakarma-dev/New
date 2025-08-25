@@ -118,10 +118,11 @@ const ComponentPalette: React.FC = () => {
     return (
         <Box>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Component palette tabs" variant="fullWidth">
-                    <Tab icon={<Widgets />} iconPosition="start" label="Components" id="palette-tab-0" sx={{minHeight: 48}} />
-                    <Tab icon={<GridView />} iconPosition="start" label="Layouts" id="palette-tab-1" sx={{minHeight: 48}} />
-                    <Tab icon={<ViewQuilt />} iconPosition="start" label="Templates" id="palette-tab-2" sx={{minHeight: 48}} />
+                <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Component palette tabs" variant="scrollable" scrollButtons="auto">
+                    <Tab icon={<Apps />} iconPosition="start" label="App Components" id="palette-tab-0" sx={{minHeight: 48}} />
+                    <Tab icon={<Widgets />} iconPosition="start" label="All Components" id="palette-tab-1" sx={{minHeight: 48}} />
+                    <Tab icon={<GridView />} iconPosition="start" label="Layouts" id="palette-tab-2" sx={{minHeight: 48}} />
+                    <Tab icon={<ViewQuilt />} iconPosition="start" label="Templates" id="palette-tab-3" sx={{minHeight: 48}} />
                 </Tabs>
             </Box>
 
