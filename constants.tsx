@@ -1,14 +1,12 @@
-
-
 import React from 'react';
 import { ElementType, EditorElement, Template, BaseProps, TextProps, SlideProps, ElementProps } from './types';
-import { 
-    CheckBoxOutlineBlank, 
+import {
+    CheckBoxOutlineBlank,
     TextFields,
     SmartButton,
-    Image, 
-    SpaceBar, 
-    Input, 
+    Image,
+    SpaceBar,
+    Input,
     HorizontalRule,
     ViewModule,
     CreditCard,
@@ -47,6 +45,33 @@ import {
     WebAsset,
     TableView,
     Slideshow,
+    // New Advanced Component Icons
+    BarChart,
+    Form,
+    Tab,
+    OpenInNew,
+    Drawer,
+    SwipeUp,
+    Add,
+    Tune,
+    Search,
+    PhoneIphone,
+    Navigation,
+    Assessment,
+    Timeline,
+    LinearProgress,
+    StarRate,
+    LocalOffer,
+    Badge,
+    ToggleOff,
+    Tune as SliderIcon,
+    DateRange,
+    Schedule,
+    CloudUpload,
+    Map,
+    PlayCircle,
+    QrCode,
+    Refresh,
 } from '@mui/icons-material';
 
 
