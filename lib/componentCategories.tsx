@@ -12,7 +12,7 @@ import {
     TouchApp,
     ViewModule,
     Widgets,
-    // Component Icons  
+    // Component Icons
     CheckBoxOutlineBlank,
     TextFields,
     SmartButton,
@@ -21,10 +21,10 @@ import {
     GridOn,
     TableView,
     BarChart,
-    Form,
+    Assignment,
     Tab,
     OpenInNew,
-    Drawer,
+    Menu,
     Add,
     Search,
     DateRange,
