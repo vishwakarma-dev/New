@@ -143,6 +143,19 @@ const ProjectsDashboard: React.FC = () => {
         setIsChatOpen(false);
     };
 
+    const handleUserMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+        setUserMenuAnchor(event.currentTarget);
+    };
+
+    const handleUserMenuClose = () => {
+        setUserMenuAnchor(null);
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleUserMenuClose();
+    };
+
     return (
         <Container maxWidth="xl" sx={{ py: 4 }}>
             <Box component="header" display="flex" alignItems="center" justifyContent="space-between" mb={4}>
