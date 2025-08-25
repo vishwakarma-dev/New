@@ -126,43 +126,110 @@ const ComponentPalette: React.FC = () => {
                 </Tabs>
             </Box>
 
+            {/* Categorized App Components Tab */}
             <TabPanel value={tabIndex} index={0}>
+                <Box sx={{ maxHeight: 'calc(100vh - 180px)', overflowY: 'auto' }}>
+                    {APP_COMPONENT_CATEGORIES.map((category) => {
+                        const categoryComponents = getComponentsByCategory(category.id);
+                        const availableComponents = AVAILABLE_COMPONENTS.filter(comp =>
+                            categoryComponents.includes(comp.type)
+                        );
+
+                        if (availableComponents.length === 0) return null;
+
+                        return (
+                            <Accordion
+                                key={category.id}
+                                expanded={expandedCategory === category.id}
+                                onChange={handleCategoryChange(category.id)}
+                                sx={{ mb: 1, '&:before': { display: 'none' } }}
+                            >
+                                <AccordionSummary
+                                    expandIcon={<ExpandMore />}
+                                    sx={{
+                                        bgcolor: 'grey.50',
+                                        borderLeft: 4,
+                                        borderLeftColor: category.color,
+                                        '&:hover': { bgcolor: 'grey.100' }
+                                    }}
+                                >
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%' }}>
+                                        <Box sx={{ color: category.color, display: 'flex', alignItems: 'center' }}>
+                                            {category.icon}
+                                        </Box>
+                                        <Box sx={{ flexGrow: 1 }}>
+                                            <Typography variant="subtitle2" fontWeight="medium">
+                                                {category.name}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {category.description}
+                                            </Typography>
+                                        </Box>
+                                        <Chip
+                                            label={availableComponents.length}
+                                            size="small"
+                                            sx={{ bgcolor: category.color, color: 'white', minWidth: 24 }}
+                                        />
+                                    </Box>
+                                </AccordionSummary>
+                                <AccordionDetails sx={{ pt: 1 }}>
+                                    <Grid container spacing={1.5}>
+                                        {availableComponents.map(comp => (
+                                            <DraggableItem
+                                                key={comp.type}
+                                                name={comp.name}
+                                                icon={comp.icon}
+                                                onDragStart={(e) => handleDragStart(e, 'component', comp.type)}
+                                            />
+                                        ))}
+                                    </Grid>
+                                </AccordionDetails>
+                            </Accordion>
+                        );
+                    })}
+                </Box>
+            </TabPanel>
+
+            {/* All Components Tab */}
+            <TabPanel value={tabIndex} index={1}>
                  <Grid container spacing={1.5}>
                     {AVAILABLE_COMPONENTS.map(comp => (
-                        <DraggableItem 
-                            key={comp.type} 
-                            name={comp.name} 
-                            icon={comp.icon} 
-                            onDragStart={(e) => handleDragStart(e, 'component', comp.type)} 
+                        <DraggableItem
+                            key={comp.type}
+                            name={comp.name}
+                            icon={comp.icon}
+                            onDragStart={(e) => handleDragStart(e, 'component', comp.type)}
                         />
                     ))}
                 </Grid>
             </TabPanel>
 
-            <TabPanel value={tabIndex} index={1}>
+            {/* Layouts Tab */}
+            <TabPanel value={tabIndex} index={2}>
                  <Grid container spacing={1.5}>
                     {LAYOUTS.map(layout => {
                         const { icon, ...layoutData } = layout;
                         return (
-                             <DraggableItem 
-                                key={layout.name} 
-                                name={layout.name} 
-                                icon={icon} 
-                                onDragStart={(e) => handleDragStart(e, 'layout', layoutData)} 
+                             <DraggableItem
+                                key={layout.name}
+                                name={layout.name}
+                                icon={icon}
+                                onDragStart={(e) => handleDragStart(e, 'layout', layoutData)}
                             />
                         )
                     })}
                  </Grid>
             </TabPanel>
 
-             <TabPanel value={tabIndex} index={2}>
+             {/* Templates Tab */}
+             <TabPanel value={tabIndex} index={3}>
                 <Grid container spacing={1.5}>
                     {AVAILABLE_TEMPLATES.map(template => (
-                         <DraggableItem 
-                            key={template.name} 
-                            name={template.name} 
-                            icon={template.icon} 
-                            onDragStart={(e) => handleDragStart(e, 'template', template)} 
+                         <DraggableItem
+                            key={template.name}
+                            name={template.name}
+                            icon={template.icon}
+                            onDragStart={(e) => handleDragStart(e, 'template', template)}
                         />
                     ))}
                 </Grid>
