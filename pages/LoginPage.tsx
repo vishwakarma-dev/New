@@ -141,10 +141,10 @@ const LoginPage: React.FC = () => {
                 <Web />
               </Avatar>
               <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
-                WebBuilder
+                AppBuilder
               </Typography>
               <Typography variant="body1" color="text.secondary">
-                Create stunning websites with AI-powered tools
+                Create powerful mobile and web applications with AI-powered tools
               </Typography>
             </Box>
 
