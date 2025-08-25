@@ -412,13 +412,25 @@ export interface Layout {
     cols: number;
 }
 
+// App Module System
+export interface AppModule {
+    id: string;
+    name: string;
+    description: string;
+    type: 'feature' | 'service' | 'ui' | 'data';
+    pages: string[]; // Page IDs that belong to this module
+    dependencies?: string[]; // Other module IDs this module depends on
+    config?: { [key: string]: any };
+    icon?: string;
+    color?: string;
+}
 
-export type ElementProps = ContainerProps | TextProps | ButtonProps | ImageProps | SpacerProps | InputProps | DividerProps | StackProps | CardProps | AccordionProps | AlertProps | GridProps | LinkProps | AvatarProps | ListProps | LinearProgressProps | SwitchProps | CarouselProps | SlideProps | HeaderProps | DataGridProps;
+export type ElementProps = ContainerProps | TextProps | ButtonProps | ImageProps | SpacerProps | InputProps | DividerProps | StackProps | CardProps | AccordionProps | AlertProps | GridProps | LinkProps | AvatarProps | ListProps | LinearProgressProps | SwitchProps | CarouselProps | SlideProps | HeaderProps | DataGridProps | ChartProps | FormProps | TabsProps | ModalProps | DrawerProps | BottomSheetProps | FloatingActionButtonProps | SegmentedControlProps | SearchBarProps | AppBarProps | NavigationBarProps | StatusCardProps | TimelineProps | StepperProps | RatingProps | ChipProps | BadgeProps | ToggleProps | SliderProps | DatePickerProps | TimePickerProps | FileUploadProps | MapViewProps | VideoPlayerProps | QRCodeProps | LoadingSpinnerProps;
 
 // A type that combines all possible props by intersecting them.
 // The `keyof` this intersection will be a union of all possible prop keys from each interface.
 // This is used to allow the property editor to update any valid prop for any element type.
-type AllPropsCombined = ContainerProps & TextProps & ButtonProps & ImageProps & SpacerProps & InputProps & DividerProps & StackProps & CardProps & AccordionProps & AlertProps & GridProps & LinkProps & AvatarProps & ListProps & LinearProgressProps & SwitchProps & CarouselProps & SlideProps & HeaderProps & DataGridProps;
+type AllPropsCombined = ContainerProps & TextProps & ButtonProps & ImageProps & SpacerProps & InputProps & DividerProps & StackProps & CardProps & AccordionProps & AlertProps & GridProps & LinkProps & AvatarProps & ListProps & LinearProgressProps & SwitchProps & CarouselProps & SlideProps & HeaderProps & DataGridProps & ChartProps & FormProps & TabsProps & ModalProps & DrawerProps & BottomSheetProps & FloatingActionButtonProps & SegmentedControlProps & SearchBarProps & AppBarProps & NavigationBarProps & StatusCardProps & TimelineProps & StepperProps & RatingProps & ChipProps & BadgeProps & ToggleProps & SliderProps & DatePickerProps & TimePickerProps & FileUploadProps & MapViewProps & VideoPlayerProps & QRCodeProps & LoadingSpinnerProps;
 export type AnyElementPropKey = keyof AllPropsCombined;
 
 export interface EditorElement {
