@@ -1,15 +1,45 @@
-
-
 import React, { useState } from 'react';
 import ProjectCard from '../components/ProjectCard';
 import { Project } from '../types';
-import { Grid, Container, Box, Typography, Button, Checkbox, TextField, InputAdornment, Modal, Backdrop, Fade, FormControl, InputLabel, Select, MenuItem } from '@mui/material';
+import {
+  Grid,
+  Container,
+  Box,
+  Typography,
+  Button,
+  Checkbox,
+  TextField,
+  InputAdornment,
+  Modal,
+  Backdrop,
+  Fade,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  AppBar,
+  Toolbar,
+  Avatar,
+  IconButton,
+  Menu,
+  Divider,
+  ListItemIcon,
+  ListItemText
+} from '@mui/material';
 import { SelectChangeEvent } from '@mui/material/Select';
-import SearchIcon from '@mui/icons-material/Search';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import {
+  Search as SearchIcon,
+  AutoAwesome as AutoAwesomeIcon,
+  Web,
+  AccountCircle,
+  Logout,
+  Settings,
+  Person
+} from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { deleteProject, updateProject, addProject, addGeneratedProject } from '../store/projectsSlice';
+import { useAuth } from '../contexts/AuthContext';
 import GeminiChat from '../components/GeminiChat';
 
 const style = {
