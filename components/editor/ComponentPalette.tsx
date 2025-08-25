@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Tabs, Tab, Typography, Paper } from '@mui/material';
+import { Box, Tabs, Tab, Typography, Paper, Accordion, AccordionSummary, AccordionDetails, Chip } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { ElementType, Template, Layout } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Widgets, GridView, ViewQuilt } from '@mui/icons-material';
+import { APP_COMPONENT_CATEGORIES, getComponentsByCategory } from '../../lib/componentCategories';
+import { Widgets, GridView, ViewQuilt, ExpandMore, Apps } from '@mui/icons-material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
