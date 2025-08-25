@@ -82,6 +82,15 @@ const GeminiChat: React.FC<GeminiChatProps> = ({ open, onClose, onProjectGenerat
     const handleSend = async () => {
         if (!input.trim() || isLoading) return;
 
+        if (!ai) {
+            setMessages(prev => [...prev,
+                { sender: 'user', text: input },
+                { sender: 'ai', text: "Sorry, AI functionality is not available. Please configure your Gemini API key." }
+            ]);
+            setInput('');
+            return;
+        }
+
         const userMessage: Message = { sender: 'user', text: input };
         setMessages(prev => [...prev, userMessage]);
         setInput('');
