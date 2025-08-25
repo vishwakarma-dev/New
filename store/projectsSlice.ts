@@ -256,6 +256,90 @@ const projectsSlice = createSlice({
                 }
             }
         },
+
+        // Module Management Actions
+        addModule: (state, action: PayloadAction<AddModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                if (!project.modules) {
+                    project.modules = [];
+                }
+                project.modules.push(action.payload.module);
+            }
+        },
+
+        removeModule: (state, action: PayloadAction<RemoveModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project && project.modules) {
+                project.modules = project.modules.filter(m => m.id !== action.payload.moduleId);
+
+                // Remove module reference from pages
+                project.pages.forEach(page => {
+                    if (page.moduleId === action.payload.moduleId) {
+                        page.moduleId = undefined;
+                    }
+                });
+            }
+        },
+
+        updateModule: (state, action: PayloadAction<UpdateModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project && project.modules) {
+                const moduleIndex = project.modules.findIndex(m => m.id === action.payload.moduleId);
+                if (moduleIndex !== -1) {
+                    project.modules[moduleIndex] = {
+                        ...project.modules[moduleIndex],
+                        ...action.payload.changes
+                    };
+                }
+            }
+        },
+
+        assignPageToModule: (state, action: PayloadAction<AssignPageToModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                // Update page to reference the module
+                const page = project.pages.find(p => p.id === action.payload.pageId);
+                if (page) {
+                    // Remove from previous module if assigned
+                    if (page.moduleId && project.modules) {
+                        const prevModule = project.modules.find(m => m.id === page.moduleId);
+                        if (prevModule) {
+                            prevModule.pages = prevModule.pages.filter(pid => pid !== action.payload.pageId);
+                        }
+                    }
+
+                    page.moduleId = action.payload.moduleId;
+                }
+
+                // Add page to new module
+                if (project.modules) {
+                    const module = project.modules.find(m => m.id === action.payload.moduleId);
+                    if (module && !module.pages.includes(action.payload.pageId)) {
+                        module.pages.push(action.payload.pageId);
+                    }
+                }
+            }
+        },
+
+        removePageFromModule: (state, action: PayloadAction<RemovePageFromModulePayload>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                // Remove module reference from page
+                const page = project.pages.find(p => p.id === action.payload.pageId);
+                if (page && page.moduleId === action.payload.moduleId) {
+                    page.moduleId = undefined;
+                }
+
+                // Remove page from module
+                if (project.modules) {
+                    const module = project.modules.find(m => m.id === action.payload.moduleId);
+                    if (module) {
+                        module.pages = module.pages.filter(pid => pid !== action.payload.pageId);
+                    }
+                }
+            }
+        },
     },
 });
 
