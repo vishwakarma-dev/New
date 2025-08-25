@@ -361,11 +361,11 @@ const HomePage: React.FC = () => {
                   <Web />
                 </Avatar>
                 <Typography variant="h6" fontWeight="bold">
-                  WebBuilder
+                  AppBuilder
                 </Typography>
               </Box>
               <Typography variant="body2" sx={{ mb: 3, opacity: 0.8 }}>
-                The easiest way to create stunning websites with AI-powered tools and intuitive design.
+                The easiest way to create powerful mobile and web applications with AI-powered tools and intuitive design.
               </Typography>
               <Stack direction="row" spacing={1}>
                 <IconButton sx={{ color: 'white' }}>
@@ -382,7 +382,7 @@ const HomePage: React.FC = () => {
             <Grid item xs={12} md={6}>
               <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  © 2024 WebBuilder. All rights reserved.
+                  © 2024 AppBuilder. All rights reserved.
                 </Typography>
               </Box>
             </Grid>
