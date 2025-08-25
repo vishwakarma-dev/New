@@ -195,6 +195,361 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
                 { id: 3, firstName: 'Peter', lastName: 'Jones' },
             ]
         }
+    },
+
+    // ADVANCED APP COMPONENTS
+    // Data Visualization
+    {
+        name: 'Chart',
+        type: ElementType.Chart,
+        icon: <BarChart />,
+        defaultProps: {
+            ...commonDefaultProps,
+            width: '100%',
+            height: '300px',
+            type: 'bar',
+            title: 'Chart Title',
+            legend: true,
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],
+                datasets: [{
+                    label: 'Sales',
+                    data: [12, 19, 3, 5, 2]
+                }]
+            }
+        }
+    },
+
+    // Forms & Input
+    {
+        name: 'Form',
+        type: ElementType.Form,
+        icon: <Form />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            method: 'POST',
+            validation: true,
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            paddingLeft: '16px',
+            paddingRight: '16px'
+        }
+    },
+    {
+        name: 'Search Bar',
+        type: ElementType.SearchBar,
+        icon: <Search />,
+        defaultProps: {
+            ...commonDefaultProps,
+            placeholder: 'Search...',
+            showFilter: true,
+            width: '100%'
+        }
+    },
+    {
+        name: 'Date Picker',
+        type: ElementType.DatePicker,
+        icon: <DateRange />,
+        defaultProps: {
+            ...commonDefaultProps,
+            format: 'MM/DD/YYYY',
+            disablePast: false,
+            disableFuture: false
+        }
+    },
+    {
+        name: 'Time Picker',
+        type: ElementType.TimePicker,
+        icon: <Schedule />,
+        defaultProps: {
+            ...commonDefaultProps,
+            format: '12h'
+        }
+    },
+    {
+        name: 'File Upload',
+        type: ElementType.FileUpload,
+        icon: <CloudUpload />,
+        defaultProps: {
+            ...commonDefaultProps,
+            accept: 'image/*',
+            multiple: false,
+            dragDrop: true,
+            width: '100%'
+        }
+    },
+    {
+        name: 'Slider',
+        type: ElementType.Slider,
+        icon: <SliderIcon />,
+        defaultProps: {
+            ...commonDefaultProps,
+            value: 50,
+            min: 0,
+            max: 100,
+            step: 1,
+            marks: false,
+            orientation: 'horizontal',
+            width: '100%'
+        }
+    },
+    {
+        name: 'Rating',
+        type: ElementType.Rating,
+        icon: <StarRate />,
+        defaultProps: {
+            ...commonDefaultProps,
+            value: 3,
+            max: 5,
+            readOnly: false,
+            size: 'medium'
+        }
+    },
+
+    // Navigation & Layout
+    {
+        name: 'Tabs',
+        type: ElementType.Tabs,
+        icon: <Tab />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            variant: 'standard',
+            orientation: 'horizontal',
+            width: '100%'
+        }
+    },
+    {
+        name: 'App Bar',
+        type: ElementType.AppBar,
+        icon: <PhoneIphone />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            title: 'App Title',
+            showBackButton: false,
+            width: '100%',
+            paddingTop: '8px',
+            paddingBottom: '8px',
+            paddingLeft: '16px',
+            paddingRight: '16px'
+        }
+    },
+    {
+        name: 'Navigation Bar',
+        type: ElementType.NavigationBar,
+        icon: <Navigation />,
+        defaultProps: {
+            ...commonDefaultProps,
+            items: [
+                { label: 'Home', icon: 'home' },
+                { label: 'Search', icon: 'search' },
+                { label: 'Profile', icon: 'person' }
+            ],
+            variant: 'bottom',
+            showLabels: true,
+            width: '100%'
+        }
+    },
+    {
+        name: 'Drawer',
+        type: ElementType.Drawer,
+        icon: <Drawer />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            anchor: 'left',
+            variant: 'temporary',
+            width: '280px'
+        }
+    },
+    {
+        name: 'Bottom Sheet',
+        type: ElementType.BottomSheet,
+        icon: <SwipeUp />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            title: 'Bottom Sheet',
+            expandable: true,
+            width: '100%'
+        }
+    },
+    {
+        name: 'Modal',
+        type: ElementType.Modal,
+        icon: <OpenInNew />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            title: 'Modal Title',
+            size: 'medium'
+        }
+    },
+    {
+        name: 'Stepper',
+        type: ElementType.Stepper,
+        icon: <Stairs />,
+        defaultProps: {
+            ...commonDefaultProps,
+            steps: ['Step 1', 'Step 2', 'Step 3'],
+            activeStep: 0,
+            orientation: 'horizontal',
+            width: '100%'
+        }
+    },
+
+    // Interactive Elements
+    {
+        name: 'Floating Action Button',
+        type: ElementType.FloatingActionButton,
+        icon: <Add />,
+        defaultProps: {
+            ...commonDefaultProps,
+            icon: 'add',
+            color: 'primary',
+            size: 'medium',
+            position: 'bottom-right'
+        }
+    },
+    {
+        name: 'Segmented Control',
+        type: ElementType.SegmentedControl,
+        icon: <Tune />,
+        defaultProps: {
+            ...commonDefaultProps,
+            options: ['Option 1', 'Option 2', 'Option 3'],
+            selected: 0,
+            color: 'primary',
+            width: '100%'
+        }
+    },
+    {
+        name: 'Toggle Group',
+        type: ElementType.Toggle,
+        icon: <ToggleOff />,
+        defaultProps: {
+            ...commonDefaultProps,
+            options: ['Left', 'Center', 'Right'],
+            selected: 'Center',
+            exclusive: true
+        }
+    },
+
+    // Display Components
+    {
+        name: 'Chip',
+        type: ElementType.Chip,
+        icon: <LocalOffer />,
+        defaultProps: {
+            ...commonDefaultProps,
+            label: 'Chip Label',
+            variant: 'filled',
+            color: 'primary',
+            deletable: false
+        }
+    },
+    {
+        name: 'Badge',
+        type: ElementType.Badge,
+        icon: <Badge />,
+        defaultProps: {
+            ...commonDefaultProps,
+            children: [],
+            content: '4',
+            color: 'error',
+            variant: 'standard'
+        }
+    },
+    {
+        name: 'Status Card',
+        type: ElementType.StatusCard,
+        icon: <Assessment />,
+        defaultProps: {
+            ...commonDefaultProps,
+            title: 'Status',
+            value: '1,234',
+            trend: 'up',
+            icon: 'trending_up',
+            color: 'success',
+            paddingTop: '16px',
+            paddingBottom: '16px',
+            paddingLeft: '16px',
+            paddingRight: '16px',
+            borderRadius: '8px'
+        }
+    },
+    {
+        name: 'Timeline',
+        type: ElementType.Timeline,
+        icon: <Timeline />,
+        defaultProps: {
+            ...commonDefaultProps,
+            items: [
+                { title: 'Event 1', description: 'Description 1', date: '2024-01-01', status: 'completed' },
+                { title: 'Event 2', description: 'Description 2', date: '2024-01-02', status: 'active' },
+                { title: 'Event 3', description: 'Description 3', date: '2024-01-03', status: 'pending' }
+            ],
+            orientation: 'vertical',
+            width: '100%'
+        }
+    },
+
+    // Media & Content
+    {
+        name: 'Video Player',
+        type: ElementType.VideoPlayer,
+        icon: <PlayCircle />,
+        defaultProps: {
+            ...commonDefaultProps,
+            src: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+            controls: true,
+            autoPlay: false,
+            loop: false,
+            muted: false,
+            width: '100%',
+            height: '300px',
+            borderRadius: '8px'
+        }
+    },
+    {
+        name: 'Map View',
+        type: ElementType.MapView,
+        icon: <Map />,
+        defaultProps: {
+            ...commonDefaultProps,
+            center: { lat: 37.7749, lng: -122.4194 },
+            zoom: 10,
+            markers: [
+                { lat: 37.7749, lng: -122.4194, title: 'San Francisco' }
+            ],
+            width: '100%',
+            height: '300px',
+            borderRadius: '8px'
+        }
+    },
+    {
+        name: 'QR Code',
+        type: ElementType.QRCode,
+        icon: <QrCode />,
+        defaultProps: {
+            ...commonDefaultProps,
+            value: 'https://example.com',
+            size: 128,
+            level: 'M'
+        }
+    },
+    {
+        name: 'Loading Spinner',
+        type: ElementType.LoadingSpinner,
+        icon: <Refresh />,
+        defaultProps: {
+            ...commonDefaultProps,
+            size: 'medium',
+            color: 'primary',
+            variant: 'circular'
+        }
     }
 ];
 
