@@ -166,7 +166,13 @@ const generateElementJSX = (element: EditorElement, allElements: { [key: string]
   
   // Generate the JSX
   if (elementContent) {
-    return `${indentStr}<${componentName}${jsxProps}>\n${indentStr}  ${elementContent}\n${indentStr}</${componentName}>`;
+    if (element.type === ElementType.Text || element.type === ElementType.Button) {
+      // For text content, don't add extra indentation
+      return `${indentStr}<${componentName}${jsxProps}>${elementContent}</${componentName}>`;
+    } else {
+      // For container elements with children
+      return `${indentStr}<${componentName}${jsxProps}>${elementContent}\n${indentStr}</${componentName}>`;
+    }
   } else {
     return `${indentStr}<${componentName}${jsxProps} />`;
   }
