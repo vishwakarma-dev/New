@@ -185,6 +185,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         data: { title: 'Data', icon: <DataObject />, component: <DataPanel dataSources={props.dataSources} onAddDataSource={props.onAddDataSource} onDeleteDataSource={props.onDeleteDataSource} /> },
         ai: { title: 'AI Assistant', icon: <AutoAwesome />, component: <AiChatPanel page={props.page} selectedElementId={props.selectedElementId} onUpdateElementProp={props.onUpdateElementProp} onDeleteElement={props.onDeleteElement} onAddElement={props.onAddElement} onSelectElement={props.onSelectElement} /> },
         search: { title: 'Search', icon: <Search />, component: <Typography p={2}>Search panel coming soon.</Typography> },
+        settings: { title: 'App Settings', icon: <Settings />, component: <SettingsPanel /> },
     };
     
     const iconBarItems = [
