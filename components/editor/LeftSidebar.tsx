@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Box, Typography, Paper, IconButton, Tooltip, Collapse, Tabs, Tab } from '@mui/material';
 import { ElementType, Template, Layout, Page, DataSource, AnyElementPropKey, EditorElement } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Close, AccountTree, Add, DataObject, Search, MoreHoriz, AutoAwesome } from '@mui/icons-material';
+import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome } from '@mui/icons-material';
 import LayerPanel from './LayerPanel';
 import DataPanel from './DataPanel';
 import AiChatPanel from './AiChatPanel';
+import SettingsPanel from './SettingsPanel';
 
 
 const DraggableItem: React.FC<{ name: string; icon: React.ReactNode; onDragStart: (e: React.DragEvent) => void; }> = ({ name, icon, onDragStart }) => {
@@ -163,7 +164,7 @@ interface LeftSidebarProps {
     onAddElement: (parentId: string, element: EditorElement, index: number) => void;
 }
 
-type PanelType = 'layers' | 'insert' | 'data' | 'ai' | 'search';
+type PanelType = 'layers' | 'insert' | 'data' | 'ai' | 'search' | 'settings';
 
 const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
     const [activePanel, setActivePanel] = useState<PanelType | null>('layers');
@@ -184,6 +185,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         data: { title: 'Data', icon: <DataObject />, component: <DataPanel dataSources={props.dataSources} onAddDataSource={props.onAddDataSource} onDeleteDataSource={props.onDeleteDataSource} /> },
         ai: { title: 'AI Assistant', icon: <AutoAwesome />, component: <AiChatPanel page={props.page} selectedElementId={props.selectedElementId} onUpdateElementProp={props.onUpdateElementProp} onDeleteElement={props.onDeleteElement} onAddElement={props.onAddElement} onSelectElement={props.onSelectElement} /> },
         search: { title: 'Search', icon: <Search />, component: <Typography p={2}>Search panel coming soon.</Typography> },
+        settings: { title: 'App Settings', icon: <Settings />, component: <SettingsPanel /> },
     };
     
     const iconBarItems = [
@@ -192,6 +194,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         { key: 'data', title: 'Data Sources' },
         { key: 'ai', title: 'AI Assistant' },
         { key: 'search', title: 'Search' },
+    ];
+
+    const bottomBarItems = [
+        { key: 'settings', title: 'App Settings' },
     ];
 
     return (
@@ -206,11 +212,13 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
                     </Tooltip>
                  ))}
                  <Box flexGrow={1} />
-                  <Tooltip title="More" placement="right">
-                    <IconButton>
-                        <MoreHoriz />
-                    </IconButton>
-                 </Tooltip>
+                 {bottomBarItems.map(item => (
+                    <Tooltip title={item.title} placement="right" key={item.key}>
+                        <IconButton onClick={() => handlePanelToggle(item.key as PanelType)} color={activePanel === item.key ? 'primary' : 'default'}>
+                            {panels[item.key as PanelType].icon}
+                        </IconButton>
+                    </Tooltip>
+                 ))}
             </Box>
 
             {/* Content Panel */}

@@ -1,13 +1,12 @@
-
-
-
 import React, { useState, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField } from '@mui/material';
-import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check } from '@mui/icons-material';
+import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp } from '@mui/icons-material';
 import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
+import JSZip from 'jszip';
+import { generateReactProject } from '../../lib/projectGenerator';
 
 
 interface TopBarProps {
@@ -97,6 +96,40 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
         link.click();
     };
 
+    const handleDownloadProject = async () => {
+        if (!project) return;
+
+        try {
+            // Generate React project files
+            const projectFiles = generateReactProject(project);
+
+            // Create zip file
+            const zip = new JSZip();
+
+            // Add all generated files to zip
+            Object.entries(projectFiles).forEach(([filename, content]) => {
+                zip.file(filename, content);
+            });
+
+            // Generate zip blob
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+            // Create download link
+            const url = URL.createObjectURL(zipBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-react-project.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Error generating React project:', error);
+            alert('Error generating React project. Please try again.');
+        }
+    };
+
     const handleImportClick = () => {
         importInputRef.current?.click();
     };
@@ -182,6 +215,9 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     </Tooltip>
                     <Tooltip title="Export JSON">
                         <IconButton size="small" onClick={handleExport}><FileDownload /></IconButton>
+                    </Tooltip>
+                    <Tooltip title="Download React Project">
+                        <IconButton size="small" onClick={handleDownloadProject}><GetApp /></IconButton>
                     </Tooltip>
                      <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
                      <Tooltip title="Desktop">
