@@ -96,22 +96,38 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
         link.click();
     };
 
-    const handleDownloadProject = () => {
+    const handleDownloadProject = async () => {
         if (!project) return;
 
-        const projectData = {
-            ...project,
-            exportedAt: new Date().toISOString(),
-            version: '1.0.0'
-        };
+        try {
+            // Generate React project files
+            const projectFiles = generateReactProject(project);
 
-        const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-          JSON.stringify(projectData, null, 2)
-        )}`;
-        const link = document.createElement("a");
-        link.href = jsonString;
-        link.download = `${project.name.toLowerCase().replace(/\s/g, '_')}_project.json`;
-        link.click();
+            // Create zip file
+            const zip = new JSZip();
+
+            // Add all generated files to zip
+            Object.entries(projectFiles).forEach(([filename, content]) => {
+                zip.file(filename, content);
+            });
+
+            // Generate zip blob
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+
+            // Create download link
+            const url = URL.createObjectURL(zipBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${project.name.toLowerCase().replace(/[^a-z0-9]/g, '-')}-react-project.zip`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+
+        } catch (error) {
+            console.error('Error generating React project:', error);
+            alert('Error generating React project. Please try again.');
+        }
     };
 
     const handleImportClick = () => {
