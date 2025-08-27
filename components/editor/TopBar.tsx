@@ -216,7 +216,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     <Tooltip title="Export JSON">
                         <IconButton size="small" onClick={handleExport}><FileDownload /></IconButton>
                     </Tooltip>
-                    <Tooltip title="Download Project">
+                    <Tooltip title="Download React Project">
                         <IconButton size="small" onClick={handleDownloadProject}><GetApp /></IconButton>
                     </Tooltip>
                      <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
