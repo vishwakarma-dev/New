@@ -94,6 +94,24 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
         link.click();
     };
 
+    const handleDownloadProject = () => {
+        if (!project) return;
+
+        const projectData = {
+            ...project,
+            exportedAt: new Date().toISOString(),
+            version: '1.0.0'
+        };
+
+        const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
+          JSON.stringify(projectData, null, 2)
+        )}`;
+        const link = document.createElement("a");
+        link.href = jsonString;
+        link.download = `${project.name.toLowerCase().replace(/\s/g, '_')}_project.json`;
+        link.click();
+    };
+
     const handleImportClick = () => {
         importInputRef.current?.click();
     };
