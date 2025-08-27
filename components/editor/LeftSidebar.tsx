@@ -212,11 +212,13 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
                     </Tooltip>
                  ))}
                  <Box flexGrow={1} />
-                  <Tooltip title="More" placement="right">
-                    <IconButton>
-                        <MoreHoriz />
-                    </IconButton>
-                 </Tooltip>
+                 {bottomBarItems.map(item => (
+                    <Tooltip title={item.title} placement="right" key={item.key}>
+                        <IconButton onClick={() => handlePanelToggle(item.key as PanelType)} color={activePanel === item.key ? 'primary' : 'default'}>
+                            {panels[item.key as PanelType].icon}
+                        </IconButton>
+                    </Tooltip>
+                 ))}
             </Box>
 
             {/* Content Panel */}
