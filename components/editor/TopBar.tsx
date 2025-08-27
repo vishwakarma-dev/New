@@ -5,6 +5,8 @@ import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
+import JSZip from 'jszip';
+import { generateReactProject } from '../../lib/projectGenerator';
 
 
 interface TopBarProps {
