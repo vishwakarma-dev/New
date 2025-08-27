@@ -196,6 +196,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         { key: 'search', title: 'Search' },
     ];
 
+    const bottomBarItems = [
+        { key: 'settings', title: 'App Settings' },
+    ];
+
     return (
         <Box sx={{ display: 'flex', height: '100%', width: '100%', bgcolor: 'background.paper' }}>
             {/* Icon Bar */}
