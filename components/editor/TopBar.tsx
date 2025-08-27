@@ -198,6 +198,9 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     <Tooltip title="Export JSON">
                         <IconButton size="small" onClick={handleExport}><FileDownload /></IconButton>
                     </Tooltip>
+                    <Tooltip title="Download Project">
+                        <IconButton size="small" onClick={handleDownloadProject}><GetApp /></IconButton>
+                    </Tooltip>
                      <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
                      <Tooltip title="Desktop">
                          <IconButton size="small" onClick={() => dispatch(setViewMode('desktop'))} color={viewMode === 'desktop' ? 'primary' : 'default'}><DesktopWindows /></IconButton>
