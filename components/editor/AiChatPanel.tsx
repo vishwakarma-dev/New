@@ -39,7 +39,7 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
     let ai: GoogleGenAI | null = null;
 
     try {
-        if (apiKey) {
+        if (apiKey && apiKey !== 'DEMO_KEY_PLEASE_CONFIGURE') {
             ai = new GoogleGenAI({ apiKey });
         } else {
             setApiKeyError(true);
