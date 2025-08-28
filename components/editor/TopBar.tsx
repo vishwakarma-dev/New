@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
 import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import JSZip from 'jszip';
 import { generateReactProject } from '../../lib/projectGenerator';
 import { Avatar } from '@mui/material';
@@ -34,6 +35,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
     const importInputRef = useRef<HTMLInputElement>(null);
     const pageNameInputRef = useRef<HTMLInputElement>(null);
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
     
     // State for unified Add/Edit
     const [pageNameInput, setPageNameInput] = useState('');
@@ -143,6 +145,11 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
 
     const handleLogout = () => {
         logout();
+        handleProfileClose();
+    };
+
+    const handleProfileSettings = () => {
+        navigate('/profile');
         handleProfileClose();
     };
 
@@ -302,7 +309,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                             </Box>
                         </Box>
 
-                        <MenuItem onClick={handleProfileClose}>
+                        <MenuItem onClick={handleProfileSettings}>
                             <Person sx={{ mr: 1.5 }} />
                             <ListItemText primary="Profile Settings" />
                         </MenuItem>
