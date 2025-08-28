@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Box, Typography, Paper, IconButton, Tooltip, Collapse, Tabs, Tab } from '@mui/material';
 import { ElementType, Template, Layout, Page, DataSource, AnyElementPropKey, EditorElement } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome } from '@mui/icons-material';
+import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome, PhotoLibrary } from '@mui/icons-material';
 import LayerPanel from './LayerPanel';
 import DataPanel from './DataPanel';
 import AiChatPanel from './AiChatPanel';
 import SettingsPanel from './SettingsPanel';
+import MediaPanel from './MediaPanel';
 
 
 const DraggableItem: React.FC<{ name: string; icon: React.ReactNode; onDragStart: (e: React.DragEvent) => void; }> = ({ name, icon, onDragStart }) => {
@@ -164,7 +165,7 @@ interface LeftSidebarProps {
     onAddElement: (parentId: string, element: EditorElement, index: number) => void;
 }
 
-type PanelType = 'layers' | 'insert' | 'data' | 'ai' | 'search' | 'settings';
+type PanelType = 'layers' | 'insert' | 'data' | 'media' | 'ai' | 'search' | 'settings';
 
 const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
     const [activePanel, setActivePanel] = useState<PanelType | null>('layers');
@@ -183,6 +184,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         layers: { title: 'Tree view', icon: <AccountTree />, component: <LayerPanel page={props.page} selectedElementId={props.selectedElementId} onSelectElement={props.onSelectElement} onAddPage={props.onAddPage} /> },
         insert: { title: 'Insert', icon: <Add />, component: <InsertPanel /> },
         data: { title: 'Data', icon: <DataObject />, component: <DataPanel dataSources={props.dataSources} onAddDataSource={props.onAddDataSource} onDeleteDataSource={props.onDeleteDataSource} /> },
+        media: { title: 'Media Library', icon: <PhotoLibrary />, component: <MediaPanel /> },
         ai: { title: 'AI Assistant', icon: <AutoAwesome />, component: <AiChatPanel page={props.page} selectedElementId={props.selectedElementId} onUpdateElementProp={props.onUpdateElementProp} onDeleteElement={props.onDeleteElement} onAddElement={props.onAddElement} onSelectElement={props.onSelectElement} /> },
         search: { title: 'Search', icon: <Search />, component: <Typography p={2}>Search panel coming soon.</Typography> },
         settings: { title: 'App Settings', icon: <Settings />, component: <SettingsPanel /> },
@@ -192,6 +194,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         { key: 'layers', title: 'Tree View' },
         { key: 'insert', title: 'Insert' },
         { key: 'data', title: 'Data Sources' },
+        { key: 'media', title: 'Media Library' },
         { key: 'ai', title: 'AI Assistant' },
         { key: 'search', title: 'Search' },
     ];

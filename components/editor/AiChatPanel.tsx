@@ -28,12 +28,41 @@ const AITypingIndicator = () => (
 );
 
 const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
-    const [messages, setMessages] = useState<Message[]>([{ sender: 'ai', text: "Hello! I'm your AI assistant. Tell me what you'd like to change. \n\nFor example: 'Add a button' or 'Change the selected text to Hello World'." }]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [apiKeyError, setApiKeyError] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Check if API key is available
+    const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+    let ai: GoogleGenAI | null = null;
+
+    try {
+        if (apiKey && apiKey !== 'DEMO_KEY_PLEASE_CONFIGURE') {
+            ai = new GoogleGenAI({ apiKey });
+        } else {
+            setApiKeyError(true);
+        }
+    } catch (error) {
+        console.error('Error initializing Google GenAI:', error);
+        setApiKeyError(true);
+    }
+
+    // Set initial message based on API key availability
+    useEffect(() => {
+        if (apiKeyError) {
+            setMessages([{
+                sender: 'ai',
+                text: "🤖 AI Assistant Setup Required\n\nTo enable AI features, you need a Google Gemini API key:\n\n1. Visit https://aistudio.google.com/app/apikey\n2. Create a new API key\n3. Set the GEMINI_API_KEY environment variable\n4. Restart the development server\n\nOnce configured, I'll help you build your website with natural language commands!"
+            }]);
+        } else {
+            setMessages([{
+                sender: 'ai',
+                text: "Hello! I'm your AI assistant. Tell me what you'd like to change. \n\nFor example: 'Add a button' or 'Change the selected text to Hello World'."
+            }]);
+        }
+    }, [apiKeyError]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -62,6 +91,16 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
         setMessages(prev => [...prev, userMessage]);
         setInput('');
         setIsLoading(true);
+
+        // Check if AI is available
+        if (!ai || apiKeyError) {
+            setMessages(prev => [...prev, {
+                sender: 'ai',
+                text: 'Please configure your Gemini API key first. Check the setup instructions above! 👆'
+            }]);
+            setIsLoading(false);
+            return;
+        }
 
         try {
             const pageContext = getPageContext();
@@ -174,13 +213,13 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
                         fullWidth
                         multiline
                         maxRows={4}
-                        placeholder="e.g., add a blue button"
+                        placeholder={apiKeyError ? "AI Assistant unavailable" : "e.g., add a blue button"}
                         variant="outlined"
                         size="small"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleInputKeyDown}
-                        disabled={isLoading}
+                        disabled={isLoading || apiKeyError}
                         sx={{
                              '& .MuiOutlinedInput-root': {
                                 borderRadius: 4,
