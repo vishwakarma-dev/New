@@ -1,12 +1,14 @@
 import React, { useState, useRef } from 'react';
 import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField } from '@mui/material';
-import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp } from '@mui/icons-material';
+import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person } from '@mui/icons-material';
 import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
+import { useAuth } from '../../contexts/AuthContext';
 import JSZip from 'jszip';
 import { generateReactProject } from '../../lib/projectGenerator';
+import { Avatar } from '@mui/material';
 
 
 interface TopBarProps {
@@ -28,20 +30,25 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
     const canRedo = history.future.length > 0;
     
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
     const importInputRef = useRef<HTMLInputElement>(null);
     const pageNameInputRef = useRef<HTMLInputElement>(null);
+    const { user, logout } = useAuth();
     
     // State for unified Add/Edit
     const [pageNameInput, setPageNameInput] = useState('');
     const [editingPageInfo, setEditingPageInfo] = useState<{ id: string; name: string } | null>(null);
 
     const open = Boolean(anchorEl);
+    const profileOpen = Boolean(profileAnchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
+    const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => setProfileAnchorEl(event.currentTarget);
     const handleClose = () => {
         setAnchorEl(null);
         setEditingPageInfo(null);
         setPageNameInput('');
     };
+    const handleProfileClose = () => setProfileAnchorEl(null);
     
     const handleSwitchPageAction = (pageId: string) => {
         if (editingPageInfo?.id === pageId) return; // Don't switch if we are editing this page's name
@@ -132,6 +139,11 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
 
     const handleImportClick = () => {
         importInputRef.current?.click();
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleProfileClose();
     };
 
     const currentPageName = project?.pages.find(p => p.id === currentPageId)?.name || 'Loading...';
@@ -233,6 +245,73 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
                     </Tooltip>
+
+                    {/* User Profile Section */}
+                    <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                    <Tooltip title="Account">
+                        <IconButton
+                            size="small"
+                            onClick={handleProfileClick}
+                            sx={{ p: 0.5 }}
+                        >
+                            {user?.avatar ? (
+                                <Avatar
+                                    src={user.avatar}
+                                    alt={user.name}
+                                    sx={{ width: 32, height: 32 }}
+                                />
+                            ) : (
+                                <AccountCircle sx={{ fontSize: 32 }} />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+
+                    <Menu
+                        anchorEl={profileAnchorEl}
+                        open={profileOpen}
+                        onClose={handleProfileClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        MenuListProps={{ sx: { minWidth: '200px' } }}
+                    >
+                        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                {user?.avatar ? (
+                                    <Avatar
+                                        src={user.avatar}
+                                        alt={user.name}
+                                        sx={{ width: 40, height: 40 }}
+                                    />
+                                ) : (
+                                    <AccountCircle sx={{ fontSize: 40, color: 'text.secondary' }} />
+                                )}
+                                <Box>
+                                    <Typography variant="subtitle2" fontWeight="bold">
+                                        {user?.name || 'Guest User'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {user?.email || 'guest@example.com'}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        <MenuItem onClick={handleProfileClose}>
+                            <Person sx={{ mr: 1.5 }} />
+                            <ListItemText primary="Profile Settings" />
+                        </MenuItem>
+
+                        <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                            <Logout sx={{ mr: 1.5 }} />
+                            <ListItemText primary="Logout" />
+                        </MenuItem>
+                    </Menu>
                 </Box>
             </Toolbar>
         </AppBar>
