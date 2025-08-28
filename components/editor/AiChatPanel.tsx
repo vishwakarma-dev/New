@@ -96,7 +96,7 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
         if (!ai || apiKeyError) {
             setMessages(prev => [...prev, {
                 sender: 'ai',
-                text: 'AI Assistant is not available. Please configure the GEMINI_API_KEY environment variable.'
+                text: 'Please configure your Gemini API key first. Check the setup instructions above! 👆'
             }]);
             setIsLoading(false);
             return;
