@@ -34,20 +34,12 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
     const [apiKeyError, setApiKeyError] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
-    // Check if API key is available
-    const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
-    let ai: GoogleGenAI | null = null;
-
-    try {
-        if (apiKey && apiKey !== 'DEMO_KEY_PLEASE_CONFIGURE') {
-            ai = new GoogleGenAI({ apiKey });
-        } else {
-            setApiKeyError(true);
-        }
-    } catch (error) {
-        console.error('Error initializing Google GenAI:', error);
-        setApiKeyError(true);
-    }
+    // Determine API key availability once
+    useEffect(() => {
+        const key = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        const ok = !!key && key !== 'DEMO_KEY_PLEASE_CONFIGURE';
+        setApiKeyError(!ok);
+    }, []);
 
     // Set initial message based on API key availability
     useEffect(() => {
