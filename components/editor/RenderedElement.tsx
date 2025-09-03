@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, SpacerProps, InputProps, DividerProps, StackProps, CardProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, CarouselProps, SlideProps, HeaderProps, DataGridProps } from '../../types';
 import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar } from '@mui/material';
@@ -149,6 +147,26 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         onSelectElement(element.id);
     };
 
+    const handleActionClick = (e: React.MouseEvent) => {
+        if (!isReadOnly) return;
+        const actions = (element.props as any).actions as any[] | undefined;
+        if (!actions || actions.length === 0) return;
+        const clickActions = actions.filter(a => a.event === 'onClick');
+        clickActions.forEach(a => {
+            if (a.type === 'openUrl' && a.params?.url) {
+                const target = a.params?.target || '_self';
+                window.open(a.params.url, target);
+            }
+            if (a.type === 'scrollTo' && a.params?.elementId) {
+                const targetEl = document.querySelector(`[data-element-id="${a.params.elementId}"]`);
+                if (targetEl && 'scrollIntoView' in targetEl) {
+                    (targetEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        });
+        e.stopPropagation();
+    };
+
     const handleDelete = (e: React.MouseEvent) => {
         if (isReadOnly || !onDeleteElement) return;
         e.stopPropagation();
@@ -294,7 +312,7 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     }
 
     const commonEventHandlers = {
-        onClick: handleClick,
+        onClick: isReadOnly ? handleActionClick : handleClick,
         draggable: !isReadOnly,
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
