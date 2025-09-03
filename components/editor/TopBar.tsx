@@ -261,6 +261,24 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
                     </Tooltip>
+                    <Tooltip title="Share">
+                        <IconButton size="small" onClick={() => setShareOpen(true)}><Share /></IconButton>
+                    </Tooltip>
+
+                    {/* Share Dialog */}
+                    <Dialog open={shareOpen} onClose={() => setShareOpen(false)}>
+                        <DialogTitle>Share Project</DialogTitle>
+                        <DialogContent>
+                            <Typography variant="body2" sx={{ mb: 1 }}>View-only link</Typography>
+                            <TextField fullWidth size="small" value={previewUrl} InputProps={{ readOnly: true }} sx={{ mb: 2 }} />
+                            <FormControlLabel control={<Switch checked={!!projectFromStore?.isPublic} onChange={() => {/* toggled via MCP-backed backend in future */}} />} label="Publicly accessible" />
+                            <Typography variant="caption" color="text.secondary" display="block">Use the link above to share a preview. For real-time collaboration, connect Supabase in MCP and enable Live Collaboration in settings.</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => { navigator.clipboard.writeText(previewUrl); }} variant="contained">Copy Link</Button>
+                            <Button onClick={() => setShareOpen(false)}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
 
                     {/* User Profile Section */}
                     <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
