@@ -52,7 +52,15 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
         setPageNameInput('');
     };
     const handleProfileClose = () => setProfileAnchorEl(null);
-    
+
+    const [shareOpen, setShareOpen] = useState(false);
+
+    const previewUrl = React.useMemo(() => {
+        const base = window.location.origin + window.location.pathname + window.location.search + '#';
+        const pageIdToUse = currentPageId || history.present.id;
+        return `${base}/preview/${projectFromStore?.id || project?.id}/${pageIdToUse}`;
+    }, [projectFromStore?.id, project?.id, currentPageId, history.present.id]);
+
     const handleSwitchPageAction = (pageId: string) => {
         if (editingPageInfo?.id === pageId) return; // Don't switch if we are editing this page's name
         onSwitchPage(pageId);
