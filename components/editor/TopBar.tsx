@@ -5,6 +5,7 @@ import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
+import { setProjectSharing } from '../../store/projectsSlice';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import JSZip from 'jszip';
