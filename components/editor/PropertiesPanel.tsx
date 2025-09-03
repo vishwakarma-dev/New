@@ -619,6 +619,20 @@ const ActionEditor: React.FC<{ actions: ElementAction[]; onChange: (a: ElementAc
                                 <InputLabel>Event</InputLabel>
                                 <Select label="Event" value={a.event} onChange={e => update(idx, { event: e.target.value as any })}>
                                     <MenuItem value="onClick">onClick</MenuItem>
+                                    <MenuItem value="onDoubleClick">onDoubleClick</MenuItem>
+                                    <MenuItem value="onMouseEnter">onMouseEnter</MenuItem>
+                                    <MenuItem value="onMouseLeave">onMouseLeave</MenuItem>
+                                    <MenuItem value="onMouseOver">onMouseOver</MenuItem>
+                                    <MenuItem value="onMouseOut">onMouseOut</MenuItem>
+                                    <MenuItem value="onMouseDown">onMouseDown</MenuItem>
+                                    <MenuItem value="onMouseUp">onMouseUp</MenuItem>
+                                    <MenuItem value="onFocus">onFocus</MenuItem>
+                                    <MenuItem value="onBlur">onBlur</MenuItem>
+                                    <MenuItem value="onChange">onChange</MenuItem>
+                                    <MenuItem value="onInput">onInput</MenuItem>
+                                    <MenuItem value="onKeyDown">onKeyDown</MenuItem>
+                                    <MenuItem value="onKeyUp">onKeyUp</MenuItem>
+                                    <MenuItem value="onScroll">onScroll</MenuItem>
                                     <MenuItem value="onLoad">onLoad</MenuItem>
                                 </Select>
                             </FormControl>
