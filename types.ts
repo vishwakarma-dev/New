@@ -449,6 +449,22 @@ export interface DataSource {
     error: string | null;
 }
 
+export interface Comment {
+    id: string;
+    elementId: string | null;
+    author: string;
+    text: string;
+    timestamp: number;
+    resolved: boolean;
+}
+
+export interface PageVersion {
+    id: string;
+    name: string;
+    timestamp: number;
+    snapshot: Page;
+}
+
 export interface Page {
     id: string;
     name: string;
@@ -456,6 +472,8 @@ export interface Page {
     rootElementId: string;
     theme?: ThemeSettings;
     dataSources: DataSource[];
+    comments?: Comment[];
+    versions?: PageVersion[];
     moduleId?: string; // Which module this page belongs to
     pageType?: 'screen' | 'modal' | 'dialog' | 'component'; // Type of page for apps
 }
@@ -471,6 +489,9 @@ export interface Project {
     modules?: AppModule[]; // App modules
     projectType?: 'web' | 'mobile' | 'desktop' | 'hybrid'; // Type of application
     platform?: 'react' | 'react-native' | 'flutter' | 'pwa'; // Target platform
+    reusableComponents?: Template[];
+    isPublic?: boolean;
+    shareId?: string;
 }
 
 export interface Template {
