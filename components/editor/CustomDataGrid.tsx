@@ -11,6 +11,7 @@ export interface CustomDataGridProps {
   editable?: boolean;
   showToolbar?: boolean;
   striped?: boolean;
+  suppressEvents?: boolean; // when true, prevent bubbling to parent (read-only preview)
 }
 
 const densityRowHeight: Record<'compact'|'standard'|'comfortable', number> = {
@@ -40,7 +41,7 @@ function exportAsExcelHtml(rows: any[], columns: DataGridColumn[]) {
   download('data.xls', html, 'application/vnd.ms-excel');
 }
 
-const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows: rowsProp, density = 'standard', pageSize = 10, editable = true, showToolbar = true, striped }) => {
+const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows: rowsProp, density = 'standard', pageSize = 10, editable = true, showToolbar = true, striped, suppressEvents = false }) => {
   const [columns, setColumns] = useState<DataGridColumn[]>(colsProp || []);
   const [rows, setRows] = useState<any[]>(rowsProp || []);
   const [sort, setSort] = useState<{ field: string; dir: 'asc' | 'desc' } | null>(null);
@@ -141,8 +142,10 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / size));
 
+  const wrapperHandlers = suppressEvents ? { onClick: (e: React.MouseEvent) => e.stopPropagation(), onMouseDown: (e: React.MouseEvent) => e.stopPropagation() } : {};
+
   return (
-    <Box onClick={e => e.stopPropagation()} onMouseDown={e => e.stopPropagation()}>
+    <Box {...wrapperHandlers}>
       {showToolbar && (
         <Toolbar variant="dense" sx={{ gap: 1 }}>
           <Typography variant="subtitle2" sx={{ flex: 1 }}>Rows: {filteredRows.length}</Typography>
