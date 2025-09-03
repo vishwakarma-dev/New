@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Tabs, Tab, Typography, Paper, Accordion, AccordionSummary, AccordionDetails, Chip } from '@mui/material';
-import Grid from '@mui/material/Unstable_Grid2';
+import Grid from '@mui/material/Grid2';
 import { ElementType, Template, Layout } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
 import { APP_COMPONENT_CATEGORIES, getComponentsByCategory } from '../../lib/componentCategories';
