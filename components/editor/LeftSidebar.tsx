@@ -199,6 +199,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         { key: 'insert', title: 'Insert' },
         { key: 'data', title: 'Data Sources' },
         { key: 'media', title: 'Media Library' },
+        { key: 'comments', title: 'Comments' },
         { key: 'ai', title: 'AI Assistant' },
         { key: 'search', title: 'Search' },
     ];
