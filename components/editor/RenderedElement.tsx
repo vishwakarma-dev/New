@@ -147,23 +147,58 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         onSelectElement(element.id);
     };
 
+    const executeAction = async (a: any) => {
+        if (a.type === 'openUrl' && a.params?.url) {
+            const target = a.params?.target || '_self';
+            window.open(a.params.url, target);
+        }
+        if (a.type === 'scrollTo' && a.params?.elementId) {
+            const targetEl = document.querySelector(`[data-element-id="${a.params.elementId}"]`);
+            if (targetEl) {
+                const behavior = a.params?.behavior || 'smooth';
+                if (typeof a.params?.offset === 'number') {
+                    const rect = (targetEl as HTMLElement).getBoundingClientRect();
+                    const top = window.scrollY + rect.top - (a.params.offset || 0);
+                    window.scrollTo({ top, behavior });
+                } else {
+                    (targetEl as HTMLElement).scrollIntoView({ behavior, block: 'start' });
+                }
+            }
+        }
+        if (a.type === 'copyToClipboard') {
+            const text = a.params?.text ?? (document.querySelector(`[data-element-id="${element.id}"]`)?.textContent || '');
+            try { await navigator.clipboard.writeText(text); } catch {}
+        }
+        if (a.type === 'downloadFile' && a.params?.url) {
+            const link = document.createElement('a');
+            link.href = a.params.url;
+            if (a.params?.filename) link.download = a.params.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        if (a.type === 'callWebhook' && a.params?.url) {
+            const method = a.params?.method || 'GET';
+            const headers = a.params?.headers || {};
+            const body = ['GET','HEAD'].includes(method) ? undefined : a.params?.body;
+            try { await fetch(a.params.url, { method, headers, body }); } catch {}
+        }
+        if (a.type === 'tel' && a.params?.phone) {
+            window.location.href = `tel:${a.params.phone}`;
+        }
+        if (a.type === 'mailto' && a.params?.email) {
+            const s = encodeURIComponent(a.params.subject || '');
+            const b = encodeURIComponent(a.params.body || '');
+            window.location.href = `mailto:${a.params.email}?subject=${s}&body=${b}`;
+        }
+    };
+
     const handleActionClick = (e: React.MouseEvent) => {
         if (!isReadOnly) return;
         const actions = (element.props as any).actions as any[] | undefined;
         if (!actions || actions.length === 0) return;
         const clickActions = actions.filter(a => a.event === 'onClick');
-        clickActions.forEach(a => {
-            if (a.type === 'openUrl' && a.params?.url) {
-                const target = a.params?.target || '_self';
-                window.open(a.params.url, target);
-            }
-            if (a.type === 'scrollTo' && a.params?.elementId) {
-                const targetEl = document.querySelector(`[data-element-id="${a.params.elementId}"]`);
-                if (targetEl && 'scrollIntoView' in targetEl) {
-                    (targetEl as HTMLElement).scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
-            }
-        });
+        clickActions.forEach(executeAction);
         e.stopPropagation();
     };
 
@@ -313,6 +348,11 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
 
     const commonEventHandlers = {
         onClick: isReadOnly ? handleActionClick : handleClick,
+        onMouseEnter: isReadOnly ? (e: React.MouseEvent) => {
+            const actions = (element.props as any).actions as any[] | undefined;
+            if (!actions || actions.length === 0) return;
+            actions.filter(a => a.event === 'onHover').forEach(executeAction);
+        } : undefined,
         draggable: !isReadOnly,
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
@@ -349,6 +389,14 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
             )}
         </>
     );
+
+    useEffect(() => {
+        if (!isReadOnly) return;
+        const actions = (element.props as any).actions as any[] | undefined;
+        if (!actions || actions.length === 0) return;
+        actions.filter(a => a.event === 'onLoad').forEach(executeAction);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const renderChildren = (children: string[] | undefined) => {
         if (!children) return [];
