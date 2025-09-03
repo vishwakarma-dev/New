@@ -60,6 +60,15 @@ export interface ThemeSettings {
     fontFamily?: string;
 }
 
+export type ElementEvent = 'onClick' | 'onLoad';
+export type ActionType = 'openUrl' | 'scrollTo';
+export interface ElementAction {
+    id: string;
+    event: ElementEvent;
+    type: ActionType;
+    params: { [key: string]: any };
+}
+
 export interface BaseProps {
     // Layout
     display?: 'flex' | 'block' | 'inline-block' | 'grid' | 'none' | 'inline-flex';
@@ -87,21 +96,22 @@ export interface BaseProps {
     border?: string;
     boxShadow?: string;
     opacity?: number;
-    
+
     // Grid item props (from MUI Grid)
     xs?: number;
     sm?: number;
     md?: number;
     lg?: number;
-    
+
     // Misc
     customClass?: string;
     customCss?: { [key: string]: string };
     sx?: any;
+    actions?: ElementAction[];
 
     // LEGACY props for backwards compatibility.
-    padding?: number; 
-    shadow?: number; 
+    padding?: number;
+    shadow?: number;
 }
 
 export interface ContainerProps extends BaseProps {
