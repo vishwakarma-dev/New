@@ -257,6 +257,7 @@ export interface DataGridColumn {
     sortable?: boolean;
     filterable?: boolean;
     hidden?: boolean;
+    pinned?: 'left' | 'right';
 }
 
 export interface DataGridProps extends BaseProps {
