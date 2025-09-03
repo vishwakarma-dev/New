@@ -193,12 +193,16 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         }
     };
 
-    const handleActionClick = (e: React.MouseEvent) => {
+    const triggerActions = (evt: string) => {
         if (!isReadOnly) return;
         const actions = (element.props as any).actions as any[] | undefined;
         if (!actions || actions.length === 0) return;
-        const clickActions = actions.filter(a => a.event === 'onClick');
-        clickActions.forEach(executeAction);
+        actions.filter(a => a.event === evt || (evt === 'onMouseEnter' && a.event === 'onHover')).forEach(executeAction);
+    };
+
+    const handleActionClick = (e: React.MouseEvent) => {
+        if (!isReadOnly) return;
+        triggerActions('onClick');
         e.stopPropagation();
     };
 
