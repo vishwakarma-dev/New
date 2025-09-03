@@ -205,6 +205,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
     ];
 
     const bottomBarItems = [
+        { key: 'history', title: 'Version History' },
         { key: 'settings', title: 'App Settings' },
     ];
 
