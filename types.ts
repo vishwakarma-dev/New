@@ -251,6 +251,12 @@ export interface HeaderProps extends ContainerProps {
 export interface DataGridColumn {
     field: string;
     headerName: string;
+    width?: number;
+    type?: 'string' | 'number' | 'date' | 'boolean';
+    editable?: boolean;
+    sortable?: boolean;
+    filterable?: boolean;
+    hidden?: boolean;
 }
 
 export interface DataGridProps extends BaseProps {
@@ -258,6 +264,10 @@ export interface DataGridProps extends BaseProps {
     rows?: { [key: string]: any }[];
     dataSourceId?: string;
     striped?: boolean;
+    pageSize?: number;
+    density?: 'compact' | 'standard' | 'comfortable';
+    editable?: boolean;
+    showToolbar?: boolean;
 }
 
 // Advanced App Component Interfaces
