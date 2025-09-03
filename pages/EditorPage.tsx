@@ -210,6 +210,41 @@ const EditorPage: React.FC = () => {
         prevPageCountRef.current = pageCount;
     }, [project?.pages, handleSwitchPage, currentPageId]);
 
+    // Auto-save: persist to localStorage with debounce
+    const autoSaveTimer = useRef<number | null>(null);
+    useEffect(() => {
+        localStorage.setItem('autosave:enabled', String(autoSaveEnabled));
+    }, [autoSaveEnabled]);
+
+    useEffect(() => {
+        if (!autoSaveEnabled || !projectId || !currentPageId) return;
+        if (autoSaveTimer.current) window.clearTimeout(autoSaveTimer.current);
+        autoSaveTimer.current = window.setTimeout(() => {
+            try {
+                const key = `autosave:${projectId}:${currentPageId}`;
+                const payload = { timestamp: Date.now(), page };
+                localStorage.setItem(key, JSON.stringify(payload));
+            } catch {}
+        }, 800);
+        return () => { if (autoSaveTimer.current) window.clearTimeout(autoSaveTimer.current); };
+    }, [page, autoSaveEnabled, projectId, currentPageId]);
+
+    // Offer restore on page load if an autosave exists
+    useEffect(() => {
+        if (!projectId || !currentPageId) return;
+        const key = `autosave:${projectId}:${currentPageId}`;
+        try {
+            const raw = localStorage.getItem(key);
+            if (!raw) return;
+            const saved = JSON.parse(raw) as { timestamp: number; page: Page };
+            // Only prompt once per page load
+            if (saved && saved.page && window.confirm('A locally auto-saved version was found. Restore it?')) {
+                dispatch(updateCurrentPageData(saved.page));
+            }
+        } catch {}
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [projectId, currentPageId]);
+
     const handleAddPage = (name: string) => {
         if (projectId) {
             const pageName = name.trim() ? name.trim() : 'Untitled Page';
@@ -338,7 +373,7 @@ const EditorPage: React.FC = () => {
                 </Box>
                 {/* Center Panel */}
                 <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                    <TopBar 
+                    <TopBar
                         project={project}
                         currentPageId={currentPageId}
                         onSwitchPage={handleSwitchPage}
@@ -347,6 +382,8 @@ const EditorPage: React.FC = () => {
                         onUpdatePageName={handleUpdatePageName}
                         onImport={handleImportPage}
                         onTogglePreview={handleTogglePreview}
+                        autoSaveEnabled={autoSaveEnabled}
+                        onToggleAutoSave={setAutoSaveEnabled}
                     />
                     <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'grey.200' }}>
                         <Canvas 
