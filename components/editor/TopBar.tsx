@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField } from '@mui/material';
-import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Switch, FormControlLabel } from '@mui/material';
+import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person, Share } from '@mui/icons-material';
 import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
