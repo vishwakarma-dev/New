@@ -54,6 +54,8 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
   const [editing, setEditing] = useState<{ row: number; field: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedCell, setSelectedCell] = useState<{ row: number; field: string } | null>(null);
+  const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState('');
 
   useEffect(() => setColumns(colsProp || []), [colsProp]);
   useEffect(() => setRows(rowsProp || []), [rowsProp]);
@@ -62,7 +64,13 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
 
   const filteredRows = useMemo(() => {
     let r = [...rows];
-    // apply filters
+    // global search
+    const q = search.trim().toLowerCase();
+    if (q) {
+      const fields = visibleColumns.map(c => c.field);
+      r = r.filter(row => fields.some(f => String(row[f] ?? '').toLowerCase().includes(q)));
+    }
+    // apply column filters
     Object.entries(filters).forEach(([field, value]) => {
       if (!value) return;
       r = r.filter(row => String(row[field] ?? '').toLowerCase().includes(String(value).toLowerCase()));
@@ -81,7 +89,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
       });
     }
     return r;
-  }, [rows, filters, sort]);
+  }, [rows, filters, sort, search, visibleColumns]);
 
   const pagedRows = useMemo(() => {
     const start = page * size;
@@ -147,8 +155,22 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
   return (
     <Box {...wrapperHandlers}>
       {showToolbar && (
-        <Toolbar variant="dense" sx={{ gap: 1 }}>
-          <Typography variant="subtitle2" sx={{ flex: 1 }}>Rows: {filteredRows.length}</Typography>
+        <Toolbar variant="dense" sx={{ gap: 1, flexWrap: 'wrap' }}>
+          <Typography variant="subtitle2" sx={{ mr: 'auto' }}>Rows: {filteredRows.length}</Typography>
+
+          {!showSearch && (
+            <Tooltip title="Search"><IconButton size="small" onClick={() => setShowSearch(true)}><Search fontSize="small" /></IconButton></Tooltip>
+          )}
+          {showSearch && (
+            <TextField size="small" value={search} onChange={e => { setSearch(e.target.value); setPage(0); }} placeholder="Search" sx={{ width: { xs: 160, sm: 220, md: 260 } }}
+              InputProps={{ endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton size="small" onClick={() => { setSearch(''); setShowSearch(false); }}><Close fontSize="small" /></IconButton>
+                </InputAdornment>
+              ) }}
+            />
+          )}
+
           <Tooltip title="Toggle Filters"><IconButton size="small" onClick={() => setShowFilters(v => !v)}><FilterList fontSize="small" /></IconButton></Tooltip>
           <Tooltip title="Column Visibility"><IconButton size="small" onClick={(e) => setColumnMenuAnchor(e.currentTarget)}><ViewColumn fontSize="small" /></IconButton></Tooltip>
           <Menu anchorEl={columnMenuAnchor} open={Boolean(columnMenuAnchor)} onClose={() => setColumnMenuAnchor(null)}>
@@ -233,11 +255,11 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
 
       <Box sx={{ display:'flex', justifyContent:'space-between', alignItems:'center', p: 1 }}>
         <Typography variant="caption">Page {page + 1} / {totalPages}</Typography>
-        <Box sx={{ display:'flex', gap: 1 }}>
-          <Button size="small" disabled={page === 0} onClick={() => setPage(0)}>First</Button>
-          <Button size="small" disabled={page === 0} onClick={() => setPage(p => Math.max(0, p - 1))}>Prev</Button>
-          <Button size="small" disabled={page >= totalPages - 1} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}>Next</Button>
-          <Button size="small" disabled={page >= totalPages - 1} onClick={() => setPage(totalPages - 1)}>Last</Button>
+        <Box sx={{ display:'flex', gap: 0.5 }}>
+          <Tooltip title="First Page"><span><IconButton size="small" disabled={page === 0} onClick={() => setPage(0)}><FirstPage fontSize="small" /></IconButton></span></Tooltip>
+          <Tooltip title="Previous"><span><IconButton size="small" disabled={page === 0} onClick={() => setPage(p => Math.max(0, p - 1))}><NavigateBefore fontSize="small" /></IconButton></span></Tooltip>
+          <Tooltip title="Next"><span><IconButton size="small" disabled={page >= totalPages - 1} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}><NavigateNext fontSize="small" /></IconButton></span></Tooltip>
+          <Tooltip title="Last Page"><span><IconButton size="small" disabled={page >= totalPages - 1} onClick={() => setPage(totalPages - 1)}><LastPage fontSize="small" /></IconButton></span></Tooltip>
         </Box>
       </Box>
     </Box>
