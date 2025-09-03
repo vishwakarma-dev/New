@@ -53,7 +53,17 @@ const MediaPanel: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<MediaFile | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
+  const [tab, setTab] = useState<'library' | 'stock'>('library');
+  const [stockImages, setStockImages] = useState<string[]>([]);
+  const [stockLoading, setStockLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (tab === 'stock') {
+      fetchStock();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
