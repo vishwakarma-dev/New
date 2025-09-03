@@ -1,9 +1,10 @@
-
-
 import React, { useState, useEffect } from 'react';
-import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps } from '../../types';
+import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps, Template } from '../../types';
 import { Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Slider, Paper, Tabs, Tab, SelectChangeEvent, Accordion, AccordionSummary, AccordionDetails, ToggleButtonGroup, ToggleButton, IconButton, Divider, InputAdornment, Stack, Button, FormControlLabel, Switch as MuiSwitch } from '@mui/material';
-import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete } from '@mui/icons-material';
+import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete, Save } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store';
+import { addReusableComponent } from '../../store/projectsSlice';
 
 interface PropertiesPanelProps {
     selectedElement: EditorElement | null;
@@ -156,6 +157,8 @@ const FONT_PRESETS = [
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page, onUpdateProps, onUpdateTheme }) => {
     const [tabIndex, setTabIndex] = useState(0);
+    const dispatch: AppDispatch = useDispatch();
+    const editorProjectId = useSelector((s: RootState) => s.editor.projectId);
 
     useEffect(() => {
         if (selectedElement) {
@@ -175,7 +178,30 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                 </Box>
             );
         }
-        
+
+        const buildTemplateFrom = (rootId: string): Template => {
+            const queue = [rootId];
+            const collected: { [k: string]: EditorElement } = {};
+            while (queue.length) {
+                const id = queue.shift()!;
+                const el = page.elements[id];
+                if (!el) continue;
+                collected[id] = JSON.parse(JSON.stringify(el));
+                const children = (el.props as any).children as string[] | undefined;
+                if (children && Array.isArray(children)) queue.push(...children);
+            }
+            return { name: '', icon: <Save />, rootElementId: rootId, elements: collected };
+        };
+
+        const handleSaveAsComponent = () => {
+            if (!editorProjectId) return;
+            const name = window.prompt('Name for this component?') || '';
+            if (!name.trim()) return;
+            const template = buildTemplateFrom(selectedElement.id);
+            template.name = name.trim();
+            dispatch(addReusableComponent({ projectId: editorProjectId, component: { name: template.name, template } }));
+        };
+
         const update = (prop: AnyElementPropKey, value: any) => {
             onUpdateProps(selectedElement.id, prop, value);
         };
@@ -190,6 +216,11 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
 
         return (
             <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+                    <Button size="small" variant="outlined" startIcon={<Save />} onClick={handleSaveAsComponent}>
+                        Save as Component
+                    </Button>
+                </Box>
                 <PropAccordion title="Layout" defaultExpanded>
                     <PropItem gridColumn="span 2">
                         <FormControl size="small" fullWidth><InputLabel>Display</InputLabel>
