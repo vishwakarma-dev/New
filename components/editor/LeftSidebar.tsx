@@ -8,6 +8,8 @@ import DataPanel from './DataPanel';
 import AiChatPanel from './AiChatPanel';
 import SettingsPanel from './SettingsPanel';
 import MediaPanel from './MediaPanel';
+import CommentsPanel from './CommentsPanel';
+import HistoryPanel from './HistoryPanel';
 
 
 const DraggableItem: React.FC<{ name: string; icon: React.ReactNode; onDragStart: (e: React.DragEvent) => void; }> = ({ name, icon, onDragStart }) => {
