@@ -165,7 +165,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
         if (selectedElement) {
             setTabIndex(0);
         }
-    }, [selectedElement]);
+    }, [selectedElement?.id]);
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
