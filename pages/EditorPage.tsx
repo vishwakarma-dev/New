@@ -1,9 +1,3 @@
-
-
-
-
-
-
 import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import TopBar from '../components/editor/TopBar';
@@ -30,6 +24,11 @@ const EditorPage: React.FC = () => {
     const selectedElement = selectedElementId ? page.elements[selectedElementId] : null;
     const project = projects.find(p => p.id === projectId);
     const topBarHeight = 48; // Dense toolbar height
+
+    const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
+        const v = localStorage.getItem('autosave:enabled');
+        return v ? v === 'true' : true;
+    });
 
     const [addMenuAnchorEl, setAddMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [addMenuContainerId, setAddMenuContainerId] = useState<string | null>(null);
