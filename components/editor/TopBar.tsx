@@ -25,7 +25,8 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, onAddPage, onDeletePage, onUpdatePageName, onImport, onTogglePreview }) => {
     const dispatch: AppDispatch = useDispatch();
-    const { history, viewMode } = useSelector((state: RootState) => state.editor);
+    const { history, viewMode, projectId } = useSelector((state: RootState) => state.editor);
+    const projectFromStore = useSelector((state: RootState) => state.projects.projects.find(p => p.id === projectId));
     const currentPage = history.present;
     const canUndo = history.past.length > 0;
     const canRedo = history.future.length > 0;
