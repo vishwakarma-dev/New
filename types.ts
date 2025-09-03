@@ -60,8 +60,8 @@ export interface ThemeSettings {
     fontFamily?: string;
 }
 
-export type ElementEvent = 'onClick' | 'onLoad';
-export type ActionType = 'openUrl' | 'scrollTo';
+export type ElementEvent = 'onClick' | 'onLoad' | 'onHover';
+export type ActionType = 'openUrl' | 'scrollTo' | 'copyToClipboard' | 'downloadFile' | 'callWebhook' | 'tel' | 'mailto';
 export interface ElementAction {
     id: string;
     event: ElementEvent;
