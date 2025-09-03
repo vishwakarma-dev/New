@@ -796,31 +796,12 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                     }
                 }
                 
-                if (!content) {
-                    content = (
-                        <TableContainer>
-                            <Table stickyHeader>
-                                <TableHead>
-                                    <TableRow>
-                                        {columns.map((col) => <TableCell key={col.field}>{col.headerName}</TableCell>)}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {rows.map((row, index) => (
-                                        <TableRow key={row.id || index} sx={{ '&:nth-of-type(odd)': { backgroundColor: dgProps.striped ? theme.palette.action.hover : 'inherit' } }}>
-                                            {columns.map((col) => <TableCell key={col.field}>{row[col.field]}</TableCell>)}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    );
-                }
-
                 return (
                     <Paper variant="outlined" sx={sx} {...commonEventHandlers} className={props.customClass}>
                         {renderOverlayControls()}
-                        {content}
+                        <Box onClick={(e)=>e.stopPropagation()} onMouseDown={(e)=>e.stopPropagation()}>
+                            <CustomDataGrid columns={columns} rows={rows} density={dgProps.density || 'standard'} pageSize={dgProps.pageSize || 10} editable={dgProps.editable ?? true} showToolbar={dgProps.showToolbar ?? true} striped={dgProps.striped} />
+                        </Box>
                     </Paper>
                 );
 
