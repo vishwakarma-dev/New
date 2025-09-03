@@ -84,8 +84,9 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
         setInput('');
         setIsLoading(true);
 
-        // Check if AI is available
-        if (!ai || apiKeyError) {
+        // Initialize AI client on demand
+        const key = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        if (!key || key === 'DEMO_KEY_PLEASE_CONFIGURE' || apiKeyError) {
             setMessages(prev => [...prev, {
                 sender: 'ai',
                 text: 'Please configure your Gemini API key first. Check the setup instructions above! 👆'
@@ -95,11 +96,12 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
         }
 
         try {
+            const ai = new GoogleGenAI({ apiKey: key });
             const pageContext = getPageContext();
             const prompt = `
                 Page Context:
                 ${pageContext}
-                
+
                 User Request: "${userMessage.text}"
 
                 Based on the context and the user request, generate a JSON object with a list of actions to perform.
