@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Box, Typography, Paper, IconButton, Tooltip, Collapse, Tabs, Tab } from '@mui/material';
 import { ElementType, Template, Layout, Page, DataSource, AnyElementPropKey, EditorElement } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome, PhotoLibrary } from '@mui/icons-material';
+import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome, PhotoLibrary, Comment, History } from '@mui/icons-material';
 import LayerPanel from './LayerPanel';
 import DataPanel from './DataPanel';
 import AiChatPanel from './AiChatPanel';
