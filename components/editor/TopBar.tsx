@@ -272,7 +272,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                         <DialogContent>
                             <Typography variant="body2" sx={{ mb: 1 }}>View-only link</Typography>
                             <TextField fullWidth size="small" value={previewUrl} InputProps={{ readOnly: true }} sx={{ mb: 2 }} />
-                            <FormControlLabel control={<Switch checked={!!projectFromStore?.isPublic} onChange={() => {/* toggled via MCP-backed backend in future */}} />} label="Publicly accessible" />
+                            <FormControlLabel control={<Switch checked={!!projectFromStore?.isPublic} onChange={() => { if (projectFromStore) dispatch(setProjectSharing({ projectId: projectFromStore.id, isPublic: !projectFromStore.isPublic })); }} />} label="Publicly accessible" />
                             <Typography variant="caption" color="text.secondary" display="block">Use the link above to share a preview. For real-time collaboration, connect Supabase in MCP and enable Live Collaboration in settings.</Typography>
                         </DialogContent>
                         <DialogActions>
