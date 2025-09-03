@@ -352,11 +352,20 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
 
     const commonEventHandlers = {
         onClick: isReadOnly ? handleActionClick : handleClick,
-        onMouseEnter: isReadOnly ? (e: React.MouseEvent) => {
-            const actions = (element.props as any).actions as any[] | undefined;
-            if (!actions || actions.length === 0) return;
-            actions.filter(a => a.event === 'onHover').forEach(executeAction);
-        } : undefined,
+        onDoubleClick: isReadOnly ? () => triggerActions('onDoubleClick') : undefined,
+        onMouseEnter: isReadOnly ? () => triggerActions('onMouseEnter') : undefined,
+        onMouseLeave: isReadOnly ? () => triggerActions('onMouseLeave') : undefined,
+        onMouseOver: isReadOnly ? () => triggerActions('onMouseOver') : undefined,
+        onMouseOut: isReadOnly ? () => triggerActions('onMouseOut') : undefined,
+        onMouseDown: isReadOnly ? () => triggerActions('onMouseDown') : undefined,
+        onMouseUp: isReadOnly ? () => triggerActions('onMouseUp') : undefined,
+        onFocus: isReadOnly ? () => triggerActions('onFocus') : undefined,
+        onBlur: isReadOnly ? () => triggerActions('onBlur') : undefined,
+        onChange: isReadOnly ? () => triggerActions('onChange') : undefined,
+        onInput: isReadOnly ? () => triggerActions('onInput') : undefined,
+        onKeyDown: isReadOnly ? () => triggerActions('onKeyDown') : undefined,
+        onKeyUp: isReadOnly ? () => triggerActions('onKeyUp') : undefined,
+        onScroll: isReadOnly ? () => triggerActions('onScroll') : undefined,
         draggable: !isReadOnly,
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
