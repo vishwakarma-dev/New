@@ -1,9 +1,11 @@
-
-
 import React, { useState, useEffect } from 'react';
-import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps } from '../../types';
+import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps, Template, ElementAction } from '../../types';
 import { Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Slider, Paper, Tabs, Tab, SelectChangeEvent, Accordion, AccordionSummary, AccordionDetails, ToggleButtonGroup, ToggleButton, IconButton, Divider, InputAdornment, Stack, Button, FormControlLabel, Switch as MuiSwitch } from '@mui/material';
-import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete } from '@mui/icons-material';
+import Grid from '@mui/material/Grid';
+import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete, Save, Settings } from '@mui/icons-material';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../store';
+import { addReusableComponent } from '../../store/projectsSlice';
 
 interface PropertiesPanelProps {
     selectedElement: EditorElement | null;
@@ -156,12 +158,14 @@ const FONT_PRESETS = [
 
 const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page, onUpdateProps, onUpdateTheme }) => {
     const [tabIndex, setTabIndex] = useState(0);
+    const dispatch: AppDispatch = useDispatch();
+    const editorProjectId = useSelector((s: RootState) => s.editor.projectId);
 
     useEffect(() => {
         if (selectedElement) {
             setTabIndex(0);
         }
-    }, [selectedElement]);
+    }, [selectedElement?.id]);
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -175,7 +179,30 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                 </Box>
             );
         }
-        
+
+        const buildTemplateFrom = (rootId: string): Template => {
+            const queue = [rootId];
+            const collected: { [k: string]: EditorElement } = {};
+            while (queue.length) {
+                const id = queue.shift()!;
+                const el = page.elements[id];
+                if (!el) continue;
+                collected[id] = JSON.parse(JSON.stringify(el));
+                const children = (el.props as any).children as string[] | undefined;
+                if (children && Array.isArray(children)) queue.push(...children);
+            }
+            return { name: '', icon: <Save />, rootElementId: rootId, elements: collected };
+        };
+
+        const handleSaveAsComponent = () => {
+            if (!editorProjectId) return;
+            const name = window.prompt('Name for this component?') || '';
+            if (!name.trim()) return;
+            const template = buildTemplateFrom(selectedElement.id);
+            template.name = name.trim();
+            dispatch(addReusableComponent({ projectId: editorProjectId, component: { name: template.name, template } }));
+        };
+
         const update = (prop: AnyElementPropKey, value: any) => {
             onUpdateProps(selectedElement.id, prop, value);
         };
@@ -190,6 +217,11 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
 
         return (
             <Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', p: 1 }}>
+                    <Button size="small" variant="outlined" startIcon={<Save />} onClick={handleSaveAsComponent}>
+                        Save as Component
+                    </Button>
+                </Box>
                 <PropAccordion title="Layout" defaultExpanded>
                     <PropItem gridColumn="span 2">
                         <FormControl size="small" fullWidth><InputLabel>Display</InputLabel>
@@ -366,6 +398,24 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                                 ))}
                             </Select></FormControl>
                         </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <TextField fullWidth label="Page Size" size="small" type="number" value={(props as DataGridProps).pageSize || 10} onChange={e => update('pageSize', parseInt(e.target.value, 10) || 10)} />
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControl size="small" fullWidth><InputLabel>Density</InputLabel>
+                                <Select label="Density" value={(props as DataGridProps).density || 'standard'} onChange={e => update('density', e.target.value)}>
+                                    <MenuItem value="compact">compact</MenuItem>
+                                    <MenuItem value="standard">standard</MenuItem>
+                                    <MenuItem value="comfortable">comfortable</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControlLabel control={<MuiSwitch checked={(props as DataGridProps).showToolbar ?? true} onChange={e => update('showToolbar', e.target.checked)} />} label="Show Toolbar" />
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControlLabel control={<MuiSwitch checked={(props as DataGridProps).editable ?? true} onChange={e => update('editable', e.target.checked)} />} label="Editable" />
+                        </PropItem>
                         <PropItem gridColumn="span 2">
                             <TextField
                                 fullWidth
@@ -532,13 +582,209 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                  <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Inspector tabs" variant="fullWidth">
                     <Tab icon={<EditAttributes />} label="Style" />
                     <Tab icon={<Palette />} label="Theme" />
+                    <Tab icon={<Settings />} label="Advanced" />
                 </Tabs>
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                 {tabIndex === 0 && renderStylePanel()}
                 {tabIndex === 1 && renderGlobalThemePanel()}
+                {tabIndex === 2 && (
+                    <Box p={2}>
+                        {!selectedElement ? (
+                            <Typography variant="body2" color="text.secondary">Select an element to configure actions.</Typography>
+                        ) : (
+                            <ActionEditor actions={(selectedElement.props as any).actions || []} onChange={(actions) => onUpdateProps(selectedElement.id, 'actions', actions)} page={page} />
+                        )}
+                    </Box>
+                )}
             </Box>
         </Box>
+    );
+};
+
+const ActionEditor: React.FC<{ actions: ElementAction[]; onChange: (a: ElementAction[]) => void; page: Page }> = ({ actions, onChange, page }) => {
+    const [items, setItems] = useState<ElementAction[]>(actions);
+
+    useEffect(() => { setItems(actions); }, [actions]);
+
+    const update = (idx: number, patch: Partial<ElementAction>) => {
+        const next = items.map((a, i) => i === idx ? { ...a, ...patch } : a);
+        setItems(next); onChange(next);
+    };
+
+    const updateParam = (idx: number, key: string, value: any) => {
+        const next = items.map((a, i) => i === idx ? { ...a, params: { ...a.params, [key]: value } } : a);
+        setItems(next); onChange(next);
+    };
+
+    const add = () => {
+        const next = [...items, { id: `act-${Date.now()}`, event: 'onClick', type: 'openUrl', params: { url: 'https://example.com', target: '_self' } }];
+        setItems(next); onChange(next);
+    };
+
+    const remove = (idx: number) => {
+        const next = items.filter((_, i) => i !== idx);
+        setItems(next); onChange(next);
+    };
+
+    return (
+        <Stack spacing={1.5}>
+            {items.map((a, idx) => (
+                <Paper key={a.id} variant="outlined" sx={{ p: 1.5 }}>
+                    <Grid container spacing={1.5}>
+                        <Grid size={6}>
+                            <FormControl size="small" fullWidth>
+                                <InputLabel>Event</InputLabel>
+                                <Select label="Event" value={a.event} onChange={e => update(idx, { event: e.target.value as any })}>
+                                    <MenuItem value="onClick">onClick</MenuItem>
+                                    <MenuItem value="onDoubleClick">onDoubleClick</MenuItem>
+                                    <MenuItem value="onMouseEnter">onMouseEnter</MenuItem>
+                                    <MenuItem value="onMouseLeave">onMouseLeave</MenuItem>
+                                    <MenuItem value="onMouseOver">onMouseOver</MenuItem>
+                                    <MenuItem value="onMouseOut">onMouseOut</MenuItem>
+                                    <MenuItem value="onMouseDown">onMouseDown</MenuItem>
+                                    <MenuItem value="onMouseUp">onMouseUp</MenuItem>
+                                    <MenuItem value="onFocus">onFocus</MenuItem>
+                                    <MenuItem value="onBlur">onBlur</MenuItem>
+                                    <MenuItem value="onChange">onChange</MenuItem>
+                                    <MenuItem value="onInput">onInput</MenuItem>
+                                    <MenuItem value="onKeyDown">onKeyDown</MenuItem>
+                                    <MenuItem value="onKeyUp">onKeyUp</MenuItem>
+                                    <MenuItem value="onScroll">onScroll</MenuItem>
+                                    <MenuItem value="onLoad">onLoad</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid size={6}>
+                            <FormControl size="small" fullWidth>
+                                <InputLabel>Action</InputLabel>
+                                <Select label="Action" value={a.type} onChange={e => update(idx, { type: e.target.value as any, params: {} })}>
+                                    <MenuItem value="openUrl">Open URL</MenuItem>
+                                    <MenuItem value="scrollTo">Scroll to Element</MenuItem>
+                                    <MenuItem value="copyToClipboard">Copy to Clipboard</MenuItem>
+                                    <MenuItem value="downloadFile">Download File</MenuItem>
+                                    <MenuItem value="callWebhook">Call Webhook</MenuItem>
+                                    <MenuItem value="tel">Phone Call</MenuItem>
+                                    <MenuItem value="mailto">Email Link</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        {a.type === 'openUrl' && (
+                            <>
+                                <Grid size={8}>
+                                    <TextField size="small" fullWidth label="URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={4}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Target</InputLabel>
+                                        <Select label="Target" value={a.params.target || '_self'} onChange={e => updateParam(idx, 'target', e.target.value)}>
+                                            <MenuItem value="_self">Same Tab</MenuItem>
+                                            <MenuItem value="_blank">New Tab</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            </>
+                        )}
+                        {a.type === 'scrollTo' && (
+                            <>
+                                <Grid size={12}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Target Element</InputLabel>
+                                        <Select label="Target Element" value={a.params.elementId || ''} onChange={e => updateParam(idx, 'elementId', e.target.value)}>
+                                            {Object.values(page.elements).map(el => (
+                                                <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={12}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Behavior</InputLabel>
+                                        <Select label="Behavior" value={a.params.behavior || 'smooth'} onChange={e => updateParam(idx, 'behavior', e.target.value)}>
+                                            <MenuItem value="smooth">Smooth</MenuItem>
+                                            <MenuItem value="auto">Auto</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth type="number" label="Offset (px)" value={a.params.offset ?? 0} onChange={e => updateParam(idx, 'offset', Number(e.target.value))} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'copyToClipboard' && (
+                            <Grid size={12}>
+                                <TextField size="small" fullWidth label="Text (optional)" placeholder="Leave blank to copy element text" value={a.params.text || ''} onChange={e => updateParam(idx, 'text', e.target.value)} />
+                            </Grid>
+                        )}
+
+                        {a.type === 'downloadFile' && (
+                            <>
+                                <Grid size={8}>
+                                    <TextField size="small" fullWidth label="File URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={4}>
+                                    <TextField size="small" fullWidth label="Filename (optional)" value={a.params.filename || ''} onChange={e => updateParam(idx, 'filename', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'callWebhook' && (
+                            <>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth label="URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Method</InputLabel>
+                                        <Select label="Method" value={a.params.method || 'GET'} onChange={e => updateParam(idx, 'method', e.target.value)}>
+                                            <MenuItem value="GET">GET</MenuItem>
+                                            <MenuItem value="POST">POST</MenuItem>
+                                            <MenuItem value="PUT">PUT</MenuItem>
+                                            <MenuItem value="PATCH">PATCH</MenuItem>
+                                            <MenuItem value="DELETE">DELETE</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Headers (JSON)" value={JSON.stringify(a.params.headers || {})} onChange={e => {
+                                        try { updateParam(idx, 'headers', JSON.parse(e.target.value || '{}')); } catch {}
+                                    }} />
+                                </Grid>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth multiline rows={3} label="Body (JSON/string)" value={a.params.body || ''} onChange={e => updateParam(idx, 'body', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'tel' && (
+                            <Grid size={12}>
+                                <TextField size="small" fullWidth label="Phone" value={a.params.phone || ''} onChange={e => updateParam(idx, 'phone', e.target.value)} />
+                            </Grid>
+                        )}
+
+                        {a.type === 'mailto' && (
+                            <>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth label="Email" value={a.params.email || ''} onChange={e => updateParam(idx, 'email', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Subject" value={a.params.subject || ''} onChange={e => updateParam(idx, 'subject', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Body" value={a.params.body || ''} onChange={e => updateParam(idx, 'body', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
+                        <Grid size={12} display="flex" justifyContent="flex-end">
+                            <Button size="small" color="error" onClick={() => remove(idx)}>Remove</Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
+            ))}
+            <Button variant="outlined" onClick={add}>Add Action</Button>
+        </Stack>
     );
 };
 

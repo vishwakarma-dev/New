@@ -1,12 +1,16 @@
 import React, { useState, useRef } from 'react';
-import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField } from '@mui/material';
-import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Switch, FormControlLabel } from '@mui/material';
+import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person, Share } from '@mui/icons-material';
 import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { setViewMode, undo, redo } from '../../store/editorSlice';
+import { setProjectSharing } from '../../store/projectsSlice';
+import { useAuth } from '../../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import JSZip from 'jszip';
 import { generateReactProject } from '../../lib/projectGenerator';
+import { Avatar } from '@mui/material';
 
 
 interface TopBarProps {
@@ -18,31 +22,48 @@ interface TopBarProps {
     onUpdatePageName: (pageId: string, newName: string) => void;
     onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onTogglePreview: () => void;
+    autoSaveEnabled: boolean;
+    onToggleAutoSave: (enabled: boolean) => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, onAddPage, onDeletePage, onUpdatePageName, onImport, onTogglePreview }) => {
+const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, onAddPage, onDeletePage, onUpdatePageName, onImport, onTogglePreview, autoSaveEnabled, onToggleAutoSave }) => {
     const dispatch: AppDispatch = useDispatch();
-    const { history, viewMode } = useSelector((state: RootState) => state.editor);
+    const { history, viewMode, projectId } = useSelector((state: RootState) => state.editor);
+    const projectFromStore = useSelector((state: RootState) => state.projects.projects.find(p => p.id === projectId));
     const currentPage = history.present;
     const canUndo = history.past.length > 0;
     const canRedo = history.future.length > 0;
     
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
     const importInputRef = useRef<HTMLInputElement>(null);
     const pageNameInputRef = useRef<HTMLInputElement>(null);
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     
     // State for unified Add/Edit
     const [pageNameInput, setPageNameInput] = useState('');
     const [editingPageInfo, setEditingPageInfo] = useState<{ id: string; name: string } | null>(null);
 
     const open = Boolean(anchorEl);
+    const profileOpen = Boolean(profileAnchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
+    const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => setProfileAnchorEl(event.currentTarget);
     const handleClose = () => {
         setAnchorEl(null);
         setEditingPageInfo(null);
         setPageNameInput('');
     };
-    
+    const handleProfileClose = () => setProfileAnchorEl(null);
+
+    const [shareOpen, setShareOpen] = useState(false);
+
+    const previewUrl = React.useMemo(() => {
+        const base = window.location.origin + window.location.pathname + window.location.search + '#';
+        const pageIdToUse = currentPageId || history.present.id;
+        return `${base}/preview/${projectFromStore?.id || project?.id}/${pageIdToUse}`;
+    }, [projectFromStore?.id, project?.id, currentPageId, history.present.id]);
+
     const handleSwitchPageAction = (pageId: string) => {
         if (editingPageInfo?.id === pageId) return; // Don't switch if we are editing this page's name
         onSwitchPage(pageId);
@@ -132,6 +153,16 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
 
     const handleImportClick = () => {
         importInputRef.current?.click();
+    };
+
+    const handleLogout = () => {
+        logout();
+        handleProfileClose();
+    };
+
+    const handleProfileSettings = () => {
+        navigate('/profile');
+        handleProfileClose();
     };
 
     const currentPageName = project?.pages.find(p => p.id === currentPageId)?.name || 'Loading...';
@@ -230,9 +261,95 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                          <IconButton size="small" onClick={() => dispatch(setViewMode('mobile'))} color={viewMode === 'mobile' ? 'primary' : 'default'}><PhoneIphone /></IconButton>
                      </Tooltip>
                       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                    <FormControlLabel sx={{ mr: 1 }} control={<Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />} label="Auto Save" />
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
                     </Tooltip>
+                    <Tooltip title="Share">
+                        <IconButton size="small" onClick={() => setShareOpen(true)}><Share /></IconButton>
+                    </Tooltip>
+
+                    {/* Share Dialog */}
+                    <Dialog open={shareOpen} onClose={() => setShareOpen(false)}>
+                        <DialogTitle>Share Project</DialogTitle>
+                        <DialogContent>
+                            <Typography variant="body2" sx={{ mb: 1 }}>View-only link</Typography>
+                            <TextField fullWidth size="small" value={previewUrl} InputProps={{ readOnly: true }} sx={{ mb: 2 }} />
+                            <FormControlLabel control={<Switch checked={!!projectFromStore?.isPublic} onChange={() => { if (projectFromStore) dispatch(setProjectSharing({ projectId: projectFromStore.id, isPublic: !projectFromStore.isPublic })); }} />} label="Publicly accessible" />
+                            <Typography variant="caption" color="text.secondary" display="block">Use the link above to share a preview. For real-time collaboration, connect Supabase in MCP and enable Live Collaboration in settings.</Typography>
+                        </DialogContent>
+                        <DialogActions>
+                            <Button onClick={() => { navigator.clipboard.writeText(previewUrl); }} variant="contained">Copy Link</Button>
+                            <Button onClick={() => setShareOpen(false)}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+
+                    {/* User Profile Section */}
+                    <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                    <Tooltip title="Account">
+                        <IconButton
+                            size="small"
+                            onClick={handleProfileClick}
+                            sx={{ p: 0.5 }}
+                        >
+                            {user?.avatar ? (
+                                <Avatar
+                                    src={user.avatar}
+                                    alt={user.name}
+                                    sx={{ width: 32, height: 32 }}
+                                />
+                            ) : (
+                                <AccountCircle sx={{ fontSize: 32 }} />
+                            )}
+                        </IconButton>
+                    </Tooltip>
+
+                    <Menu
+                        anchorEl={profileAnchorEl}
+                        open={profileOpen}
+                        onClose={handleProfileClose}
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'right',
+                        }}
+                        transformOrigin={{
+                            vertical: 'top',
+                            horizontal: 'right',
+                        }}
+                        MenuListProps={{ sx: { minWidth: '200px' } }}
+                    >
+                        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                                {user?.avatar ? (
+                                    <Avatar
+                                        src={user.avatar}
+                                        alt={user.name}
+                                        sx={{ width: 40, height: 40 }}
+                                    />
+                                ) : (
+                                    <AccountCircle sx={{ fontSize: 40, color: 'text.secondary' }} />
+                                )}
+                                <Box>
+                                    <Typography variant="subtitle2" fontWeight="bold">
+                                        {user?.name || 'Guest User'}
+                                    </Typography>
+                                    <Typography variant="caption" color="text.secondary">
+                                        {user?.email || 'guest@example.com'}
+                                    </Typography>
+                                </Box>
+                            </Box>
+                        </Box>
+
+                        <MenuItem onClick={handleProfileSettings}>
+                            <Person sx={{ mr: 1.5 }} />
+                            <ListItemText primary="Profile Settings" />
+                        </MenuItem>
+
+                        <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
+                            <Logout sx={{ mr: 1.5 }} />
+                            <ListItemText primary="Logout" />
+                        </MenuItem>
+                    </Menu>
                 </Box>
             </Toolbar>
         </AppBar>

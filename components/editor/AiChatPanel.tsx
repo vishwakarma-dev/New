@@ -28,12 +28,33 @@ const AITypingIndicator = () => (
 );
 
 const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
-    const [messages, setMessages] = useState<Message[]>([{ sender: 'ai', text: "Hello! I'm your AI assistant. Tell me what you'd like to change. \n\nFor example: 'Add a button' or 'Change the selected text to Hello World'." }]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [apiKeyError, setApiKeyError] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    // Determine API key availability once
+    useEffect(() => {
+        const key = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        const ok = !!key && key !== 'DEMO_KEY_PLEASE_CONFIGURE';
+        setApiKeyError(!ok);
+    }, []);
+
+    // Set initial message based on API key availability
+    useEffect(() => {
+        if (apiKeyError) {
+            setMessages([{
+                sender: 'ai',
+                text: "🤖 AI Assistant Setup Required\n\nTo enable AI features, you need a Google Gemini API key:\n\n1. Visit https://aistudio.google.com/app/apikey\n2. Create a new API key\n3. Set the GEMINI_API_KEY environment variable\n4. Restart the development server\n\nOnce configured, I'll help you build your website with natural language commands!"
+            }]);
+        } else {
+            setMessages([{
+                sender: 'ai',
+                text: "Hello! I'm your AI assistant. Tell me what you'd like to change. \n\nFor example: 'Add a button' or 'Change the selected text to Hello World'."
+            }]);
+        }
+    }, [apiKeyError]);
 
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,12 +84,24 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
         setInput('');
         setIsLoading(true);
 
+        // Initialize AI client on demand
+        const key = process.env.API_KEY || process.env.GEMINI_API_KEY;
+        if (!key || key === 'DEMO_KEY_PLEASE_CONFIGURE' || apiKeyError) {
+            setMessages(prev => [...prev, {
+                sender: 'ai',
+                text: 'Please configure your Gemini API key first. Check the setup instructions above! 👆'
+            }]);
+            setIsLoading(false);
+            return;
+        }
+
         try {
+            const ai = new GoogleGenAI({ apiKey: key });
             const pageContext = getPageContext();
             const prompt = `
                 Page Context:
                 ${pageContext}
-                
+
                 User Request: "${userMessage.text}"
 
                 Based on the context and the user request, generate a JSON object with a list of actions to perform.
@@ -174,13 +207,13 @@ const AiChatPanel: React.FC<AiChatPanelProps> = (props) => {
                         fullWidth
                         multiline
                         maxRows={4}
-                        placeholder="e.g., add a blue button"
+                        placeholder={apiKeyError ? "AI Assistant unavailable" : "e.g., add a blue button"}
                         variant="outlined"
                         size="small"
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleInputKeyDown}
-                        disabled={isLoading}
+                        disabled={isLoading || apiKeyError}
                         sx={{
                              '& .MuiOutlinedInput-root': {
                                 borderRadius: 4,

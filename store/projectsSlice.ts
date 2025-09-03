@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Project, Page, EditorElement, AppModule } from '../types';
+import { Project, Page, EditorElement, AppModule, Template, Comment } from '../types';
 import { createInitialPage } from './editorSlice';
 import { ModuleManager, DEFAULT_APP_MODULES } from '../lib/moduleUtils';
 
@@ -18,7 +18,10 @@ const mockProjects: Project[] = [
         pages: [createInitialPage('page-1', 'Landing Page')],
         projectType: 'web',
         platform: 'react',
-        modules: []
+        modules: [],
+        reusableComponents: [],
+        isPublic: false,
+        shareId: 'share-1'
     },
     {
         id: '2',
@@ -33,7 +36,10 @@ const mockProjects: Project[] = [
         ],
         projectType: 'web',
         platform: 'react',
-        modules: []
+        modules: [],
+        reusableComponents: [],
+        isPublic: false,
+        shareId: 'share-2'
     },
 ];
 
@@ -118,7 +124,10 @@ const projectsSlice = createSlice({
                 pages: [createInitialPage(newPageId, 'New Page')],
                 projectType: projectType || 'web',
                 platform: platform || 'react',
-                modules: []
+                modules: [],
+                reusableComponents: [],
+                isPublic: false,
+                shareId: `share-${Date.now()}`
             };
 
             // Initialize with selected modules if provided
@@ -205,6 +214,9 @@ const projectsSlice = createSlice({
                 imageUrl: `https://source.unsplash.com/random/800x600?sig=${Date.now()}`,
                 status: 'New',
                 pages: newPages.filter(p => p && !p.name.includes('(Error)')),
+                reusableComponents: [],
+                isPublic: false,
+                shareId: `share-${Date.now()}`,
             };
 
             if (newProject.pages.length > 0) {
@@ -254,6 +266,83 @@ const projectsSlice = createSlice({
                 if(pageIndex !== -1) {
                     project.pages[pageIndex] = action.payload.content;
                 }
+            }
+        },
+
+        // Reusable Components
+        addReusableComponent: (state, action: PayloadAction<{ projectId: string; component: { name: string; template: Template } }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                if (!project.reusableComponents) project.reusableComponents = [];
+                const { name, template } = action.payload.component;
+                const compTemplate: Template = { name, icon: template.icon, rootElementId: template.rootElementId, elements: template.elements };
+                project.reusableComponents.push(compTemplate);
+            }
+        },
+        removeReusableComponent: (state, action: PayloadAction<{ projectId: string; name: string }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project && project.reusableComponents) {
+                project.reusableComponents = project.reusableComponents.filter(c => c.name !== action.payload.name);
+            }
+        },
+
+        // Comments
+        addComment: (state, action: PayloadAction<{ projectId: string; pageId: string; comment: Comment }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            const page = project?.pages.find(pg => pg.id === action.payload.pageId);
+            if (page) {
+                if (!page.comments) page.comments = [];
+                page.comments.push(action.payload.comment);
+            }
+        },
+        updateComment: (state, action: PayloadAction<{ projectId: string; pageId: string; commentId: string; changes: Partial<Comment> }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            const page = project?.pages.find(pg => pg.id === action.payload.pageId);
+            if (page && page.comments) {
+                const idx = page.comments.findIndex(c => c.id === action.payload.commentId);
+                if (idx !== -1) {
+                    page.comments[idx] = { ...page.comments[idx], ...action.payload.changes };
+                }
+            }
+        },
+        deleteComment: (state, action: PayloadAction<{ projectId: string; pageId: string; commentId: string }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            const page = project?.pages.find(pg => pg.id === action.payload.pageId);
+            if (page && page.comments) {
+                page.comments = page.comments.filter(c => c.id !== action.payload.commentId);
+            }
+        },
+
+        // Version History
+        savePageVersion: (state, action: PayloadAction<{ projectId: string; pageId: string; name?: string }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            const pageIndex = project?.pages.findIndex(pg => pg.id === action.payload.pageId) ?? -1;
+            if (project && pageIndex !== -1) {
+                const page = project.pages[pageIndex];
+                const snapshot: Page = JSON.parse(JSON.stringify(page));
+                if (!page.versions) page.versions = [];
+                page.versions.push({ id: `ver-${Date.now()}`, name: action.payload.name || `Snapshot ${page.versions.length + 1}`, timestamp: Date.now(), snapshot });
+            }
+        },
+        restorePageVersion: (state, action: PayloadAction<{ projectId: string; pageId: string; versionId: string }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            const pageIndex = project?.pages.findIndex(pg => pg.id === action.payload.pageId) ?? -1;
+            if (project && pageIndex !== -1) {
+                const page = project.pages[pageIndex];
+                const version = (page.versions || []).find(v => v.id === action.payload.versionId);
+                if (version) {
+                    const restored = JSON.parse(JSON.stringify(version.snapshot));
+                    project.pages[pageIndex] = restored;
+                }
+            }
+        },
+
+        // Sharing
+        setProjectSharing: (state, action: PayloadAction<{ projectId: string; isPublic: boolean }>) => {
+            const project = state.projects.find(p => p.id === action.payload.projectId);
+            if (project) {
+                project.isPublic = action.payload.isPublic;
+                if (!project.shareId) project.shareId = `share-${Date.now()}`;
             }
         },
 
@@ -352,6 +441,14 @@ export const {
     updatePageName,
     updatePageContent,
     addGeneratedProject,
+    addReusableComponent,
+    removeReusableComponent,
+    addComment,
+    updateComment,
+    deleteComment,
+    savePageVersion,
+    restorePageVersion,
+    setProjectSharing,
     addModule,
     removeModule,
     updateModule,

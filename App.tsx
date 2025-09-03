@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import ProjectsDashboard from './pages/ProjectsDashboard';
 import EditorPage from './pages/EditorPage';
 import PreviewPage from './pages/PreviewPage';
+import ProfilePage from './pages/ProfilePage';
 
 // Create a modern theme
 const theme = createTheme({
@@ -114,6 +115,14 @@ const App: React.FC = () => {
               element={
                 <ProtectedRoute>
                   <PreviewPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
                 </ProtectedRoute>
               }
             />

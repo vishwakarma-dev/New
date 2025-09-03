@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Grid, Box, Typography, Paper, IconButton, Tooltip, Collapse, Tabs, Tab } from '@mui/material';
 import { ElementType, Template, Layout, Page, DataSource, AnyElementPropKey, EditorElement } from '../../types';
 import { AVAILABLE_COMPONENTS, AVAILABLE_TEMPLATES } from '../../constants';
-import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome } from '@mui/icons-material';
+import { Close, AccountTree, Add, DataObject, Search, Settings, AutoAwesome, PhotoLibrary, Comment, History } from '@mui/icons-material';
 import LayerPanel from './LayerPanel';
 import DataPanel from './DataPanel';
 import AiChatPanel from './AiChatPanel';
 import SettingsPanel from './SettingsPanel';
+import MediaPanel from './MediaPanel';
+import CommentsPanel from './CommentsPanel';
+import HistoryPanel from './HistoryPanel';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store';
 
 
 const DraggableItem: React.FC<{ name: string; icon: React.ReactNode; onDragStart: (e: React.DragEvent) => void; }> = ({ name, icon, onDragStart }) => {
@@ -70,6 +75,8 @@ const LAYOUTS: LayoutWithIcon[] = [
 
 const InsertPanel: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const editorProjectId = useSelector((s: RootState) => s.editor.projectId);
+    const project = useSelector((s: RootState) => s.projects.projects.find(p => p.id === editorProjectId));
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -82,9 +89,11 @@ const InsertPanel: React.FC = () => {
         else if (type === 'template') e.dataTransfer.setData('newTemplate', JSON.stringify(data));
     };
 
+    const userComponents = project?.reusableComponents || [];
+
     const tabData = [
-        { 
-            label: "Elements", 
+        {
+            label: "Elements",
             content: (
                 <>
                     <Typography variant="overline" color="text.secondary" display="block" mb={1.5}>
@@ -107,18 +116,26 @@ const InsertPanel: React.FC = () => {
                 </>
             )
         },
-        { 
-            label: "Components", 
+        {
+            label: "Components",
             content: (
-                <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
-                    <Typography variant="body2" color="text.secondary">
-                        User-defined components will appear here.
-                    </Typography>
-                </Box>
+                userComponents.length > 0 ? (
+                    <Grid container spacing={1.5}>
+                        {userComponents.map((template: any) => (
+                            <DraggableItem key={template.name} name={template.name} icon={template.icon || <span />} onDragStart={(e) => handleDragStart(e, 'template', template)} />
+                        ))}
+                    </Grid>
+                ) : (
+                    <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Save elements as reusable components from the Inspector.
+                        </Typography>
+                    </Box>
+                )
             )
         },
-        { 
-            label: "Templates", 
+        {
+            label: "Templates",
             content: (
                 <Grid container spacing={1.5}>
                     {AVAILABLE_TEMPLATES.map(template => (
@@ -164,7 +181,7 @@ interface LeftSidebarProps {
     onAddElement: (parentId: string, element: EditorElement, index: number) => void;
 }
 
-type PanelType = 'layers' | 'insert' | 'data' | 'ai' | 'search' | 'settings';
+type PanelType = 'layers' | 'insert' | 'data' | 'media' | 'ai' | 'comments' | 'history' | 'search' | 'settings';
 
 const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
     const [activePanel, setActivePanel] = useState<PanelType | null>('layers');
@@ -183,7 +200,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         layers: { title: 'Tree view', icon: <AccountTree />, component: <LayerPanel page={props.page} selectedElementId={props.selectedElementId} onSelectElement={props.onSelectElement} onAddPage={props.onAddPage} /> },
         insert: { title: 'Insert', icon: <Add />, component: <InsertPanel /> },
         data: { title: 'Data', icon: <DataObject />, component: <DataPanel dataSources={props.dataSources} onAddDataSource={props.onAddDataSource} onDeleteDataSource={props.onDeleteDataSource} /> },
+        media: { title: 'Media Library', icon: <PhotoLibrary />, component: <MediaPanel /> },
         ai: { title: 'AI Assistant', icon: <AutoAwesome />, component: <AiChatPanel page={props.page} selectedElementId={props.selectedElementId} onUpdateElementProp={props.onUpdateElementProp} onDeleteElement={props.onDeleteElement} onAddElement={props.onAddElement} onSelectElement={props.onSelectElement} /> },
+        comments: { title: 'Comments', icon: <Comment />, component: <CommentsPanel selectedElementId={props.selectedElementId} /> },
+        history: { title: 'History', icon: <History />, component: <HistoryPanel /> },
         search: { title: 'Search', icon: <Search />, component: <Typography p={2}>Search panel coming soon.</Typography> },
         settings: { title: 'App Settings', icon: <Settings />, component: <SettingsPanel /> },
     };
@@ -192,11 +212,14 @@ const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
         { key: 'layers', title: 'Tree View' },
         { key: 'insert', title: 'Insert' },
         { key: 'data', title: 'Data Sources' },
+        { key: 'media', title: 'Media Library' },
+        { key: 'comments', title: 'Comments' },
         { key: 'ai', title: 'AI Assistant' },
         { key: 'search', title: 'Search' },
     ];
 
     const bottomBarItems = [
+        { key: 'history', title: 'Version History' },
         { key: 'settings', title: 'App Settings' },
     ];
 

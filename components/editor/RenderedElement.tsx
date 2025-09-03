@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, SpacerProps, InputProps, DividerProps, StackProps, CardProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, CarouselProps, SlideProps, HeaderProps, DataGridProps } from '../../types';
 import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar } from '@mui/material';
@@ -8,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Add as AddIcon, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
+import CustomDataGrid from './CustomDataGrid';
 
 const mapFontSizeToVariant = (fontSize: string | undefined) => {
     if (!fontSize || !isNaN(parseFloat(fontSize))) return undefined; // Return undefined if it's a direct pixel/rem value
@@ -147,6 +146,65 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         if (isReadOnly) return;
         e.stopPropagation();
         onSelectElement(element.id);
+    };
+
+    const executeAction = async (a: any) => {
+        if (a.type === 'openUrl' && a.params?.url) {
+            const target = a.params?.target || '_self';
+            window.open(a.params.url, target);
+        }
+        if (a.type === 'scrollTo' && a.params?.elementId) {
+            const targetEl = document.querySelector(`[data-element-id="${a.params.elementId}"]`);
+            if (targetEl) {
+                const behavior = a.params?.behavior || 'smooth';
+                if (typeof a.params?.offset === 'number') {
+                    const rect = (targetEl as HTMLElement).getBoundingClientRect();
+                    const top = window.scrollY + rect.top - (a.params.offset || 0);
+                    window.scrollTo({ top, behavior });
+                } else {
+                    (targetEl as HTMLElement).scrollIntoView({ behavior, block: 'start' });
+                }
+            }
+        }
+        if (a.type === 'copyToClipboard') {
+            const text = a.params?.text ?? (document.querySelector(`[data-element-id="${element.id}"]`)?.textContent || '');
+            try { await navigator.clipboard.writeText(text); } catch {}
+        }
+        if (a.type === 'downloadFile' && a.params?.url) {
+            const link = document.createElement('a');
+            link.href = a.params.url;
+            if (a.params?.filename) link.download = a.params.filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        if (a.type === 'callWebhook' && a.params?.url) {
+            const method = a.params?.method || 'GET';
+            const headers = a.params?.headers || {};
+            const body = ['GET','HEAD'].includes(method) ? undefined : a.params?.body;
+            try { await fetch(a.params.url, { method, headers, body }); } catch {}
+        }
+        if (a.type === 'tel' && a.params?.phone) {
+            window.location.href = `tel:${a.params.phone}`;
+        }
+        if (a.type === 'mailto' && a.params?.email) {
+            const s = encodeURIComponent(a.params.subject || '');
+            const b = encodeURIComponent(a.params.body || '');
+            window.location.href = `mailto:${a.params.email}?subject=${s}&body=${b}`;
+        }
+    };
+
+    const triggerActions = (evt: string) => {
+        if (!isReadOnly) return;
+        const actions = (element.props as any).actions as any[] | undefined;
+        if (!actions || actions.length === 0) return;
+        actions.filter(a => a.event === evt || (evt === 'onMouseEnter' && a.event === 'onHover')).forEach(executeAction);
+    };
+
+    const handleActionClick = (e: React.MouseEvent) => {
+        if (!isReadOnly) return;
+        triggerActions('onClick');
+        e.stopPropagation();
     };
 
     const handleDelete = (e: React.MouseEvent) => {
@@ -294,7 +352,21 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     }
 
     const commonEventHandlers = {
-        onClick: handleClick,
+        onClick: isReadOnly ? handleActionClick : handleClick,
+        onDoubleClick: isReadOnly ? () => triggerActions('onDoubleClick') : undefined,
+        onMouseEnter: isReadOnly ? () => triggerActions('onMouseEnter') : undefined,
+        onMouseLeave: isReadOnly ? () => triggerActions('onMouseLeave') : undefined,
+        onMouseOver: isReadOnly ? () => triggerActions('onMouseOver') : undefined,
+        onMouseOut: isReadOnly ? () => triggerActions('onMouseOut') : undefined,
+        onMouseDown: isReadOnly ? () => triggerActions('onMouseDown') : undefined,
+        onMouseUp: isReadOnly ? () => triggerActions('onMouseUp') : undefined,
+        onFocus: isReadOnly ? () => triggerActions('onFocus') : undefined,
+        onBlur: isReadOnly ? () => triggerActions('onBlur') : undefined,
+        onChange: isReadOnly ? () => triggerActions('onChange') : undefined,
+        onInput: isReadOnly ? () => triggerActions('onInput') : undefined,
+        onKeyDown: isReadOnly ? () => triggerActions('onKeyDown') : undefined,
+        onKeyUp: isReadOnly ? () => triggerActions('onKeyUp') : undefined,
+        onScroll: isReadOnly ? () => triggerActions('onScroll') : undefined,
         draggable: !isReadOnly,
         onDragStart: handleDragStart,
         onDragEnd: handleDragEnd,
@@ -331,6 +403,14 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
             )}
         </>
     );
+
+    useEffect(() => {
+        if (!isReadOnly) return;
+        const actions = (element.props as any).actions as any[] | undefined;
+        if (!actions || actions.length === 0) return;
+        actions.filter(a => a.event === 'onLoad').forEach(executeAction);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const renderChildren = (children: string[] | undefined) => {
         if (!children) return [];
@@ -717,31 +797,10 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                     }
                 }
                 
-                if (!content) {
-                    content = (
-                        <TableContainer>
-                            <Table stickyHeader>
-                                <TableHead>
-                                    <TableRow>
-                                        {columns.map((col) => <TableCell key={col.field}>{col.headerName}</TableCell>)}
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {rows.map((row, index) => (
-                                        <TableRow key={row.id || index} sx={{ '&:nth-of-type(odd)': { backgroundColor: dgProps.striped ? theme.palette.action.hover : 'inherit' } }}>
-                                            {columns.map((col) => <TableCell key={col.field}>{row[col.field]}</TableCell>)}
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </TableContainer>
-                    );
-                }
-
                 return (
                     <Paper variant="outlined" sx={sx} {...commonEventHandlers} className={props.customClass}>
                         {renderOverlayControls()}
-                        {content}
+                        <CustomDataGrid columns={columns} rows={rows} density={dgProps.density || 'standard'} pageSize={dgProps.pageSize || 10} editable={dgProps.editable ?? true} showToolbar={dgProps.showToolbar ?? true} striped={dgProps.striped} suppressEvents={isReadOnly} />
                     </Paper>
                 );
 

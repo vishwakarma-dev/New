@@ -60,6 +60,32 @@ export interface ThemeSettings {
     fontFamily?: string;
 }
 
+export type ElementEvent =
+    | 'onClick'
+    | 'onDoubleClick'
+    | 'onMouseEnter'
+    | 'onMouseLeave'
+    | 'onMouseOver'
+    | 'onMouseOut'
+    | 'onMouseDown'
+    | 'onMouseUp'
+    | 'onFocus'
+    | 'onBlur'
+    | 'onChange'
+    | 'onInput'
+    | 'onKeyDown'
+    | 'onKeyUp'
+    | 'onScroll'
+    | 'onLoad'
+    | 'onHover';
+export type ActionType = 'openUrl' | 'scrollTo' | 'copyToClipboard' | 'downloadFile' | 'callWebhook' | 'tel' | 'mailto';
+export interface ElementAction {
+    id: string;
+    event: ElementEvent;
+    type: ActionType;
+    params: { [key: string]: any };
+}
+
 export interface BaseProps {
     // Layout
     display?: 'flex' | 'block' | 'inline-block' | 'grid' | 'none' | 'inline-flex';
@@ -87,21 +113,22 @@ export interface BaseProps {
     border?: string;
     boxShadow?: string;
     opacity?: number;
-    
+
     // Grid item props (from MUI Grid)
     xs?: number;
     sm?: number;
     md?: number;
     lg?: number;
-    
+
     // Misc
     customClass?: string;
     customCss?: { [key: string]: string };
     sx?: any;
+    actions?: ElementAction[];
 
     // LEGACY props for backwards compatibility.
-    padding?: number; 
-    shadow?: number; 
+    padding?: number;
+    shadow?: number;
 }
 
 export interface ContainerProps extends BaseProps {
@@ -224,6 +251,13 @@ export interface HeaderProps extends ContainerProps {
 export interface DataGridColumn {
     field: string;
     headerName: string;
+    width?: number;
+    type?: 'string' | 'number' | 'date' | 'boolean';
+    editable?: boolean;
+    sortable?: boolean;
+    filterable?: boolean;
+    hidden?: boolean;
+    pinned?: 'left' | 'right';
 }
 
 export interface DataGridProps extends BaseProps {
@@ -231,6 +265,10 @@ export interface DataGridProps extends BaseProps {
     rows?: { [key: string]: any }[];
     dataSourceId?: string;
     striped?: boolean;
+    pageSize?: number;
+    density?: 'compact' | 'standard' | 'comfortable';
+    editable?: boolean;
+    showToolbar?: boolean;
 }
 
 // Advanced App Component Interfaces
@@ -449,6 +487,22 @@ export interface DataSource {
     error: string | null;
 }
 
+export interface Comment {
+    id: string;
+    elementId: string | null;
+    author: string;
+    text: string;
+    timestamp: number;
+    resolved: boolean;
+}
+
+export interface PageVersion {
+    id: string;
+    name: string;
+    timestamp: number;
+    snapshot: Page;
+}
+
 export interface Page {
     id: string;
     name: string;
@@ -456,6 +510,8 @@ export interface Page {
     rootElementId: string;
     theme?: ThemeSettings;
     dataSources: DataSource[];
+    comments?: Comment[];
+    versions?: PageVersion[];
     moduleId?: string; // Which module this page belongs to
     pageType?: 'screen' | 'modal' | 'dialog' | 'component'; // Type of page for apps
 }
@@ -471,6 +527,9 @@ export interface Project {
     modules?: AppModule[]; // App modules
     projectType?: 'web' | 'mobile' | 'desktop' | 'hybrid'; // Type of application
     platform?: 'react' | 'react-native' | 'flutter' | 'pwa'; // Target platform
+    reusableComponents?: Template[];
+    isPublic?: boolean;
+    shareId?: string;
 }
 
 export interface Template {
