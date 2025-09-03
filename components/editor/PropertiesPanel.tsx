@@ -398,6 +398,24 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                                 ))}
                             </Select></FormControl>
                         </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <TextField fullWidth label="Page Size" size="small" type="number" value={(props as DataGridProps).pageSize || 10} onChange={e => update('pageSize', parseInt(e.target.value, 10) || 10)} />
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControl size="small" fullWidth><InputLabel>Density</InputLabel>
+                                <Select label="Density" value={(props as DataGridProps).density || 'standard'} onChange={e => update('density', e.target.value)}>
+                                    <MenuItem value="compact">compact</MenuItem>
+                                    <MenuItem value="standard">standard</MenuItem>
+                                    <MenuItem value="comfortable">comfortable</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControlLabel control={<MuiSwitch checked={(props as DataGridProps).showToolbar ?? true} onChange={e => update('showToolbar', e.target.checked)} />} label="Show Toolbar" />
+                        </PropItem>
+                        <PropItem gridColumn="span 1">
+                            <FormControlLabel control={<MuiSwitch checked={(props as DataGridProps).editable ?? true} onChange={e => update('editable', e.target.checked)} />} label="Editable" />
+                        </PropItem>
                         <PropItem gridColumn="span 2">
                             <TextField
                                 fullWidth
