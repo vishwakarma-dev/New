@@ -75,9 +75,8 @@ const LAYOUTS: LayoutWithIcon[] = [
 
 const InsertPanel: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
-    const projectId = (window as any).__reduxStore ? undefined : undefined; // placeholder to avoid TS unused import
-    const { projectId: editorProjectId } = (require('react-redux') as any).useSelector((s: any) => s.editor);
-    const project = (require('react-redux') as any).useSelector((s: any) => s.projects.projects.find((p: any) => p.id === editorProjectId));
+    const editorProjectId = useSelector((s: RootState) => s.editor.projectId);
+    const project = useSelector((s: RootState) => s.projects.projects.find(p => p.id === editorProjectId));
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
