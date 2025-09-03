@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps, Template } from '../../types';
+import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, InputProps, AnyElementPropKey, StackProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, ThemeSettings, CarouselProps, HeaderProps, DataGridProps, Template, ElementAction } from '../../types';
 import { Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Slider, Paper, Tabs, Tab, SelectChangeEvent, Accordion, AccordionSummary, AccordionDetails, ToggleButtonGroup, ToggleButton, IconButton, Divider, InputAdornment, Stack, Button, FormControlLabel, Switch as MuiSwitch } from '@mui/material';
-import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete, Save } from '@mui/icons-material';
+import { Palette, EditAttributes, CheckCircle, ExpandMore, FormatAlignLeft, FormatAlignCenter, FormatAlignRight, FormatBold, FormatItalic, FormatUnderlined, StrikethroughS, Delete, Save, Settings } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
 import { addReusableComponent } from '../../store/projectsSlice';
@@ -563,13 +563,110 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                  <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Inspector tabs" variant="fullWidth">
                     <Tab icon={<EditAttributes />} label="Style" />
                     <Tab icon={<Palette />} label="Theme" />
+                    <Tab icon={<Settings />} label="Advanced" />
                 </Tabs>
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                 {tabIndex === 0 && renderStylePanel()}
                 {tabIndex === 1 && renderGlobalThemePanel()}
+                {tabIndex === 2 && (
+                    <Box p={2}>
+                        {!selectedElement ? (
+                            <Typography variant="body2" color="text.secondary">Select an element to configure actions.</Typography>
+                        ) : (
+                            <ActionEditor actions={(selectedElement.props as any).actions || []} onChange={(actions) => onUpdateProps(selectedElement.id, 'actions', actions)} page={page} />
+                        )}
+                    </Box>
+                )}
             </Box>
         </Box>
+    );
+};
+
+const ActionEditor: React.FC<{ actions: ElementAction[]; onChange: (a: ElementAction[]) => void; page: Page }> = ({ actions, onChange, page }) => {
+    const [items, setItems] = useState<ElementAction[]>(actions);
+
+    useEffect(() => { setItems(actions); }, [actions]);
+
+    const update = (idx: number, patch: Partial<ElementAction>) => {
+        const next = items.map((a, i) => i === idx ? { ...a, ...patch } : a);
+        setItems(next); onChange(next);
+    };
+
+    const updateParam = (idx: number, key: string, value: any) => {
+        const next = items.map((a, i) => i === idx ? { ...a, params: { ...a.params, [key]: value } } : a);
+        setItems(next); onChange(next);
+    };
+
+    const add = () => {
+        const next = [...items, { id: `act-${Date.now()}`, event: 'onClick', type: 'openUrl', params: { url: 'https://example.com', target: '_self' } }];
+        setItems(next); onChange(next);
+    };
+
+    const remove = (idx: number) => {
+        const next = items.filter((_, i) => i !== idx);
+        setItems(next); onChange(next);
+    };
+
+    return (
+        <Stack spacing={1.5}>
+            {items.map((a, idx) => (
+                <Paper key={a.id} variant="outlined" sx={{ p: 1.5 }}>
+                    <Grid container spacing={1.5}>
+                        <Grid size={6}>
+                            <FormControl size="small" fullWidth>
+                                <InputLabel>Event</InputLabel>
+                                <Select label="Event" value={a.event} onChange={e => update(idx, { event: e.target.value as any })}>
+                                    <MenuItem value="onClick">onClick</MenuItem>
+                                    <MenuItem value="onLoad">onLoad</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        <Grid size={6}>
+                            <FormControl size="small" fullWidth>
+                                <InputLabel>Action</InputLabel>
+                                <Select label="Action" value={a.type} onChange={e => update(idx, { type: e.target.value as any, params: {} })}>
+                                    <MenuItem value="openUrl">Open URL</MenuItem>
+                                    <MenuItem value="scrollTo">Scroll to Element</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </Grid>
+                        {a.type === 'openUrl' && (
+                            <>
+                                <Grid size={8}>
+                                    <TextField size="small" fullWidth label="URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={4}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Target</InputLabel>
+                                        <Select label="Target" value={a.params.target || '_self'} onChange={e => updateParam(idx, 'target', e.target.value)}>
+                                            <MenuItem value="_self">Same Tab</MenuItem>
+                                            <MenuItem value="_blank">New Tab</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                            </>
+                        )}
+                        {a.type === 'scrollTo' && (
+                            <Grid size={12}>
+                                <FormControl size="small" fullWidth>
+                                    <InputLabel>Target Element</InputLabel>
+                                    <Select label="Target Element" value={a.params.elementId || ''} onChange={e => updateParam(idx, 'elementId', e.target.value)}>
+                                        {Object.values(page.elements).map(el => (
+                                            <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+                        )}
+                        <Grid size={12} display="flex" justifyContent="flex-end">
+                            <Button size="small" color="error" onClick={() => remove(idx)}>Remove</Button>
+                        </Grid>
+                    </Grid>
+                </Paper>
+            ))}
+            <Button variant="outlined" onClick={add}>Add Action</Button>
+        </Stack>
     );
 };
 
