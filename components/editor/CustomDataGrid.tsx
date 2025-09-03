@@ -61,6 +61,12 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
   useEffect(() => setRows(rowsProp || []), [rowsProp]);
 
   const visibleColumns = useMemo(() => columns.filter(c => !c.hidden), [columns]);
+  const orderedColumns = useMemo(() => {
+    const left = visibleColumns.filter(c => c.pinned === 'left');
+    const right = visibleColumns.filter(c => c.pinned === 'right');
+    const none = visibleColumns.filter(c => !c.pinned);
+    return [...left, ...none, ...right];
+  }, [visibleColumns]);
 
   const filteredRows = useMemo(() => {
     let r = [...rows];
