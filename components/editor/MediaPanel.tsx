@@ -155,182 +155,178 @@ const MediaPanel: React.FC = () => {
     { key: 'document', label: 'Documents', icon: <InsertDriveFile /> },
   ];
 
+  const fetchStock = async (q?: string) => {
+    try {
+      setStockLoading(true);
+      if (!q || !q.trim()) {
+        const res = await fetch('https://picsum.photos/v2/list?page=1&limit=24');
+        const data = await res.json();
+        setStockImages(data.map((d: any) => `https://picsum.photos/id/${d.id}/400/300`));
+      } else {
+        const urls = Array.from({ length: 24 }).map((_, i) => `https://source.unsplash.com/featured/400x300?${encodeURIComponent(q)}&sig=${i}`);
+        setStockImages(urls);
+      }
+    } catch (e) {
+      setStockImages([]);
+    } finally {
+      setStockLoading(false);
+    }
+  };
+
   return (
     <Box sx={{ p: 2 }}>
-      {/* Upload Section */}
-      <Box sx={{ mb: 3 }}>
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          multiple
-          accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
-          style={{ display: 'none' }}
-        />
-        <Button
-          variant="contained"
-          fullWidth
-          startIcon={uploading ? <CircularProgress size={20} color="inherit" /> : <CloudUpload />}
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading}
-          sx={{ mb: 2 }}
-        >
-          {uploading ? 'Uploading...' : 'Upload Media Files'}
-        </Button>
-        
-        {mediaFiles.length === 0 && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Upload images, videos, audio files, and documents to use in your project.
-          </Alert>
-        )}
+      <Box sx={{ mb: 2, position: 'sticky', top: 0, bgcolor: 'background.paper', zIndex: 1 }}>
+        <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="fullWidth">
+          <Tab value="library" label="Library" />
+          <Tab value="stock" label="Stock" />
+        </Tabs>
       </Box>
 
-      {/* Search and Filter */}
-      {mediaFiles.length > 0 && (
-        <Box sx={{ mb: 2 }}>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder="Search media files..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: <Search sx={{ mr: 1, color: 'action.active' }} />
-            }}
-            sx={{ mb: 2 }}
-          />
-          
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {typeFilters.map(filter => (
-              <Chip
-                key={filter.key}
-                icon={filter.icon}
-                label={filter.label}
-                variant={filterType === filter.key ? 'filled' : 'outlined'}
-                color={filterType === filter.key ? 'primary' : 'default'}
-                size="small"
-                onClick={() => setFilterType(filter.key as any)}
-              />
-            ))}
+      {tab === 'library' && (
+        <>
+          <Box sx={{ mb: 3 }}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              multiple
+              accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.txt"
+              style={{ display: 'none' }}
+            />
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={uploading ? <CircularProgress size={20} color="inherit" /> : <CloudUpload />}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              sx={{ mb: 2 }}
+            >
+              {uploading ? 'Uploading...' : 'Upload Media Files'}
+            </Button>
+            {mediaFiles.length === 0 && (
+              <Alert severity="info" sx={{ mb: 2 }}>
+                Upload images, videos, audio files, and documents to use in your project.
+              </Alert>
+            )}
           </Box>
+
+          {mediaFiles.length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <TextField
+                fullWidth
+                size="small"
+                placeholder="Search media files..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{ startAdornment: <Search sx={{ mr: 1, color: 'action.active' }} /> }}
+                sx={{ mb: 2 }}
+              />
+
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                {typeFilters.map(filter => (
+                  <Chip
+                    key={filter.key}
+                    icon={filter.icon}
+                    label={filter.label}
+                    variant={filterType === filter.key ? 'filled' : 'outlined'}
+                    color={filterType === filter.key ? 'primary' : 'default'}
+                    size="small"
+                    onClick={() => setFilterType(filter.key as any)}
+                  />
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          <Grid container spacing={2}>
+            {filteredFiles.map(file => (
+              <Grid key={file.id} item xs={12} sm={6}>
+                <Card
+                  draggable
+                  onDragStart={(e) => handleDragStart(e, file)}
+                  sx={{
+                    cursor: 'grab',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': { transform: 'translateY(-2px)', boxShadow: 3 },
+                    '&:active': { cursor: 'grabbing' }
+                  }}
+                >
+                  {file.type === 'image' && file.thumbnail ? (
+                    <CardMedia component="img" height="120" image={file.thumbnail} alt={file.name} sx={{ objectFit: 'cover' }} />
+                  ) : (
+                    <Box sx={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'grey.100', color: 'grey.600' }}>
+                      {React.cloneElement(getFileIcon(file.type), { sx: { fontSize: 48 } })}
+                    </Box>
+                  )}
+
+                  <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Tooltip title={file.name}>
+                          <Typography variant="body2" fontWeight="medium" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                            {file.name}
+                          </Typography>
+                        </Tooltip>
+                        <Typography variant="caption" color="text.secondary">{formatFileSize(file.size)}</Typography>
+                      </Box>
+
+                      <IconButton size="small" onClick={(e) => { e.preventDefault(); setMenuAnchor(e.currentTarget); setSelectedFile(file); }}>
+                        <MoreVert />
+                      </IconButton>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+
+          <Menu anchorEl={menuAnchor} open={Boolean(menuAnchor)} onClose={() => setMenuAnchor(null)}>
+            <MenuItem onClick={() => { if (selectedFile) { const link = document.createElement('a'); link.href = selectedFile.url; link.download = selectedFile.name; link.click(); } setMenuAnchor(null); }}>
+              <Download sx={{ mr: 1 }} />
+              Download
+            </MenuItem>
+            <MenuItem onClick={() => { if (selectedFile) { handleDelete(selectedFile); } setMenuAnchor(null); }} sx={{ color: 'error.main' }}>
+              <Delete sx={{ mr: 1 }} />
+              Delete
+            </MenuItem>
+          </Menu>
+        </>
+      )}
+
+      {tab === 'stock' && (
+        <Box>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <TextField fullWidth size="small" placeholder="Search stock images (e.g., business, nature)" onKeyDown={(e) => { if (e.key === 'Enter') fetchStock((e.target as HTMLInputElement).value); }} />
+            <Button variant="outlined" onClick={() => fetchStock((document.activeElement as HTMLInputElement)?.value)}>Search</Button>
+          </Box>
+
+          {stockLoading && (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+              <CircularProgress />
+            </Box>
+          )}
+
+          {!stockLoading && (
+            <Grid container spacing={2}>
+              {stockImages.map((url, idx) => (
+                <Grid item xs={12} sm={6} key={`${url}-${idx}`}>
+                  <Card sx={{ cursor: 'grab' }} draggable onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = 'copy';
+                    const mf: MediaFile = { id: `stock-${idx}`, name: url.split('/').slice(-1)[0] || 'image.jpg', type: 'image', url, size: 0, uploadDate: new Date(), thumbnail: url };
+                    e.dataTransfer.setData('mediaFile', JSON.stringify(mf));
+                  }}>
+                    <CardMedia component="img" height="120" image={url} alt="stock" sx={{ objectFit: 'cover' }} />
+                    <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
+                      <Typography variant="body2" noWrap>{url}</Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
         </Box>
       )}
 
-      {/* Media Grid */}
-      <Grid container spacing={2}>
-        {filteredFiles.map(file => (
-          <Grid key={file.id} item xs={12} sm={6}>
-            <Card
-              draggable
-              onDragStart={(e) => handleDragStart(e, file)}
-              sx={{
-                cursor: 'grab',
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: 3
-                },
-                '&:active': {
-                  cursor: 'grabbing'
-                }
-              }}
-            >
-              {file.type === 'image' && file.thumbnail ? (
-                <CardMedia
-                  component="img"
-                  height="120"
-                  image={file.thumbnail}
-                  alt={file.name}
-                  sx={{ objectFit: 'cover' }}
-                />
-              ) : (
-                <Box
-                  sx={{
-                    height: 120,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    bgcolor: 'grey.100',
-                    color: 'grey.600'
-                  }}
-                >
-                  {React.cloneElement(getFileIcon(file.type), { sx: { fontSize: 48 } })}
-                </Box>
-              )}
-              
-              <CardContent sx={{ p: 1.5, '&:last-child': { pb: 1.5 } }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Tooltip title={file.name}>
-                      <Typography
-                        variant="body2"
-                        fontWeight="medium"
-                        sx={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        {file.name}
-                      </Typography>
-                    </Tooltip>
-                    <Typography variant="caption" color="text.secondary">
-                      {formatFileSize(file.size)}
-                    </Typography>
-                  </Box>
-                  
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setMenuAnchor(e.currentTarget);
-                      setSelectedFile(file);
-                    }}
-                  >
-                    <MoreVert />
-                  </IconButton>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
-
-      {/* Context Menu */}
-      <Menu
-        anchorEl={menuAnchor}
-        open={Boolean(menuAnchor)}
-        onClose={() => setMenuAnchor(null)}
-      >
-        <MenuItem
-          onClick={() => {
-            if (selectedFile) {
-              const link = document.createElement('a');
-              link.href = selectedFile.url;
-              link.download = selectedFile.name;
-              link.click();
-            }
-            setMenuAnchor(null);
-          }}
-        >
-          <Download sx={{ mr: 1 }} />
-          Download
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            if (selectedFile) {
-              handleDelete(selectedFile);
-            }
-            setMenuAnchor(null);
-          }}
-          sx={{ color: 'error.main' }}
-        >
-          <Delete sx={{ mr: 1 }} />
-          Delete
-        </MenuItem>
-      </Menu>
-
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>Delete Media File</DialogTitle>
         <DialogContent>
@@ -340,9 +336,7 @@ const MediaPanel: React.FC = () => {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
+          <Button onClick={confirmDelete} color="error" variant="contained">Delete</Button>
         </DialogActions>
       </Dialog>
     </Box>
