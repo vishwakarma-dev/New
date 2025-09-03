@@ -161,13 +161,13 @@ const ProfilePage: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Grid container spacing={4}>
+      <Container maxWidth="lg" sx={{ py: 4, px: 3, maxWidth: '1200px' }}>
+        <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
           {/* Profile Section */}
           <Grid item xs={12} md={4}>
             <Box sx={{ position: { md: 'sticky' }, top: { md: 16 }, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Card>
-              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+            <Card sx={{ borderRadius: '16px', boxShadow: '0px 4px 20px rgba(0,0,0,0.08)', border: '1.25px solid rgba(0,0,0,0.05)', overflow: 'hidden', transition: 'box-shadow 0.3s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column' }}>
+              <CardContent sx={{ textAlign: 'center', p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center' }}>
                 <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
                   <Avatar
                     src={profile.avatar}
