@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, TextField, Menu, MenuItem, Checkbox, FormControlLabel, Toolbar, Typography, ButtonGroup, Button, Divider, Select, SelectChangeEvent } from '@mui/material';
-import { Download, ContentCopy, FilterList, ViewColumn, DensitySmall, DensityMedium, DensityLarge, Clear, ArrowDownward, ArrowUpward, Edit } from '@mui/icons-material';
+import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip, TextField, Menu, MenuItem, Checkbox, Toolbar, Typography, ButtonGroup, Button, Divider, Select, SelectChangeEvent } from '@mui/material';
+import { FilterList, ViewColumn, DensitySmall, DensityMedium, DensityLarge, ArrowDownward, ArrowUpward } from '@mui/icons-material';
 import { DataGridColumn } from '../../types';
 
 export interface CustomDataGridProps {
