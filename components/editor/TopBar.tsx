@@ -22,9 +22,11 @@ interface TopBarProps {
     onUpdatePageName: (pageId: string, newName: string) => void;
     onImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onTogglePreview: () => void;
+    autoSaveEnabled: boolean;
+    onToggleAutoSave: (enabled: boolean) => void;
 }
 
-const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, onAddPage, onDeletePage, onUpdatePageName, onImport, onTogglePreview }) => {
+const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, onAddPage, onDeletePage, onUpdatePageName, onImport, onTogglePreview, autoSaveEnabled, onToggleAutoSave }) => {
     const dispatch: AppDispatch = useDispatch();
     const { history, viewMode, projectId } = useSelector((state: RootState) => state.editor);
     const projectFromStore = useSelector((state: RootState) => state.projects.projects.find(p => p.id === projectId));
@@ -259,6 +261,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                          <IconButton size="small" onClick={() => dispatch(setViewMode('mobile'))} color={viewMode === 'mobile' ? 'primary' : 'default'}><PhoneIphone /></IconButton>
                      </Tooltip>
                       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                    <FormControlLabel sx={{ mr: 1 }} control={<Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />} label="Auto Save" />
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
                     </Tooltip>
