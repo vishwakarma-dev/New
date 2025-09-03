@@ -167,7 +167,7 @@ interface LeftSidebarProps {
     onAddElement: (parentId: string, element: EditorElement, index: number) => void;
 }
 
-type PanelType = 'layers' | 'insert' | 'data' | 'media' | 'ai' | 'search' | 'settings';
+type PanelType = 'layers' | 'insert' | 'data' | 'media' | 'ai' | 'comments' | 'history' | 'search' | 'settings';
 
 const LeftSidebar: React.FC<LeftSidebarProps> = (props) => {
     const [activePanel, setActivePanel] = useState<PanelType | null>('layers');
