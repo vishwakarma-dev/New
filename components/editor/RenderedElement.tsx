@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Add as AddIcon, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
+import CustomDataGrid from './CustomDataGrid';
 
 const mapFontSizeToVariant = (fontSize: string | undefined) => {
     if (!fontSize || !isNaN(parseFloat(fontSize))) return undefined; // Return undefined if it's a direct pixel/rem value
