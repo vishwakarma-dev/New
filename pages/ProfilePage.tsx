@@ -165,6 +165,7 @@ const ProfilePage: React.FC = () => {
         <Grid container spacing={4}>
           {/* Profile Section */}
           <Grid item xs={12} md={4}>
+            <Box sx={{ position: { md: 'sticky' }, top: { md: 16 }, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Card>
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
@@ -266,7 +267,7 @@ const ProfilePage: React.FC = () => {
             </Card>
 
             {/* Account Stats */}
-            <Card sx={{ mt: 2 }}>
+            <Card>
               <CardContent>
                 <Typography variant="h6" gutterBottom>Account Statistics</Typography>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
@@ -287,6 +288,7 @@ const ProfilePage: React.FC = () => {
                 </Box>
               </CardContent>
             </Card>
+            </Box>
           </Grid>
 
           {/* Settings Sections */}
