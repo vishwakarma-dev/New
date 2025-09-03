@@ -629,6 +629,11 @@ const ActionEditor: React.FC<{ actions: ElementAction[]; onChange: (a: ElementAc
                                 <Select label="Action" value={a.type} onChange={e => update(idx, { type: e.target.value as any, params: {} })}>
                                     <MenuItem value="openUrl">Open URL</MenuItem>
                                     <MenuItem value="scrollTo">Scroll to Element</MenuItem>
+                                    <MenuItem value="copyToClipboard">Copy to Clipboard</MenuItem>
+                                    <MenuItem value="downloadFile">Download File</MenuItem>
+                                    <MenuItem value="callWebhook">Call Webhook</MenuItem>
+                                    <MenuItem value="tel">Phone Call</MenuItem>
+                                    <MenuItem value="mailto">Email Link</MenuItem>
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -649,17 +654,97 @@ const ActionEditor: React.FC<{ actions: ElementAction[]; onChange: (a: ElementAc
                             </>
                         )}
                         {a.type === 'scrollTo' && (
+                            <>
+                                <Grid size={12}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Target Element</InputLabel>
+                                        <Select label="Target Element" value={a.params.elementId || ''} onChange={e => updateParam(idx, 'elementId', e.target.value)}>
+                                            {Object.values(page.elements).map(el => (
+                                                <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={12}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Behavior</InputLabel>
+                                        <Select label="Behavior" value={a.params.behavior || 'smooth'} onChange={e => updateParam(idx, 'behavior', e.target.value)}>
+                                            <MenuItem value="smooth">Smooth</MenuItem>
+                                            <MenuItem value="auto">Auto</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth type="number" label="Offset (px)" value={a.params.offset ?? 0} onChange={e => updateParam(idx, 'offset', Number(e.target.value))} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'copyToClipboard' && (
                             <Grid size={12}>
-                                <FormControl size="small" fullWidth>
-                                    <InputLabel>Target Element</InputLabel>
-                                    <Select label="Target Element" value={a.params.elementId || ''} onChange={e => updateParam(idx, 'elementId', e.target.value)}>
-                                        {Object.values(page.elements).map(el => (
-                                            <MenuItem key={el.id} value={el.id}>{el.name}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <TextField size="small" fullWidth label="Text (optional)" placeholder="Leave blank to copy element text" value={a.params.text || ''} onChange={e => updateParam(idx, 'text', e.target.value)} />
                             </Grid>
                         )}
+
+                        {a.type === 'downloadFile' && (
+                            <>
+                                <Grid size={8}>
+                                    <TextField size="small" fullWidth label="File URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={4}>
+                                    <TextField size="small" fullWidth label="Filename (optional)" value={a.params.filename || ''} onChange={e => updateParam(idx, 'filename', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'callWebhook' && (
+                            <>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth label="URL" value={a.params.url || ''} onChange={e => updateParam(idx, 'url', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <FormControl size="small" fullWidth>
+                                        <InputLabel>Method</InputLabel>
+                                        <Select label="Method" value={a.params.method || 'GET'} onChange={e => updateParam(idx, 'method', e.target.value)}>
+                                            <MenuItem value="GET">GET</MenuItem>
+                                            <MenuItem value="POST">POST</MenuItem>
+                                            <MenuItem value="PUT">PUT</MenuItem>
+                                            <MenuItem value="PATCH">PATCH</MenuItem>
+                                            <MenuItem value="DELETE">DELETE</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Headers (JSON)" value={JSON.stringify(a.params.headers || {})} onChange={e => {
+                                        try { updateParam(idx, 'headers', JSON.parse(e.target.value || '{}')); } catch {}
+                                    }} />
+                                </Grid>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth multiline rows={3} label="Body (JSON/string)" value={a.params.body || ''} onChange={e => updateParam(idx, 'body', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
+                        {a.type === 'tel' && (
+                            <Grid size={12}>
+                                <TextField size="small" fullWidth label="Phone" value={a.params.phone || ''} onChange={e => updateParam(idx, 'phone', e.target.value)} />
+                            </Grid>
+                        )}
+
+                        {a.type === 'mailto' && (
+                            <>
+                                <Grid size={12}>
+                                    <TextField size="small" fullWidth label="Email" value={a.params.email || ''} onChange={e => updateParam(idx, 'email', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Subject" value={a.params.subject || ''} onChange={e => updateParam(idx, 'subject', e.target.value)} />
+                                </Grid>
+                                <Grid size={6}>
+                                    <TextField size="small" fullWidth label="Body" value={a.params.body || ''} onChange={e => updateParam(idx, 'body', e.target.value)} />
+                                </Grid>
+                            </>
+                        )}
+
                         <Grid size={12} display="flex" justifyContent="flex-end">
                             <Button size="small" color="error" onClick={() => remove(idx)}>Remove</Button>
                         </Grid>
