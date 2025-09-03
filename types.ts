@@ -60,7 +60,24 @@ export interface ThemeSettings {
     fontFamily?: string;
 }
 
-export type ElementEvent = 'onClick' | 'onLoad' | 'onHover';
+export type ElementEvent =
+    | 'onClick'
+    | 'onDoubleClick'
+    | 'onMouseEnter'
+    | 'onMouseLeave'
+    | 'onMouseOver'
+    | 'onMouseOut'
+    | 'onMouseDown'
+    | 'onMouseUp'
+    | 'onFocus'
+    | 'onBlur'
+    | 'onChange'
+    | 'onInput'
+    | 'onKeyDown'
+    | 'onKeyUp'
+    | 'onScroll'
+    | 'onLoad'
+    | 'onHover';
 export type ActionType = 'openUrl' | 'scrollTo' | 'copyToClipboard' | 'downloadFile' | 'callWebhook' | 'tel' | 'mailto';
 export interface ElementAction {
     id: string;
