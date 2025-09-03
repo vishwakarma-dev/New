@@ -73,6 +73,9 @@ const LAYOUTS: LayoutWithIcon[] = [
 
 const InsertPanel: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
+    const projectId = (window as any).__reduxStore ? undefined : undefined; // placeholder to avoid TS unused import
+    const { projectId: editorProjectId } = (require('react-redux') as any).useSelector((s: any) => s.editor);
+    const project = (require('react-redux') as any).useSelector((s: any) => s.projects.projects.find((p: any) => p.id === editorProjectId));
 
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
@@ -85,9 +88,11 @@ const InsertPanel: React.FC = () => {
         else if (type === 'template') e.dataTransfer.setData('newTemplate', JSON.stringify(data));
     };
 
+    const userComponents = project?.reusableComponents || [];
+
     const tabData = [
-        { 
-            label: "Elements", 
+        {
+            label: "Elements",
             content: (
                 <>
                     <Typography variant="overline" color="text.secondary" display="block" mb={1.5}>
@@ -110,18 +115,26 @@ const InsertPanel: React.FC = () => {
                 </>
             )
         },
-        { 
-            label: "Components", 
+        {
+            label: "Components",
             content: (
-                <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
-                    <Typography variant="body2" color="text.secondary">
-                        User-defined components will appear here.
-                    </Typography>
-                </Box>
+                userComponents.length > 0 ? (
+                    <Grid container spacing={1.5}>
+                        {userComponents.map((template: any) => (
+                            <DraggableItem key={template.name} name={template.name} icon={template.icon || <span />} onDragStart={(e) => handleDragStart(e, 'template', template)} />
+                        ))}
+                    </Grid>
+                ) : (
+                    <Box sx={{ textAlign: 'center', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '200px' }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Save elements as reusable components from the Inspector.
+                        </Typography>
+                    </Box>
+                )
             )
         },
-        { 
-            label: "Templates", 
+        {
+            label: "Templates",
             content: (
                 <Grid container spacing={1.5}>
                     {AVAILABLE_TEMPLATES.map(template => (
