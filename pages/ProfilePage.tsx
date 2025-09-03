@@ -161,13 +161,13 @@ const ProfilePage: React.FC = () => {
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ py: 4, px: 3, maxWidth: '1200px' }}>
+      <Container maxWidth="lg" sx={{ py: 2, px: 1, maxWidth: '1200px' }}>
         <Grid container spacing={4} justifyContent="center" alignItems="flex-start">
           {/* Profile Section */}
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs:12, md:4 }} >
             <Box sx={{ position: { md: 'sticky' }, top: { md: 16 }, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Card sx={{ borderRadius: '16px', boxShadow: '0px 4px 20px rgba(0,0,0,0.08)', border: '1.25px solid rgba(0,0,0,0.05)', overflow: 'hidden', transition: 'box-shadow 0.3s cubic-bezier(0.4,0,0.2,1)', display: 'flex', flexDirection: 'column' }}>
-              <CardContent sx={{ textAlign: 'center', p: 3, display: 'flex', flexDirection: 'column', alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center' }}>
+              <CardContent sx={{ textAlign: 'center', p: 2, alignItems: 'center', alignSelf: 'stretch', justifyContent: 'center' }}>
                 <Box sx={{ position: 'relative', display: 'inline-block', mb: 2 }}>
                   <Avatar
                     src={profile.avatar}
@@ -193,18 +193,20 @@ const ProfilePage: React.FC = () => {
                 </Box>
                 
                 {editing ? (
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb:2 }}>
                     <TextField
                       label="Name"
                       value={profile.name}
                       onChange={(e) => setProfile(prev => ({ ...prev, name: e.target.value }))}
                       size="small"
+                      fullWidth
                     />
                     <TextField
                       label="Email"
                       value={profile.email}
                       onChange={(e) => setProfile(prev => ({ ...prev, email: e.target.value }))}
                       size="small"
+                      fullWidth
                     />
                     <TextField
                       label="Bio"
@@ -213,18 +215,21 @@ const ProfilePage: React.FC = () => {
                       multiline
                       rows={3}
                       size="small"
+                      fullWidth
                     />
                     <TextField
                       label="Website"
                       value={profile.website}
                       onChange={(e) => setProfile(prev => ({ ...prev, website: e.target.value }))}
                       size="small"
+                      fullWidth
                     />
                     <TextField
                       label="Location"
                       value={profile.location}
                       onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
                       size="small"
+                      fullWidth
                     />
                   </Box>
                 ) : (
@@ -247,7 +252,7 @@ const ProfilePage: React.FC = () => {
                   </Box>
                 )}
 
-                <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
                   {editing ? (
                     <>
                       <Button variant="contained" startIcon={<Save />} onClick={handleProfileSave}>
@@ -292,7 +297,7 @@ const ProfilePage: React.FC = () => {
           </Grid>
 
           {/* Settings Sections */}
-          <Grid item xs={12} md={8}>
+          <Grid size={{ xs:12, md:8 }} >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
               
               {/* Appearance Settings */}
@@ -304,7 +309,7 @@ const ProfilePage: React.FC = () => {
                   </Box>
                   
                   <Grid container spacing={3}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs:12, sm:6 }} >
                       <FormControl fullWidth size="small">
                         <InputLabel>Theme</InputLabel>
                         <Select
@@ -318,7 +323,7 @@ const ProfilePage: React.FC = () => {
                         </Select>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs:12, sm:6 }} >
                       <FormControl fullWidth size="small">
                         <InputLabel>Language</InputLabel>
                         <Select
@@ -431,7 +436,7 @@ const ProfilePage: React.FC = () => {
                   
                   <Typography variant="subtitle2" gutterBottom>Change Password</Typography>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs:12 }} >
                       <TextField
                         type={passwordData.showPasswords ? 'text' : 'password'}
                         label="Current Password"
@@ -451,7 +456,7 @@ const ProfilePage: React.FC = () => {
                         }}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs:12, sm:6 }} >
                       <TextField
                         type={passwordData.showPasswords ? 'text' : 'password'}
                         label="New Password"
@@ -461,7 +466,7 @@ const ProfilePage: React.FC = () => {
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs:12, sm:6 }} >
                       <TextField
                         type={passwordData.showPasswords ? 'text' : 'password'}
                         label="Confirm Password"
@@ -471,7 +476,7 @@ const ProfilePage: React.FC = () => {
                         fullWidth
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs:12 }} >
                       <Button
                         variant="outlined"
                         onClick={handlePasswordChange}

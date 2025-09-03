@@ -164,7 +164,7 @@ const HomePage: React.FC = () => {
 
         <Container maxWidth="lg">
           <Grid container spacing={6} alignItems="center">
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs:12, md:6 }} >
               <Typography variant="h2" fontWeight="bold" gutterBottom>
                 Build Amazing Apps with AI
               </Typography>
@@ -201,7 +201,7 @@ const HomePage: React.FC = () => {
                 </Button>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs:12, md:6 }} >
               <Box
                 sx={{
                   position: 'relative',
@@ -236,7 +236,7 @@ const HomePage: React.FC = () => {
         
         <Grid container spacing={4}>
           {features.map((feature, index) => (
-            <Grid item xs={12} md={6} lg={4} key={index}>
+            <Grid size={{ xs:12, md:6, lg:4 }} key={index}>
               <Card
                 sx={{
                   height: '100%',
@@ -287,7 +287,7 @@ const HomePage: React.FC = () => {
 
           <Grid container spacing={4}>
             {testimonials.map((testimonial, index) => (
-              <Grid item xs={12} md={4} key={index}>
+              <Grid size={{ xs:12, md:4 }} key={index}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -355,7 +355,7 @@ const HomePage: React.FC = () => {
       <Box sx={{ bgcolor: 'grey.900', color: 'white', py: 6 }}>
         <Container maxWidth="lg">
           <Grid container spacing={4}>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs:12, md:6 }} >
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ mr: 2, background: 'linear-gradient(45deg, #667eea, #764ba2)' }}>
                   <Web />
@@ -379,10 +379,10 @@ const HomePage: React.FC = () => {
                 </IconButton>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs:12, md:6 }} >
               <Box sx={{ textAlign: { xs: 'left', md: 'right' } }}>
                 <Typography variant="body2" sx={{ opacity: 0.8 }}>
-                  © 2024 AppBuilder. All rights reserved.
+                  © 2025 AppBuilder. All rights reserved.
                 </Typography>
               </Box>
             </Grid>
