@@ -800,9 +800,7 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                 return (
                     <Paper variant="outlined" sx={sx} {...commonEventHandlers} className={props.customClass}>
                         {renderOverlayControls()}
-                        <Box onClick={(e)=>e.stopPropagation()} onMouseDown={(e)=>e.stopPropagation()}>
-                            <CustomDataGrid columns={columns} rows={rows} density={dgProps.density || 'standard'} pageSize={dgProps.pageSize || 10} editable={dgProps.editable ?? true} showToolbar={dgProps.showToolbar ?? true} striped={dgProps.striped} />
-                        </Box>
+                        <CustomDataGrid columns={columns} rows={rows} density={dgProps.density || 'standard'} pageSize={dgProps.pageSize || 10} editable={dgProps.editable ?? true} showToolbar={dgProps.showToolbar ?? true} striped={dgProps.striped} suppressEvents={isReadOnly} />
                     </Paper>
                 );
 
