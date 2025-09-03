@@ -156,6 +156,12 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
 
   const totalPages = Math.max(1, Math.ceil(filteredRows.length / size));
 
+  const [headerAnchor, setHeaderAnchor] = useState<null | HTMLElement>(null);
+  const [headerField, setHeaderField] = useState<string | null>(null);
+  const openHeaderMenu = (e: React.MouseEvent, field: string) => { e.stopPropagation(); setHeaderAnchor(e.currentTarget as HTMLElement); setHeaderField(field); };
+  const closeHeaderMenu = () => { setHeaderAnchor(null); setHeaderField(null); };
+  const setPin = (field: string, pinned: 'left' | 'right' | undefined) => setColumns(prev => prev.map(c => c.field === field ? { ...c, pinned } : c));
+
   const wrapperHandlers = suppressEvents ? { onClick: (e: React.MouseEvent) => e.stopPropagation(), onMouseDown: (e: React.MouseEvent) => e.stopPropagation() } : {};
 
   return (
@@ -211,18 +217,36 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
         }}>
           <TableHead>
             <TableRow>
-              {visibleColumns.map(col => (
+              {orderedColumns.map(col => (
                 <TableCell key={col.field} sx={{ cursor: (col.sortable ?? true) ? 'pointer': 'default' }} onClick={(col.sortable ?? true) ? toggleSort(col.field) : undefined}>
-                  <Box sx={{ display:'flex', alignItems:'center', gap: 0.5 }}>
-                    <span>{col.headerName ?? col.field}</span>
-                    {sort?.field === col.field && (sort.dir === 'asc' ? <ArrowUpward fontSize="inherit" /> : <ArrowDownward fontSize="inherit" />)}
+                  <Box sx={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap: 0.5 }}>
+                    <Box sx={{ display:'flex', alignItems:'center', gap: 0.5 }}>
+                      <span>{col.headerName ?? col.field}</span>
+                      {sort?.field === col.field && (sort.dir === 'asc' ? <ArrowUpward fontSize="inherit" /> : <ArrowDownward fontSize="inherit" />)}
+                    </Box>
+                    <IconButton size="small" onClick={(e) => openHeaderMenu(e, col.field)}>
+                      <MoreVert fontSize="inherit" />
+                    </IconButton>
                   </Box>
                 </TableCell>
               ))}
             </TableRow>
+            <TableRow>
+              <TableCell sx={{ p: 0 }} colSpan={orderedColumns.length}>
+                <Menu anchorEl={headerAnchor} open={Boolean(headerAnchor)} onClose={closeHeaderMenu} onClick={(e) => e.stopPropagation()}>
+                  <MenuItem onClick={() => { headerField && setSort({ field: headerField, dir: 'asc' }); closeHeaderMenu(); }}><ArrowUpward fontSize="small" style={{ marginRight: 8 }} /> Sort Ascending</MenuItem>
+                  <MenuItem onClick={() => { headerField && setSort({ field: headerField, dir: 'desc' }); closeHeaderMenu(); }}><ArrowDownward fontSize="small" style={{ marginRight: 8 }} /> Sort Descending</MenuItem>
+                  <MenuItem onClick={() => { if (sort?.field === headerField) setSort(null); closeHeaderMenu(); }}><Close fontSize="small" style={{ marginRight: 8 }} /> Clear Sort</MenuItem>
+                  <Divider />
+                  <MenuItem onClick={() => { headerField && setPin(headerField, 'left'); closeHeaderMenu(); }}><PushPin fontSize="small" style={{ marginRight: 8 }} /> Pin Left</MenuItem>
+                  <MenuItem onClick={() => { headerField && setPin(headerField, 'right'); closeHeaderMenu(); }}><PushPin fontSize="small" style={{ marginRight: 8, transform: 'scaleX(-1)' }} /> Pin Right</MenuItem>
+                  <MenuItem onClick={() => { headerField && setPin(headerField, undefined); closeHeaderMenu(); }}><Close fontSize="small" style={{ marginRight: 8 }} /> Unpin</MenuItem>
+                </Menu>
+              </TableCell>
+            </TableRow>
             {showFilters && (
               <TableRow>
-                {visibleColumns.map(col => (
+                {orderedColumns.map(col => (
                   <TableCell key={col.field}>
                     {(col.filterable ?? true) ? (
                       <TextField size="small" fullWidth placeholder="Filter" value={filters[col.field] || ''} onChange={e => setFilter(col.field, e.target.value)} />
@@ -235,7 +259,7 @@ const CustomDataGrid: React.FC<CustomDataGridProps> = ({ columns: colsProp, rows
           <TableBody>
             {pagedRows.map((row, rIdx) => (
               <TableRow key={rIdx} sx={{ '&:nth-of-type(odd)': { backgroundColor: striped ? 'action.hover' : 'inherit' } }}>
-                {visibleColumns.map(col => {
+                {orderedColumns.map(col => {
                   const value = row[col.field];
                   const isEditing = editing && editing.row === (page*size + rIdx) && editing.field === col.field;
                   return (
