@@ -140,7 +140,7 @@ const ProfilePage: React.FC = () => {
             </IconButton>
           </Tooltip>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Profile & Settings
+            My Account
           </Typography>
         </Toolbar>
       </AppBar>
