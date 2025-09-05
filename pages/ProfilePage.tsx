@@ -284,7 +284,15 @@ const ProfilePage: React.FC = () => {
           {/* Settings Sections */}
           <Grid size={{ xs:12, md:8 }} >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              
+              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} variant="scrollable">
+                  <Tab value="appearance" label="Appearance" />
+                  <Tab value="editor" label="Editor" />
+                  <Tab value="notifications" label="Notifications" />
+                  <Tab value="security" label="Security" />
+                </Tabs>
+              </Box>
+
               {/* Appearance Settings */}
               <Card>
                 <CardContent>
