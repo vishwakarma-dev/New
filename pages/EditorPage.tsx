@@ -385,7 +385,7 @@ const EditorPage: React.FC = () => {
                         onToggleAutoSave={(v) => dispatch((await import('../store/userSettingsSlice')).updateSetting({ key: 'autoSave', value: v }))}
                     />
                     <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'grey.200' }}>
-                        <Canvas 
+                        <Canvas
                             page={page}
                             viewMode={viewMode}
                             selectedElementId={selectedElementId}
@@ -396,6 +396,7 @@ const EditorPage: React.FC = () => {
                             onDropNewElement={handleDropNewElement}
                             onAddElement={handleAddElement}
                             isPreviewing={false}
+                            showRulers={userSettings.showRulers}
                         />
                     </Box>
                 </Box>
