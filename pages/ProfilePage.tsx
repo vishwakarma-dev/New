@@ -30,6 +30,7 @@ import {
   ListItemSecondaryAction,
   Tabs,
   Tab,
+  Slider,
 } from '@mui/material';
 import {
   ArrowBack,
