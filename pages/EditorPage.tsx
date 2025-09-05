@@ -390,19 +390,21 @@ const EditorPage: React.FC = () => {
                         onToggleAutoSave={(v) => dispatch(updateSetting({ key: 'autoSave', value: v }))}
                     />
                     <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'grey.200' }}>
-                        <Canvas
-                            page={page}
-                            viewMode={viewMode}
-                            selectedElementId={selectedElementId}
-                            onSelectElement={handleSelectElement}
-                            onDeleteElement={handleDeleteElement}
-                            onMoveElement={handleMoveElement}
-                            onOpenAddMenu={handleOpenAddMenu}
-                            onDropNewElement={handleDropNewElement}
-                            onAddElement={handleAddElement}
-                            isPreviewing={false}
-                            showRulers={userSettings.showRulers}
-                        />
+                        <ThemeProvider theme={dynamicTheme}>
+                            <Canvas
+                                page={page}
+                                viewMode={viewMode}
+                                selectedElementId={selectedElementId}
+                                onSelectElement={handleSelectElement}
+                                onDeleteElement={handleDeleteElement}
+                                onMoveElement={handleMoveElement}
+                                onOpenAddMenu={handleOpenAddMenu}
+                                onDropNewElement={handleDropNewElement}
+                                onAddElement={handleAddElement}
+                                isPreviewing={false}
+                                showRulers={userSettings.showRulers}
+                            />
+                        </ThemeProvider>
                     </Box>
                 </Box>
                 
