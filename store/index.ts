@@ -7,7 +7,7 @@ export const store = configureStore({
   reducer: {
     projects: projectsReducer,
     editor: editorReducer,
-    userSettings: (await import('./userSettingsSlice')).default,
+    userSettings: userSettingsReducer,
   },
 });
 
