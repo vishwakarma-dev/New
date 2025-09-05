@@ -204,7 +204,6 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
             dispatch(addReusableComponent({ projectId: editorProjectId, component: { name: template.name, template } }));
         };
 
-        const defaultUnit = useSelector((s: RootState) => s.userSettings.defaultUnit);
         const normalizeUnit = (v: string) => {
             if (typeof v !== 'string') return v as any;
             const trimmed = v.trim();
