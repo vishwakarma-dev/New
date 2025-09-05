@@ -210,9 +210,7 @@ const EditorPage: React.FC = () => {
 
     // Auto-save: persist to localStorage with debounce
     const autoSaveTimer = useRef<number | null>(null);
-    useEffect(() => {
-        localStorage.setItem('autosave:enabled', String(autoSaveEnabled));
-    }, [autoSaveEnabled]);
+    // autoSaveEnabled comes from user settings
 
     useEffect(() => {
         if (!autoSaveEnabled || !projectId || !currentPageId) return;
