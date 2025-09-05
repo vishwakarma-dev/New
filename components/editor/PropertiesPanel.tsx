@@ -170,6 +170,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
     const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
         setTabIndex(newValue);
     };
+    const defaultUnit = useSelector((s: RootState) => s.userSettings.defaultUnit);
     
     const renderStylePanel = () => {
         if (!selectedElement) {
