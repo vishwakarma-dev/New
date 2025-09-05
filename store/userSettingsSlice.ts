@@ -15,6 +15,8 @@ export interface UserSettingsState {
   primaryColor: string;
   secondaryColor: string;
   fontFamily: string;
+  borderRadius: number;
+  spacingUnit: number;
 }
 
 const STORAGE_KEY = 'user:settings:v1';
@@ -36,6 +38,8 @@ const getInitialState = (): UserSettingsState => {
     primaryColor: '#667eea',
     secondaryColor: '#764ba2',
     fontFamily: 'Inter, Roboto, Helvetica, Arial, sans-serif',
+    borderRadius: 12,
+    spacingUnit: 8,
   };
 };
 
