@@ -284,284 +284,286 @@ const ProfilePage: React.FC = () => {
 
           {/* Settings Sections */}
           <Grid size={{ xs:12, md:8 }} >
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Paper variant="outlined" sx={{ bgcolor: 'background.paper' }}>
-                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} variant="scrollable" sx={{ px: 1 }}>
-                  <Tab value="appearance" label="Appearance" />
-                  <Tab value="editor" label="Editor" />
-                  <Tab value="notifications" label="Notifications" />
-                  <Tab value="security" label="Security" />
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
+              <Card>
+                <Tabs
+                  value={activeTab}
+                  onChange={(_, v) => setActiveTab(v)}
+                  variant="fullWidth"
+                  sx={{
+                    "& .MuiTab-root": { minHeight: 56, fontWeight: 400 },
+                  }}
+                >
+                  <Tab icon={<Palette />} iconPosition="start" value="appearance" label="Appearance" />
+                  <Tab icon={<Edit />} iconPosition="start" value="editor" label="Editor" />
+                  <Tab icon={<Notifications />} iconPosition="start" value="notifications" label="Notifications" />
+                  <Tab icon={<Security />} iconPosition="start" value="security" label="Security" />
                 </Tabs>
-              </Paper>
+              </Card>
 
               {activeTab === 'appearance' && (
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
-              <Card>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Palette sx={{ mr: 2, color: 'primary.main' }} />
-                    <Typography variant="h6">Appearance</Typography>
-                  </Box>
+                <Card variant='outlined' sx={{padding : 2}}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <Palette sx={{ mr: 2, color: 'primary.main' }} />
+                      <Typography variant="h6">Appearance</Typography>
+                    </Box>
 
-                  <Grid container spacing={3}>
-                    <Grid size={{ xs:12, sm:6 }} >
+                    <Grid container spacing={3}>
+                      <Grid size={{ xs:12, sm:6 }} >
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Theme</InputLabel>
+                          <Select
+                            value={settings.theme}
+                            label="Theme"
+                            onChange={(e) => handleSettingChange('theme', e.target.value)}
+                          >
+                            <MenuItem value="light">Light</MenuItem>
+                            <MenuItem value="dark">Dark</MenuItem>
+                            <MenuItem value="auto">Auto</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid size={{ xs:12, sm:6 }} >
+                        <FormControl fullWidth size="small">
+                          <InputLabel>Language</InputLabel>
+                          <Select
+                            value={settings.language}
+                            label="Language"
+                            onChange={(e) => handleSettingChange('language', e.target.value)}
+                          >
+                            <MenuItem value="en">English</MenuItem>
+                            <MenuItem value="es">Spanish</MenuItem>
+                            <MenuItem value="fr">French</MenuItem>
+                            <MenuItem value="de">German</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                    </Grid>
+
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Theme Presets</Typography>
+                      <Grid container spacing={2}>
+                        {[{ name: 'Default MUI', p: '#1976d2', s: '#dc004e' }, { name: 'Indigo Purple', p: '#667eea', s: '#764ba2' }, { name: 'Ocean Blue', p: '#0077b6', s: '#00b4d8' }, { name: 'Forest Green', p: '#2d6a4f', s: '#40916c' }, { name: 'Sunset Orange', p: '#e55934', s: '#fa7921' }, { name: 'Royal Purple', p: '#44355B', s: '#6A5693' }, { name: 'Graphite', p: '#212529', s: '#6c757d' }, { name: 'Teal & Coral', p: '#008080', s: '#FF7F50' }, { name: 'Rose Gold', p: '#B76E79', s: '#D6AD60' }].map(preset => {
+                          const isActive = settings.primaryColor === preset.p && settings.secondaryColor === preset.s;
+                          return (
+                          <Grid key={preset.name} size={{ xs:12, sm:6, md:4 }} >
+                            <Card variant="outlined" onClick={() => { handleSettingChange('primaryColor', preset.p); handleSettingChange('secondaryColor', preset.s); }} sx={{ cursor: 'pointer', position: 'relative', borderColor: isActive ? 'primary.main' : 'divider', borderWidth: isActive ? 2 : 1 }}>
+                              <CardContent>
+                                <Typography variant="subtitle2" gutterBottom>{preset.name}</Typography>
+                                <Box display="flex" height={36} borderRadius={1} overflow="hidden">
+                                  <Box flex={1} bgcolor={preset.p} />
+                                  <Box flex={1} bgcolor={preset.s} />
+                                </Box>
+                              </CardContent>
+                            </Card>
+                          </Grid>
+                          );
+                        })}
+                      </Grid>
+                    </Box>
+
+                    <Box sx={{ mt: 3 }}>
                       <FormControl fullWidth size="small">
-                        <InputLabel>Theme</InputLabel>
-                        <Select
-                          value={settings.theme}
-                          label="Theme"
-                          onChange={(e) => handleSettingChange('theme', e.target.value)}
-                        >
-                          <MenuItem value="light">Light</MenuItem>
-                          <MenuItem value="dark">Dark</MenuItem>
-                          <MenuItem value="auto">Auto</MenuItem>
+                        <InputLabel>Global Font Family</InputLabel>
+                        <Select value={settings.fontFamily || 'Inter, Roboto, Helvetica, Arial, sans-serif'} label="Global Font Family" onChange={(e) => handleSettingChange('fontFamily', e.target.value)}>
+                          {['Inter, Roboto, Helvetica, Arial, sans-serif','Roboto, sans-serif','Poppins, sans-serif','Lato, sans-serif','Arial, sans-serif','Verdana, sans-serif','Georgia, serif','Times New Roman, serif','Courier New, monospace'].map(f => (
+                            <MenuItem key={f} value={f} sx={{ fontFamily: f }}>{f.split(',')[0]}</MenuItem>
+                          ))}
                         </Select>
                       </FormControl>
-                    </Grid>
-                    <Grid size={{ xs:12, sm:6 }} >
-                      <FormControl fullWidth size="small">
-                        <InputLabel>Language</InputLabel>
-                        <Select
-                          value={settings.language}
-                          label="Language"
-                          onChange={(e) => handleSettingChange('language', e.target.value)}
-                        >
-                          <MenuItem value="en">English</MenuItem>
-                          <MenuItem value="es">Spanish</MenuItem>
-                          <MenuItem value="fr">French</MenuItem>
-                          <MenuItem value="de">German</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </Grid>
-                  </Grid>
+                    </Box>
 
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Theme Presets</Typography>
-                    <Grid container spacing={2}>
-                      {[{ name: 'Default MUI', p: '#1976d2', s: '#dc004e' }, { name: 'Indigo Purple', p: '#667eea', s: '#764ba2' }, { name: 'Ocean Blue', p: '#0077b6', s: '#00b4d8' }, { name: 'Forest Green', p: '#2d6a4f', s: '#40916c' }, { name: 'Sunset Orange', p: '#e55934', s: '#fa7921' }, { name: 'Royal Purple', p: '#44355B', s: '#6A5693' }, { name: 'Graphite', p: '#212529', s: '#6c757d' }, { name: 'Teal & Coral', p: '#008080', s: '#FF7F50' }, { name: 'Rose Gold', p: '#B76E79', s: '#D6AD60' }].map(preset => {
-                        const isActive = settings.primaryColor === preset.p && settings.secondaryColor === preset.s;
-                        return (
-                        <Grid key={preset.name} size={{ xs:12, sm:6, md:4 }} >
-                          <Card variant="outlined" onClick={() => { handleSettingChange('primaryColor', preset.p); handleSettingChange('secondaryColor', preset.s); }} sx={{ cursor: 'pointer', position: 'relative', borderColor: isActive ? 'primary.main' : 'divider', borderWidth: isActive ? 2 : 1 }}>
-                            <CardContent>
-                              <Typography variant="subtitle2" gutterBottom>{preset.name}</Typography>
-                              <Box display="flex" height={36} borderRadius={1} overflow="hidden">
-                                <Box flex={1} bgcolor={preset.p} />
-                                <Box flex={1} bgcolor={preset.s} />
-                              </Box>
-                            </CardContent>
-                          </Card>
+                    <Box sx={{ mt: 3 }}>
+                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Shape & Spacing</Typography>
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs:12, sm:6 }} >
+                          <Typography gutterBottom variant="body2">Border Radius</Typography>
+                          <Slider value={settings.borderRadius ?? 12} onChange={(_, v) => handleSettingChange('borderRadius', v as number)} step={2} marks min={0} max={24} valueLabelDisplay="auto" />
                         </Grid>
-                        );
-                      })}
-                    </Grid>
-                  </Box>
-
-                  <Box sx={{ mt: 3 }}>
-                    <FormControl fullWidth size="small">
-                      <InputLabel>Global Font Family</InputLabel>
-                      <Select value={settings.fontFamily || 'Inter, Roboto, Helvetica, Arial, sans-serif'} label="Global Font Family" onChange={(e) => handleSettingChange('fontFamily', e.target.value)}>
-                        {['Inter, Roboto, Helvetica, Arial, sans-serif','Roboto, sans-serif','Poppins, sans-serif','Lato, sans-serif','Arial, sans-serif','Verdana, sans-serif','Georgia, serif','Times New Roman, serif','Courier New, monospace'].map(f => (
-                          <MenuItem key={f} value={f} sx={{ fontFamily: f }}>{f.split(',')[0]}</MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  </Box>
-
-                  <Box sx={{ mt: 3 }}>
-                    <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Shape & Spacing</Typography>
-                    <Grid container spacing={2}>
-                      <Grid size={{ xs:12, sm:6 }} >
-                        <Typography gutterBottom variant="body2">Border Radius</Typography>
-                        <Slider value={settings.borderRadius ?? 12} onChange={(_, v) => handleSettingChange('borderRadius', v as number)} step={2} marks min={0} max={24} valueLabelDisplay="auto" />
+                        <Grid size={{ xs:12, sm:6 }} >
+                          <Typography gutterBottom variant="body2">Global Spacing Unit (px)</Typography>
+                          <Slider value={settings.spacingUnit ?? 8} onChange={(_, v) => handleSettingChange('spacingUnit', v as number)} step={1} marks min={4} max={16} valueLabelDisplay="auto" />
+                        </Grid>
                       </Grid>
-                      <Grid size={{ xs:12, sm:6 }} >
-                        <Typography gutterBottom variant="body2">Global Spacing Unit (px)</Typography>
-                        <Slider value={settings.spacingUnit ?? 8} onChange={(_, v) => handleSettingChange('spacingUnit', v as number)} step={1} marks min={4} max={16} valueLabelDisplay="auto" />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                </CardContent>
-              </Card>
-              </Paper>
+                    </Box>
+                  </CardContent>
+                </Card>
               )}
 
               {activeTab === 'editor' && (
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
-              <Card>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Edit sx={{ mr: 2, color: 'primary.main' }} />
-                    <Typography variant="h6">Editor Preferences</Typography>
-                  </Box>
+                <Card variant='outlined' sx={{padding : 2}}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <Edit sx={{ mr: 2, color: 'primary.main' }} />
+                      <Typography variant="h6">Editor Preferences</Typography>
+                    </Box>
 
-                  <List dense>
-                    <ListItem>
-                      <ListItemText primary="Auto Save" secondary="Automatically save changes" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          checked={settings.autoSave}
-                          onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText primary="Grid Snapping" secondary="Snap elements to grid" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          checked={settings.gridSnapping}
-                          onChange={(e) => handleSettingChange('gridSnapping', e.target.checked)}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText primary="Show Rulers" secondary="Display rulers in canvas" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          checked={settings.showRulers}
-                          onChange={(e) => handleSettingChange('showRulers', e.target.checked)}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  </List>
+                    <List dense>
+                      <ListItem>
+                        <ListItemText primary="Auto Save" secondary="Automatically save changes" />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            checked={settings.autoSave}
+                            onChange={(e) => handleSettingChange('autoSave', e.target.checked)}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText primary="Grid Snapping" secondary="Snap elements to grid" />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            checked={settings.gridSnapping}
+                            onChange={(e) => handleSettingChange('gridSnapping', e.target.checked)}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText primary="Show Rulers" secondary="Display rulers in canvas" />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            checked={settings.showRulers}
+                            onChange={(e) => handleSettingChange('showRulers', e.target.checked)}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    </List>
 
-                  <FormControl size="small" sx={{ mt: 2, minWidth: 120 }}>
-                    <InputLabel>Default Unit</InputLabel>
-                    <Select
-                      value={settings.defaultUnit}
-                      label="Default Unit"
-                      onChange={(e) => handleSettingChange('defaultUnit', e.target.value)}
-                    >
-                      <MenuItem value="px">Pixels (px)</MenuItem>
-                      <MenuItem value="rem">REM</MenuItem>
-                      <MenuItem value="%">Percentage (%)</MenuItem>
-                    </Select>
-                  </FormControl>
-                </CardContent>
-              </Card>
-              </Paper>
+                    <FormControl size="small" sx={{ mt: 2, minWidth: 120 }}>
+                      <InputLabel>Default Unit</InputLabel>
+                      <Select
+                        value={settings.defaultUnit}
+                        label="Default Unit"
+                        onChange={(e) => handleSettingChange('defaultUnit', e.target.value)}
+                      >
+                        <MenuItem value="px">Pixels (px)</MenuItem>
+                        <MenuItem value="rem">REM</MenuItem>
+                        <MenuItem value="%">Percentage (%)</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </CardContent>
+                </Card>
               )}
 
               {activeTab === 'notifications' && (
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
-              <Card>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Notifications sx={{ mr: 2, color: 'primary.main' }} />
-                    <Typography variant="h6">Notifications</Typography>
-                  </Box>
+                <Card variant='outlined' sx={{padding : 2}}>
+                  <CardContent>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                      <Notifications sx={{ mr: 2, color: 'primary.main' }} />
+                      <Typography variant="h6">Notifications</Typography>
+                    </Box>
 
-                  <List dense>
-                    <ListItem>
-                      <ListItemText primary="Email Notifications" secondary="Receive updates via email" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          checked={settings.emailNotifications}
-                          onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                    <ListItem>
-                      <ListItemText primary="Push Notifications" secondary="Receive browser notifications" />
-                      <ListItemSecondaryAction>
-                        <Switch
-                          checked={settings.pushNotifications}
-                          onChange={(e) => handleSettingChange('pushNotifications', e.target.checked)}
-                        />
-                      </ListItemSecondaryAction>
-                    </ListItem>
-                  </List>
-                </CardContent>
-              </Card>
-              </Paper>
+                    <List dense>
+                      <ListItem>
+                        <ListItemText primary="Email Notifications" secondary="Receive updates via email" />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            checked={settings.emailNotifications}
+                            onChange={(e) => handleSettingChange('emailNotifications', e.target.checked)}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                      <ListItem>
+                        <ListItemText primary="Push Notifications" secondary="Receive browser notifications" />
+                        <ListItemSecondaryAction>
+                          <Switch
+                            checked={settings.pushNotifications}
+                            onChange={(e) => handleSettingChange('pushNotifications', e.target.checked)}
+                          />
+                        </ListItemSecondaryAction>
+                      </ListItem>
+                    </List>
+                  </CardContent>
+                </Card>
               )}
 
               {activeTab === 'security' && (
-              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
-                <Box display="flex" flexDirection="column" gap={2}>
-              <Card>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Security sx={{ mr: 2, color: 'primary.main' }} />
-                    <Typography variant="h6">Security</Typography>
-                  </Box>
+              <Box gap={2}>
 
-                  <Typography variant="subtitle2" gutterBottom>Change Password</Typography>
-                  <Grid container spacing={2}>
-                    <Grid size={{ xs:12 }} >
-                      <TextField
-                        type={passwordData.showPasswords ? 'text' : 'password'}
-                        label="Current Password"
-                        value={passwordData.currentPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
-                        size="small"
-                        fullWidth
-                        InputProps={{
-                          endAdornment: (
-                            <IconButton
-                              onClick={() => setPasswordData(prev => ({ ...prev, showPasswords: !prev.showPasswords }))}
-                              edge="end"
-                            >
-                              {passwordData.showPasswords ? <VisibilityOff /> : <Visibility />}
-                            </IconButton>
-                          ),
-                        }}
-                      />
-                    </Grid>
-                    <Grid size={{ xs:12, sm:6 }} >
-                      <TextField
-                        type={passwordData.showPasswords ? 'text' : 'password'}
-                        label="New Password"
-                        value={passwordData.newPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
-                        size="small"
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid size={{ xs:12, sm:6 }} >
-                      <TextField
-                        type={passwordData.showPasswords ? 'text' : 'password'}
-                        label="Confirm Password"
-                        value={passwordData.confirmPassword}
-                        onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                        size="small"
-                        fullWidth
-                      />
-                    </Grid>
-                    <Grid size={{ xs:12 }} >
+                <Box display="flex" flexDirection="column" gap={2}>
+                  <Card variant='outlined' sx={{padding : 2}}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                        <Security sx={{ mr: 2, color: 'primary.main' }} />
+                        <Typography variant="h6">Security</Typography>
+                      </Box>
+
+                      <Typography variant="subtitle2" gutterBottom>Change Password</Typography>
+                      <Grid container spacing={2}>
+                        <Grid size={{ xs:12 }} >
+                          <TextField
+                            type={passwordData.showPasswords ? 'text' : 'password'}
+                            label="Current Password"
+                            value={passwordData.currentPassword}
+                            onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                            size="small"
+                            fullWidth
+                            InputProps={{
+                              endAdornment: (
+                                <IconButton
+                                  onClick={() => setPasswordData(prev => ({ ...prev, showPasswords: !prev.showPasswords }))}
+                                  edge="end"
+                                >
+                                  {passwordData.showPasswords ? <VisibilityOff /> : <Visibility />}
+                                </IconButton>
+                              ),
+                            }}
+                          />
+                        </Grid>
+                        <Grid size={{ xs:12, sm:6 }} >
+                          <TextField
+                            type={passwordData.showPasswords ? 'text' : 'password'}
+                            label="New Password"
+                            value={passwordData.newPassword}
+                            onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                            size="small"
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid size={{ xs:12, sm:6 }} >
+                          <TextField
+                            type={passwordData.showPasswords ? 'text' : 'password'}
+                            label="Confirm Password"
+                            value={passwordData.confirmPassword}
+                            onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                            size="small"
+                            fullWidth
+                          />
+                        </Grid>
+                        <Grid size={{ xs:12 }} >
+                          <Button
+                            variant="outlined"
+                            onClick={handlePasswordChange}
+                            disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+                          >
+                            Change Password
+                          </Button>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+
+                  {/* Danger Zone */}
+                  <Card variant='outlined' sx={{ border: '1px solid', borderColor: 'error.main', padding: 2 }}>
+                    <CardContent>
+                      <Typography variant="h6" color="error.main" gutterBottom>
+                        Danger Zone
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                        Once you delete your account, there is no going back. Please be certain.
+                      </Typography>
                       <Button
                         variant="outlined"
-                        onClick={handlePasswordChange}
-                        disabled={!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+                        color="error"
+                        startIcon={<Delete />}
+                        onClick={handleDeleteAccount}
                       >
-                        Change Password
+                        Delete Account
                       </Button>
-                    </Grid>
-                  </Grid>
-                </CardContent>
-              </Card>
-
-              {/* Danger Zone */}
-              <Card sx={{ border: '1px solid', borderColor: 'error.main' }}>
-                <CardContent>
-                  <Typography variant="h6" color="error.main" gutterBottom>
-                    Danger Zone
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    Once you delete your account, there is no going back. Please be certain.
-                  </Typography>
-                  <Button
-                    variant="outlined"
-                    color="error"
-                    startIcon={<Delete />}
-                    onClick={handleDeleteAccount}
-                  >
-                    Delete Account
-                  </Button>
-                </CardContent>
-              </Card>
+                    </CardContent>
+                  </Card>
                 </Box>
-              </Paper>
+              </Box>
               )}
             </Box>
           </Grid>
