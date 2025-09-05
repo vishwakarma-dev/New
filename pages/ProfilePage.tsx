@@ -293,14 +293,14 @@ const ProfilePage: React.FC = () => {
                 </Tabs>
               </Box>
 
-              {/* Appearance Settings */}
+              {activeTab === 'appearance' && (
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Palette sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Appearance</Typography>
                   </Box>
-                  
+
                   <Grid container spacing={3}>
                     <Grid size={{ xs:12, sm:6 }} >
                       <FormControl fullWidth size="small">
@@ -334,15 +334,16 @@ const ProfilePage: React.FC = () => {
                   </Grid>
                 </CardContent>
               </Card>
+              )}
 
-              {/* Editor Settings */}
+              {activeTab === 'editor' && (
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Edit sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Editor Preferences</Typography>
                   </Box>
-                  
+
                   <List dense>
                     <ListItem>
                       <ListItemText primary="Auto Save" secondary="Automatically save changes" />
@@ -372,7 +373,7 @@ const ProfilePage: React.FC = () => {
                       </ListItemSecondaryAction>
                     </ListItem>
                   </List>
-                  
+
                   <FormControl size="small" sx={{ mt: 2, minWidth: 120 }}>
                     <InputLabel>Default Unit</InputLabel>
                     <Select
@@ -387,15 +388,16 @@ const ProfilePage: React.FC = () => {
                   </FormControl>
                 </CardContent>
               </Card>
+              )}
 
-              {/* Notifications */}
+              {activeTab === 'notifications' && (
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Notifications sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Notifications</Typography>
                   </Box>
-                  
+
                   <List dense>
                     <ListItem>
                       <ListItemText primary="Email Notifications" secondary="Receive updates via email" />
@@ -418,15 +420,17 @@ const ProfilePage: React.FC = () => {
                   </List>
                 </CardContent>
               </Card>
+              )}
 
-              {/* Security */}
+              {activeTab === 'security' && (
+                <>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Security sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Security</Typography>
                   </Box>
-                  
+
                   <Typography variant="subtitle2" gutterBottom>Change Password</Typography>
                   <Grid container spacing={2}>
                     <Grid size={{ xs:12 }} >
@@ -501,6 +505,8 @@ const ProfilePage: React.FC = () => {
                   </Button>
                 </CardContent>
               </Card>
+              </>
+              )}
             </Box>
           </Grid>
         </Grid>
