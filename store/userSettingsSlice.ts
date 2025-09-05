@@ -33,6 +33,9 @@ const getInitialState = (): UserSettingsState => {
     gridSnapping: true,
     showRulers: false,
     defaultUnit: 'px',
+    primaryColor: '#667eea',
+    secondaryColor: '#764ba2',
+    fontFamily: 'Inter, Roboto, Helvetica, Arial, sans-serif',
   };
 };
 
