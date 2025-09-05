@@ -32,7 +32,8 @@ const App: React.FC = () => {
       h5: { fontWeight: 600 },
       h6: { fontWeight: 600 },
     },
-    shape: { borderRadius: 12 },
+    spacing: user.spacingUnit ?? 8,
+    shape: { borderRadius: user.borderRadius ?? 12 },
     components: {
       MuiButton: {
         styleOverrides: {
