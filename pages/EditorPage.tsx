@@ -384,7 +384,7 @@ const EditorPage: React.FC = () => {
                         onImport={handleImportPage}
                         onTogglePreview={handleTogglePreview}
                         autoSaveEnabled={autoSaveEnabled}
-                        onToggleAutoSave={(v) => dispatch((await import('../store/userSettingsSlice')).updateSetting({ key: 'autoSave', value: v }))}
+                        onToggleAutoSave={(v) => dispatch(updateSetting({ key: 'autoSave', value: v }))}
                     />
                     <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'grey.200' }}>
                         <Canvas
