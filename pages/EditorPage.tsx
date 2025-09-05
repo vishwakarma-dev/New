@@ -35,6 +35,8 @@ const EditorPage: React.FC = () => {
 
     const dynamicTheme = React.useMemo(() => {
         const themeSettings = page?.theme;
+        const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const mode = userSettings?.theme === 'auto' ? (prefersDark ? 'dark' : 'light') : (userSettings?.theme || 'light');
         return createTheme({
             spacing: themeSettings?.spacingUnit ?? 8,
             typography: {
@@ -44,6 +46,7 @@ const EditorPage: React.FC = () => {
                 borderRadius: themeSettings?.borderRadius ?? 8,
             },
             palette: {
+                mode: mode as any,
                 primary: {
                     main: themeSettings?.primaryColor || '#1976d2',
                 },
