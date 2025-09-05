@@ -124,6 +124,48 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     const [dropIndex, setDropIndex] = useState<number | null>(null);
     const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
 
+    const [moreMenuAnchor, setMoreMenuAnchor] = useState<null | HTMLElement>(null);
+    const openMoreMenu = (e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); setMoreMenuAnchor(e.currentTarget); };
+    const closeMoreMenu = () => setMoreMenuAnchor(null);
+
+    const parentInfo = useMemo(() => {
+        for (const elId in allElements) {
+            const el = allElements[elId];
+            const kids = (el.props as any)?.children as string[] | undefined;
+            if (Array.isArray(kids)) {
+                const idx = kids.indexOf(element.id);
+                if (idx !== -1) return { parentId: elId, index: idx, count: kids.length };
+            }
+        }
+        return null;
+    }, [allElements, element.id]);
+
+    const handleMoveUp = () => {
+        if (!parentInfo) return;
+        onMoveElement(element.id, parentInfo.parentId, Math.max(0, parentInfo.index - 1));
+        closeMoreMenu();
+    };
+
+    const handleMoveDown = () => {
+        if (!parentInfo) return;
+        onMoveElement(element.id, parentInfo.parentId, Math.min(parentInfo.count, parentInfo.index + 1));
+        closeMoreMenu();
+    };
+
+    const handleAddChildFromMenu = (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        if (!onOpenAddMenu) { closeMoreMenu(); return; }
+        const count = Array.isArray((element.props as any)?.children) ? ((element.props as any).children as string[]).length : 0;
+        onOpenAddMenu(e.currentTarget as HTMLElement, element.id, count);
+        closeMoreMenu();
+    };
+
+    const handleDeleteFromMenu = () => {
+        if (!onDeleteElement) { closeMoreMenu(); return; }
+        onDeleteElement(element.id);
+        closeMoreMenu();
+    };
+
     const isContainerLike = [
         ElementType.Container, ElementType.Stack, ElementType.Card, ElementType.Accordion, ElementType.Grid, ElementType.List, ElementType.Header, ElementType.Slide
     ].includes(element.type);
