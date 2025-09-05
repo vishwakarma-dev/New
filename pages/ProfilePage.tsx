@@ -284,16 +284,17 @@ const ProfilePage: React.FC = () => {
           {/* Settings Sections */}
           <Grid size={{ xs:12, md:8 }} >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} variant="scrollable">
+              <Paper variant="outlined" sx={{ bgcolor: 'background.paper' }}>
+                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} variant="scrollable" sx={{ px: 1 }}>
                   <Tab value="appearance" label="Appearance" />
                   <Tab value="editor" label="Editor" />
                   <Tab value="notifications" label="Notifications" />
                   <Tab value="security" label="Security" />
                 </Tabs>
-              </Box>
+              </Paper>
 
               {activeTab === 'appearance' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -364,9 +365,11 @@ const ProfilePage: React.FC = () => {
                   </Box>
                 </CardContent>
               </Card>
+              </Paper>
               )}
 
               {activeTab === 'editor' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -418,9 +421,11 @@ const ProfilePage: React.FC = () => {
                   </FormControl>
                 </CardContent>
               </Card>
+              </Paper>
               )}
 
               {activeTab === 'notifications' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -450,10 +455,12 @@ const ProfilePage: React.FC = () => {
                   </List>
                 </CardContent>
               </Card>
+              </Paper>
               )}
 
               {activeTab === 'security' && (
-                <>
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
+                <Box display="flex" flexDirection="column" gap={2}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
@@ -535,7 +542,8 @@ const ProfilePage: React.FC = () => {
                   </Button>
                 </CardContent>
               </Card>
-              </>
+                </Box>
+              </Paper>
               )}
             </Box>
           </Grid>
