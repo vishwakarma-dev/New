@@ -535,7 +535,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
 
                 <Box mt={4}>
                     <Typography variant="overline" color="text.secondary" display="block" mb={2}>
-                        Global Border Radius
+                        Border Radius
                     </Typography>
                     <Box px={1}>
                         <Slider
@@ -555,7 +555,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                         Typography & Spacing
                     </Typography>
                      <Box px={1}>
-                        <Typography gutterBottom variant="body2">Global Spacing Unit (px)</Typography>
+                        <Typography gutterBottom variant="body2">Spacing Unit (px)</Typography>
                         <Slider
                             value={currentTheme.spacingUnit ?? 8}
                             onChange={handleSpacingChange}
@@ -566,9 +566,9 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                             valueLabelDisplay="auto"
                         />
                          <FormControl fullWidth size="small" sx={{ mt: 3 }}>
-                            <InputLabel>Global Font Family</InputLabel>
+                            <InputLabel>Font Family</InputLabel>
                             <Select 
-                                label="Global Font Family" 
+                                label="Font Family" 
                                 value={currentTheme.fontFamily || 'Roboto, sans-serif'} 
                                 onChange={handleFontChange}
                             >
