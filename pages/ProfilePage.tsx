@@ -45,23 +45,17 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../store';
+import { updateSetting } from '../store/userSettingsSlice';
 import { useNavigate } from 'react-router-dom';
-
-interface UserSettings {
-  theme: 'light' | 'dark' | 'auto';
-  language: string;
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  autoSave: boolean;
-  gridSnapping: boolean;
-  showRulers: boolean;
-  defaultUnit: 'px' | 'rem' | '%';
-}
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
+  const dispatch: AppDispatch = useDispatch();
+  const settings = useSelector((s: RootState) => s.userSettings);
+
   const [editing, setEditing] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   
@@ -75,17 +69,6 @@ const ProfilePage: React.FC = () => {
     avatar: user?.avatar || '',
   });
 
-  // Settings data
-  const [settings, setSettings] = useState<UserSettings>({
-    theme: 'light',
-    language: 'en',
-    emailNotifications: true,
-    pushNotifications: false,
-    autoSave: true,
-    gridSnapping: true,
-    showRulers: false,
-    defaultUnit: 'px',
-  });
 
   // Password change
   const [passwordData, setPasswordData] = useState({
@@ -101,9 +84,8 @@ const ProfilePage: React.FC = () => {
     setShowSuccessMessage(true);
   };
 
-  const handleSettingChange = (key: keyof UserSettings, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    // Auto-save settings
+  const handleSettingChange = (key: any, value: any) => {
+    dispatch(updateSetting({ key, value }));
     setShowSuccessMessage(true);
   };
 
