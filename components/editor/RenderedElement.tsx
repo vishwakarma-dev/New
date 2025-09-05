@@ -423,26 +423,44 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     const renderOverlayControls = () => !isReadOnly && isSelected && (
         <>
             <Chip label={element.name} size="small" sx={{position: 'absolute', top: -10, left: -10, zIndex: 10, bgcolor: 'primary.main', color: 'white'}}/>
-            {element.id !== rootElementId && onDeleteElement && (
-                <IconButton
-                    aria-label={`Delete ${element.name}`}
-                    onClick={handleDelete}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: -10,
-                        right: -10,
-                        zIndex: 10,
-                        bgcolor: 'error.main',
-                        color: 'white',
-                        width: 20,
-                        height: 20,
-                        '&:hover': { bgcolor: 'error.dark' }
-                    }}
-                >
-                    <DeleteIcon sx={{ fontSize: '1rem' }} />
-                </IconButton>
-            )}
+            <IconButton
+                aria-label={`More actions for ${element.name}`}
+                onClick={openMoreMenu}
+                size="small"
+                sx={{
+                    position: 'absolute',
+                    top: -10,
+                    right: -10,
+                    zIndex: 10,
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    width: 24,
+                    height: 24,
+                    boxShadow: 1,
+                    '&:hover': { bgcolor: 'action.hover' }
+                }}
+            >
+                <MoreVert sx={{ fontSize: '1rem' }} />
+            </IconButton>
+            <Menu anchorEl={moreMenuAnchor} open={Boolean(moreMenuAnchor)} onClose={closeMoreMenu} onClick={(e) => e.stopPropagation()}>
+                <MenuItem onClick={handleAddChildFromMenu} disabled={!onOpenAddMenu}>
+                    <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>Add child</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleMoveUp} disabled={!parentInfo || parentInfo.index === 0}>
+                    <ListItemIcon><ArrowUpward fontSize="small" /></ListItemIcon>
+                    <ListItemText>Move up</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleMoveDown} disabled={!parentInfo || (parentInfo && parentInfo.index === (parentInfo.count - 1))}>
+                    <ListItemIcon><ArrowDownward fontSize="small" /></ListItemIcon>
+                    <ListItemText>Move down</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleDeleteFromMenu} disabled={!onDeleteElement} sx={{ color: 'error.main' }}>
+                    <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                </MenuItem>
+            </Menu>
         </>
     );
 
