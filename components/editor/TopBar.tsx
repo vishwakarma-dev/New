@@ -282,7 +282,6 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                          <IconButton size="small" onClick={() => dispatch(setViewMode('mobile'))} color={viewMode === 'mobile' ? 'primary' : 'default'}><PhoneIphone /></IconButton>
                      </Tooltip>
                       <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
-                    <FormControlLabel sx={{ mr: 1 }} control={<Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />} label="Auto Save" />
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
                     </Tooltip>

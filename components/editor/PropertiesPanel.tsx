@@ -475,7 +475,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
         );
     }
     
-    const renderGlobalThemePanel = () => {
+    const renderProjectThemePanel = () => {
         const currentTheme = page.theme || {};
 
         const handleRadiusChange = (_event: Event, newValue: number | number[]) => {
@@ -590,14 +590,13 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
             }}>
                  <Tabs value={tabIndex} onChange={handleTabChange} aria-label="Inspector tabs" variant="fullWidth">
                     <Tab icon={<EditAttributes />} label="Style" />
-                    <Tab icon={<Palette />} label="Theme" />
                     <Tab icon={<Settings />} label="Advanced" />
+                    <Tab icon={<Palette />} label="Theme" />
                 </Tabs>
             </Box>
             <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
                 {tabIndex === 0 && renderStylePanel()}
-                {tabIndex === 1 && renderGlobalThemePanel()}
-                {tabIndex === 2 && (
+                {tabIndex === 1 && (
                     <Box p={2}>
                         {!selectedElement ? (
                             <Typography variant="body2" color="text.secondary">Select an element to configure actions.</Typography>
@@ -606,6 +605,7 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
                         )}
                     </Box>
                 )}
+                {tabIndex === 2 && renderProjectThemePanel()}
             </Box>
         </Box>
     );

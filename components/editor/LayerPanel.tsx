@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, EditorElement, ContainerProps, StackProps, CardProps, AccordionProps } from '../../types';
-import { Box, Typography, Collapse, IconButton, ListItemIcon, Tabs, Tab, TextField, InputAdornment, Button, Menu, MenuItem } from '@mui/material';
+import { Box, Typography, Collapse, IconButton, ListItemIcon, Tabs, Tab, TextField, InputAdornment, Button, Menu, MenuItem, Divider } from '@mui/material';
 import { ExpandMore, ChevronRight, Search, Add } from '@mui/icons-material';
 import { AVAILABLE_COMPONENTS } from '../../constants';
 
@@ -90,28 +90,12 @@ const TreeItem: React.FC<{
 
 const LayerPanel: React.FC<LayerPanelProps> = ({ page, selectedElementId, onSelectElement, onAddPage }) => {
     const rootElement = page.elements[page.rootElementId];
-    const [tabIndex, setTabIndex] = React.useState(0);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-    const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
-        setTabIndex(newValue);
-    };
 
     const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
 
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-    
-    const handleAddPage = () => {
-        const newPageName = prompt("Enter a name for the new screen:", "New Screen");
-        if (newPageName) {
-            onAddPage(newPageName);
-        }
-        handleMenuClose();
-    };
     
     if (!rootElement) {
         return <Typography sx={{p: 2}}>No elements on page.</Typography>;
@@ -119,65 +103,31 @@ const LayerPanel: React.FC<LayerPanelProps> = ({ page, selectedElementId, onSele
 
     return (
         <Box>
-             <Box sx={{ 
-                borderBottom: 1, 
-                borderColor: 'divider',
-                position: 'sticky',
-                top: 0,
-                zIndex: 1,
-                bgcolor: 'background.paper',
-            }}>
-                <Tabs value={tabIndex} onChange={handleTabChange} variant="fullWidth">
-                    <Tab label="Screens" />
-                    <Tab label="Components" />
-                </Tabs>
-            </Box>
-            {tabIndex === 0 && (
-                <Box sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-                     <TextField 
-                        placeholder="Search"
-                        variant="outlined"
-                        size="small"
-                        InputProps={{
+            <Box sx={{ p: 1.5, display: 'flex', flexDirection: 'column', gap: 2}}>
+                <TextField 
+                    placeholder="Search"
+                    variant="outlined"
+                    size="small"
+                    slotProps={{
+                        input : {
                             startAdornment: (
                                 <InputAdornment position="start">
                                     <Search />
                                 </InputAdornment>
                             ),
                             sx: { borderRadius: 2 }
-                        }}
-                    />
-                     <Button 
-                        variant="text" 
-                        startIcon={<Add />}
-                        onClick={handleMenuClick}
-                        sx={{ justifyContent: 'flex-start', textTransform: 'none' }}
-                        endIcon={<ChevronRight />}
-                    >
-                        New screen
-                    </Button>
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={Boolean(anchorEl)}
-                        onClose={handleMenuClose}
-                      >
-                        <MenuItem onClick={handleAddPage}>Blank screen</MenuItem>
-                      </Menu>
-                    <TreeItem
-                        element={rootElement}
-                        allElements={page.elements}
-                        level={0}
-                        selectedElementId={selectedElementId}
-                        onSelectElement={onSelectElement}
-                        page={page}
-                    />
-                </Box>
-            )}
-            {tabIndex === 1 && (
-                <Box sx={{ p: 2 }}>
-                    <Typography>Components view coming soon.</Typography>
-                </Box>
-            )}
+                        }
+                    }}
+                />
+                <TreeItem
+                    element={rootElement}
+                    allElements={page.elements}
+                    level={0}
+                    selectedElementId={selectedElementId}
+                    onSelectElement={onSelectElement}
+                    page={page}
+                />
+            </Box>
         </Box>
     );
 };
