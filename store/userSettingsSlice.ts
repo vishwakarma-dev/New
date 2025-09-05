@@ -12,6 +12,9 @@ export interface UserSettingsState {
   gridSnapping: boolean;
   showRulers: boolean;
   defaultUnit: Unit;
+  primaryColor: string;
+  secondaryColor: string;
+  fontFamily: string;
 }
 
 const STORAGE_KEY = 'user:settings:v1';
