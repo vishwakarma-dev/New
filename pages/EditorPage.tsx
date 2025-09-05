@@ -8,6 +8,7 @@ import AddElementMenu from '../components/editor/AddElementMenu';
 import { ElementType, EditorElement, AnyElementPropKey, Page, Template, ThemeSettings, DataSource, Layout } from '../types';
 import { AVAILABLE_COMPONENTS } from '../constants';
 import { Box, Typography, Button, createTheme, ThemeProvider } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { VisibilityOff } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
