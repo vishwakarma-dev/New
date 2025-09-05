@@ -12,6 +12,7 @@ import { VisibilityOff } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { setSelectedElement, updateElementProp, addElement, initializeEditor, loadPage, updateCurrentPageData, addLayout, togglePreview, deleteElement, moveElement, addTemplate, updateTheme, addDataSource, deleteDataSource, updateDataSource } from '../store/editorSlice';
+import { updateSetting } from '../store/userSettingsSlice';
 import { addPage, deletePage, updatePageName, updatePageContent } from '../store/projectsSlice';
 
 const EditorPage: React.FC = () => {
