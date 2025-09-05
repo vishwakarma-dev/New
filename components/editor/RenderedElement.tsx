@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, SpacerProps, InputProps, DividerProps, StackProps, CardProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, CarouselProps, SlideProps, HeaderProps, DataGridProps } from '../../types';
-import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar } from '@mui/material';
+import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Add as AddIcon, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { Add as AddIcon, ArrowBackIos, ArrowForwardIos, MoreVert, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
 import CustomDataGrid from './CustomDataGrid';
@@ -123,6 +123,48 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     const [isDragOver, setIsDragOver] = useState(false);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
     const [insertionIndex, setInsertionIndex] = useState<number | null>(null);
+
+    const [moreMenuAnchor, setMoreMenuAnchor] = useState<null | HTMLElement>(null);
+    const openMoreMenu = (e: React.MouseEvent<HTMLElement>) => { e.stopPropagation(); setMoreMenuAnchor(e.currentTarget); };
+    const closeMoreMenu = () => setMoreMenuAnchor(null);
+
+    const parentInfo = useMemo(() => {
+        for (const elId in allElements) {
+            const el = allElements[elId];
+            const kids = (el.props as any)?.children as string[] | undefined;
+            if (Array.isArray(kids)) {
+                const idx = kids.indexOf(element.id);
+                if (idx !== -1) return { parentId: elId, index: idx, count: kids.length };
+            }
+        }
+        return null;
+    }, [allElements, element.id]);
+
+    const handleMoveUp = () => {
+        if (!parentInfo) return;
+        onMoveElement(element.id, parentInfo.parentId, Math.max(0, parentInfo.index - 1));
+        closeMoreMenu();
+    };
+
+    const handleMoveDown = () => {
+        if (!parentInfo) return;
+        onMoveElement(element.id, parentInfo.parentId, Math.min(parentInfo.count, parentInfo.index + 1));
+        closeMoreMenu();
+    };
+
+    const handleAddChildFromMenu = (e: React.MouseEvent<HTMLElement>) => {
+        e.stopPropagation();
+        if (!onOpenAddMenu) { closeMoreMenu(); return; }
+        const count = Array.isArray((element.props as any)?.children) ? ((element.props as any).children as string[]).length : 0;
+        onOpenAddMenu(e.currentTarget as HTMLElement, element.id, count);
+        closeMoreMenu();
+    };
+
+    const handleDeleteFromMenu = () => {
+        if (!onDeleteElement) { closeMoreMenu(); return; }
+        onDeleteElement(element.id);
+        closeMoreMenu();
+    };
 
     const isContainerLike = [
         ElementType.Container, ElementType.Stack, ElementType.Card, ElementType.Accordion, ElementType.Grid, ElementType.List, ElementType.Header, ElementType.Slide
@@ -381,26 +423,44 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     const renderOverlayControls = () => !isReadOnly && isSelected && (
         <>
             <Chip label={element.name} size="small" sx={{position: 'absolute', top: -10, left: -10, zIndex: 10, bgcolor: 'primary.main', color: 'white'}}/>
-            {element.id !== rootElementId && onDeleteElement && (
-                <IconButton
-                    aria-label={`Delete ${element.name}`}
-                    onClick={handleDelete}
-                    size="small"
-                    sx={{
-                        position: 'absolute',
-                        top: -10,
-                        right: -10,
-                        zIndex: 10,
-                        bgcolor: 'error.main',
-                        color: 'white',
-                        width: 20,
-                        height: 20,
-                        '&:hover': { bgcolor: 'error.dark' }
-                    }}
-                >
-                    <DeleteIcon sx={{ fontSize: '1rem' }} />
-                </IconButton>
-            )}
+            <IconButton
+                aria-label={`More actions for ${element.name}`}
+                onClick={openMoreMenu}
+                size="small"
+                sx={{
+                    position: 'absolute',
+                    top: -10,
+                    right: -10,
+                    zIndex: 10,
+                    bgcolor: 'background.paper',
+                    color: 'text.primary',
+                    width: 24,
+                    height: 24,
+                    boxShadow: 1,
+                    '&:hover': { bgcolor: 'action.hover' }
+                }}
+            >
+                <MoreVert sx={{ fontSize: '1rem' }} />
+            </IconButton>
+            <Menu anchorEl={moreMenuAnchor} open={Boolean(moreMenuAnchor)} onClose={closeMoreMenu} onClick={(e) => e.stopPropagation()}>
+                <MenuItem onClick={handleAddChildFromMenu} disabled={!onOpenAddMenu}>
+                    <ListItemIcon><AddIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>Add child</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleMoveUp} disabled={!parentInfo || parentInfo.index === 0}>
+                    <ListItemIcon><ArrowUpward fontSize="small" /></ListItemIcon>
+                    <ListItemText>Move up</ListItemText>
+                </MenuItem>
+                <MenuItem onClick={handleMoveDown} disabled={!parentInfo || (parentInfo && parentInfo.index === (parentInfo.count - 1))}>
+                    <ListItemIcon><ArrowDownward fontSize="small" /></ListItemIcon>
+                    <ListItemText>Move down</ListItemText>
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={handleDeleteFromMenu} disabled={!onDeleteElement} sx={{ color: 'error.main' }}>
+                    <ListItemIcon><DeleteIcon fontSize="small" /></ListItemIcon>
+                    <ListItemText>Delete</ListItemText>
+                </MenuItem>
+            </Menu>
         </>
     );
 

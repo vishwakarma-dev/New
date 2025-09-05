@@ -28,6 +28,9 @@ import {
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
+  Tabs,
+  Tab,
+  Slider,
 } from '@mui/material';
 import {
   ArrowBack,
@@ -45,26 +48,21 @@ import {
   VisibilityOff,
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../store';
+import { updateSetting } from '../store/userSettingsSlice';
 import { useNavigate } from 'react-router-dom';
-
-interface UserSettings {
-  theme: 'light' | 'dark' | 'auto';
-  language: string;
-  emailNotifications: boolean;
-  pushNotifications: boolean;
-  autoSave: boolean;
-  gridSnapping: boolean;
-  showRulers: boolean;
-  defaultUnit: 'px' | 'rem' | '%';
-}
 
 const ProfilePage: React.FC = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  
+  const dispatch: AppDispatch = useDispatch();
+  const settings = useSelector((s: RootState) => s.userSettings);
+
   const [editing, setEditing] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  
+  const [activeTab, setActiveTab] = useState<'appearance' | 'editor' | 'notifications' | 'security'>('appearance');
+
   // User profile data
   const [profile, setProfile] = useState({
     name: user?.name || '',
@@ -75,17 +73,6 @@ const ProfilePage: React.FC = () => {
     avatar: user?.avatar || '',
   });
 
-  // Settings data
-  const [settings, setSettings] = useState<UserSettings>({
-    theme: 'light',
-    language: 'en',
-    emailNotifications: true,
-    pushNotifications: false,
-    autoSave: true,
-    gridSnapping: true,
-    showRulers: false,
-    defaultUnit: 'px',
-  });
 
   // Password change
   const [passwordData, setPasswordData] = useState({
@@ -101,9 +88,8 @@ const ProfilePage: React.FC = () => {
     setShowSuccessMessage(true);
   };
 
-  const handleSettingChange = (key: keyof UserSettings, value: any) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
-    // Auto-save settings
+  const handleSettingChange = (key: any, value: any) => {
+    dispatch(updateSetting({ key, value }));
     setShowSuccessMessage(true);
   };
 
@@ -156,7 +142,7 @@ const ProfilePage: React.FC = () => {
             </IconButton>
           </Tooltip>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
-            Profile & Settings
+            My Account
           </Typography>
         </Toolbar>
       </AppBar>
@@ -299,15 +285,24 @@ const ProfilePage: React.FC = () => {
           {/* Settings Sections */}
           <Grid size={{ xs:12, md:8 }} >
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              
-              {/* Appearance Settings */}
+              <Paper variant="outlined" sx={{ bgcolor: 'background.paper' }}>
+                <Tabs value={activeTab} onChange={(_, v) => setActiveTab(v)} variant="scrollable" sx={{ px: 1 }}>
+                  <Tab value="appearance" label="Appearance" />
+                  <Tab value="editor" label="Editor" />
+                  <Tab value="notifications" label="Notifications" />
+                  <Tab value="security" label="Security" />
+                </Tabs>
+              </Paper>
+
+              {activeTab === 'appearance' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Palette sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Appearance</Typography>
                   </Box>
-                  
+
                   <Grid container spacing={3}>
                     <Grid size={{ xs:12, sm:6 }} >
                       <FormControl fullWidth size="small">
@@ -339,17 +334,67 @@ const ProfilePage: React.FC = () => {
                       </FormControl>
                     </Grid>
                   </Grid>
+
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Theme Presets</Typography>
+                    <Grid container spacing={2}>
+                      {[{ name: 'Default MUI', p: '#1976d2', s: '#dc004e' }, { name: 'Indigo Purple', p: '#667eea', s: '#764ba2' }, { name: 'Ocean Blue', p: '#0077b6', s: '#00b4d8' }, { name: 'Forest Green', p: '#2d6a4f', s: '#40916c' }, { name: 'Sunset Orange', p: '#e55934', s: '#fa7921' }, { name: 'Royal Purple', p: '#44355B', s: '#6A5693' }, { name: 'Graphite', p: '#212529', s: '#6c757d' }, { name: 'Teal & Coral', p: '#008080', s: '#FF7F50' }, { name: 'Rose Gold', p: '#B76E79', s: '#D6AD60' }].map(preset => {
+                        const isActive = settings.primaryColor === preset.p && settings.secondaryColor === preset.s;
+                        return (
+                        <Grid key={preset.name} size={{ xs:12, sm:6, md:4 }} >
+                          <Card variant="outlined" onClick={() => { handleSettingChange('primaryColor', preset.p); handleSettingChange('secondaryColor', preset.s); }} sx={{ cursor: 'pointer', position: 'relative', borderColor: isActive ? 'primary.main' : 'divider', borderWidth: isActive ? 2 : 1 }}>
+                            <CardContent>
+                              <Typography variant="subtitle2" gutterBottom>{preset.name}</Typography>
+                              <Box display="flex" height={36} borderRadius={1} overflow="hidden">
+                                <Box flex={1} bgcolor={preset.p} />
+                                <Box flex={1} bgcolor={preset.s} />
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </Box>
+
+                  <Box sx={{ mt: 3 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Global Font Family</InputLabel>
+                      <Select value={settings.fontFamily || 'Inter, Roboto, Helvetica, Arial, sans-serif'} label="Global Font Family" onChange={(e) => handleSettingChange('fontFamily', e.target.value)}>
+                        {['Inter, Roboto, Helvetica, Arial, sans-serif','Roboto, sans-serif','Poppins, sans-serif','Lato, sans-serif','Arial, sans-serif','Verdana, sans-serif','Georgia, serif','Times New Roman, serif','Courier New, monospace'].map(f => (
+                          <MenuItem key={f} value={f} sx={{ fontFamily: f }}>{f.split(',')[0]}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
+
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Shape & Spacing</Typography>
+                    <Grid container spacing={2}>
+                      <Grid size={{ xs:12, sm:6 }} >
+                        <Typography gutterBottom variant="body2">Border Radius</Typography>
+                        <Slider value={settings.borderRadius ?? 12} onChange={(_, v) => handleSettingChange('borderRadius', v as number)} step={2} marks min={0} max={24} valueLabelDisplay="auto" />
+                      </Grid>
+                      <Grid size={{ xs:12, sm:6 }} >
+                        <Typography gutterBottom variant="body2">Global Spacing Unit (px)</Typography>
+                        <Slider value={settings.spacingUnit ?? 8} onChange={(_, v) => handleSettingChange('spacingUnit', v as number)} step={1} marks min={4} max={16} valueLabelDisplay="auto" />
+                      </Grid>
+                    </Grid>
+                  </Box>
                 </CardContent>
               </Card>
+              </Paper>
+              )}
 
-              {/* Editor Settings */}
+              {activeTab === 'editor' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Edit sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Editor Preferences</Typography>
                   </Box>
-                  
+
                   <List dense>
                     <ListItem>
                       <ListItemText primary="Auto Save" secondary="Automatically save changes" />
@@ -379,7 +424,7 @@ const ProfilePage: React.FC = () => {
                       </ListItemSecondaryAction>
                     </ListItem>
                   </List>
-                  
+
                   <FormControl size="small" sx={{ mt: 2, minWidth: 120 }}>
                     <InputLabel>Default Unit</InputLabel>
                     <Select
@@ -394,15 +439,18 @@ const ProfilePage: React.FC = () => {
                   </FormControl>
                 </CardContent>
               </Card>
+              </Paper>
+              )}
 
-              {/* Notifications */}
+              {activeTab === 'notifications' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Notifications sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Notifications</Typography>
                   </Box>
-                  
+
                   <List dense>
                     <ListItem>
                       <ListItemText primary="Email Notifications" secondary="Receive updates via email" />
@@ -425,15 +473,19 @@ const ProfilePage: React.FC = () => {
                   </List>
                 </CardContent>
               </Card>
+              </Paper>
+              )}
 
-              {/* Security */}
+              {activeTab === 'security' && (
+              <Paper variant="outlined" sx={{ p: 2, bgcolor: 'background.paper' }}>
+                <Box display="flex" flexDirection="column" gap={2}>
               <Card>
                 <CardContent>
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
                     <Security sx={{ mr: 2, color: 'primary.main' }} />
                     <Typography variant="h6">Security</Typography>
                   </Box>
-                  
+
                   <Typography variant="subtitle2" gutterBottom>Change Password</Typography>
                   <Grid container spacing={2}>
                     <Grid size={{ xs:12 }} >
@@ -508,6 +560,9 @@ const ProfilePage: React.FC = () => {
                   </Button>
                 </CardContent>
               </Card>
+                </Box>
+              </Paper>
+              )}
             </Box>
           </Grid>
         </Grid>

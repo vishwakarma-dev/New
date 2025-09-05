@@ -8,10 +8,12 @@ import AddElementMenu from '../components/editor/AddElementMenu';
 import { ElementType, EditorElement, AnyElementPropKey, Page, Template, ThemeSettings, DataSource, Layout } from '../types';
 import { AVAILABLE_COMPONENTS } from '../constants';
 import { Box, Typography, Button, createTheme, ThemeProvider } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { VisibilityOff } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../store';
 import { setSelectedElement, updateElementProp, addElement, initializeEditor, loadPage, updateCurrentPageData, addLayout, togglePreview, deleteElement, moveElement, addTemplate, updateTheme, addDataSource, deleteDataSource, updateDataSource } from '../store/editorSlice';
+import { updateSetting } from '../store/userSettingsSlice';
 import { addPage, deletePage, updatePageName, updatePageContent } from '../store/projectsSlice';
 
 const EditorPage: React.FC = () => {
@@ -25,10 +27,8 @@ const EditorPage: React.FC = () => {
     const project = projects.find(p => p.id === projectId);
     const topBarHeight = 48; // Dense toolbar height
 
-    const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
-        const v = localStorage.getItem('autosave:enabled');
-        return v ? v === 'true' : true;
-    });
+    const userSettings = useSelector((state: RootState) => state.userSettings);
+    const autoSaveEnabled = userSettings.autoSave;
 
     const [addMenuAnchorEl, setAddMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [addMenuContainerId, setAddMenuContainerId] = useState<string | null>(null);
@@ -37,6 +37,8 @@ const EditorPage: React.FC = () => {
 
     const dynamicTheme = React.useMemo(() => {
         const themeSettings = page?.theme;
+        const prefersDark = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const mode = userSettings?.theme === 'auto' ? (prefersDark ? 'dark' : 'light') : (userSettings?.theme || 'light');
         return createTheme({
             spacing: themeSettings?.spacingUnit ?? 8,
             typography: {
@@ -46,6 +48,7 @@ const EditorPage: React.FC = () => {
                 borderRadius: themeSettings?.borderRadius ?? 8,
             },
             palette: {
+                mode: mode as any,
                 primary: {
                     main: themeSettings?.primaryColor || '#1976d2',
                 },
@@ -66,6 +69,8 @@ const EditorPage: React.FC = () => {
             }
         });
     }, [page?.theme]);
+
+    const outerTheme = useTheme();
 
     // Effect for initializing or re-syncing the editor state
     useEffect(() => {
@@ -212,9 +217,7 @@ const EditorPage: React.FC = () => {
 
     // Auto-save: persist to localStorage with debounce
     const autoSaveTimer = useRef<number | null>(null);
-    useEffect(() => {
-        localStorage.setItem('autosave:enabled', String(autoSaveEnabled));
-    }, [autoSaveEnabled]);
+    // autoSaveEnabled comes from user settings
 
     useEffect(() => {
         if (!autoSaveEnabled || !projectId || !currentPageId) return;
@@ -316,37 +319,38 @@ const EditorPage: React.FC = () => {
 
     if (isPreviewing) {
         return (
-            <ThemeProvider theme={dynamicTheme}>
-                <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative', bgcolor: 'grey.200' }}>
-                    <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 1301 }}>
-                        <Button 
-                            variant="contained" 
-                            onClick={handleTogglePreview}
-                            startIcon={<VisibilityOff />}
-                            sx={{ 
-                                bgcolor: 'rgba(0, 0, 0, 0.6)', 
-                                color: 'white',
-                                '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' } 
-                            }}
-                        >
-                            Exit Preview
-                        </Button>
-                    </Box>
-                    <Canvas 
+            <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative', bgcolor: 'grey.200' }}>
+                <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 1301 }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleTogglePreview}
+                        startIcon={<VisibilityOff />}
+                        sx={{
+                            bgcolor: 'rgba(0, 0, 0, 0.6)',
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' }
+                        }}
+                    >
+                        Exit Preview
+                    </Button>
+                </Box>
+                <ThemeProvider theme={dynamicTheme}>
+                    <Canvas
                         page={page}
                         viewMode={viewMode}
                         selectedElementId={selectedElementId}
                         onSelectElement={handleSelectElement}
                         onMoveElement={handleMoveElement}
                         isPreviewing={true}
+                        showRulers={false}
                     />
-                </Box>
-            </ThemeProvider>
+                </ThemeProvider>
+            </Box>
         );
     }
 
     return (
-        <ThemeProvider theme={dynamicTheme}>
+        <ThemeProvider theme={outerTheme}>
             <Box sx={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100vw', overflow: 'hidden' }}>
                  {/* Left Panel */}
                 <Box component="aside" sx={{
@@ -383,21 +387,24 @@ const EditorPage: React.FC = () => {
                         onImport={handleImportPage}
                         onTogglePreview={handleTogglePreview}
                         autoSaveEnabled={autoSaveEnabled}
-                        onToggleAutoSave={setAutoSaveEnabled}
+                        onToggleAutoSave={(v) => dispatch(updateSetting({ key: 'autoSave', value: v }))}
                     />
                     <Box component="main" sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: 'grey.200' }}>
-                        <Canvas 
-                            page={page}
-                            viewMode={viewMode}
-                            selectedElementId={selectedElementId}
-                            onSelectElement={handleSelectElement}
-                            onDeleteElement={handleDeleteElement}
-                            onMoveElement={handleMoveElement}
-                            onOpenAddMenu={handleOpenAddMenu}
-                            onDropNewElement={handleDropNewElement}
-                            onAddElement={handleAddElement}
-                            isPreviewing={false}
-                        />
+                        <ThemeProvider theme={dynamicTheme}>
+                            <Canvas
+                                page={page}
+                                viewMode={viewMode}
+                                selectedElementId={selectedElementId}
+                                onSelectElement={handleSelectElement}
+                                onDeleteElement={handleDeleteElement}
+                                onMoveElement={handleMoveElement}
+                                onOpenAddMenu={handleOpenAddMenu}
+                                onDropNewElement={handleDropNewElement}
+                                onAddElement={handleAddElement}
+                                isPreviewing={false}
+                                showRulers={userSettings.showRulers}
+                            />
+                        </ThemeProvider>
                     </Box>
                 </Box>
                 

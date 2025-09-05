@@ -41,6 +41,7 @@ import { RootState, AppDispatch } from '../store';
 import { deleteProject, updateProject, addProject, addGeneratedProject } from '../store/projectsSlice';
 import { useAuth } from '../contexts/AuthContext';
 import GeminiChat from '../components/GeminiChat';
+import { useNavigate } from 'react-router-dom';
 
 const style = {
   position: 'absolute' as 'absolute',
@@ -60,6 +61,7 @@ const ProjectsDashboard: React.FC = () => {
     const dispatch: AppDispatch = useDispatch();
     const projects = useSelector((state: RootState) => state.projects.projects);
     const { user, logout } = useAuth();
+    const navigate = useNavigate();
 
     const [editingProject, setEditingProject] = useState<Project | null>(null);
     const [editFormData, setEditFormData] = useState({
@@ -229,17 +231,11 @@ const ProjectsDashboard: React.FC = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleUserMenuClose}>
+                <MenuItem onClick={() => { navigate('/profile'); handleUserMenuClose(); }}>
                     <ListItemIcon>
                         <Person fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Profile</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleUserMenuClose}>
-                    <ListItemIcon>
-                        <Settings fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Settings</ListItemText>
+                    <ListItemText>My Account</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleLogout}>

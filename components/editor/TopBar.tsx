@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, Tooltip, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Switch, FormControlLabel } from '@mui/material';
-import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person, Share } from '@mui/icons-material';
+import { AppBar, Toolbar, Typography, Box, Button, IconButton, Divider, Menu, MenuItem, ListItemText, ListItemIcon, Tooltip, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Switch, FormControlLabel } from '@mui/material';
+import { Undo, Redo, Visibility, ArrowDropDown, Add, Edit, Delete, DesktopWindows, TabletMac, PhoneIphone, FileUpload, FileDownload, Check, GetApp, AccountCircle, Logout, Person, Share, MoreVert } from '@mui/icons-material';
 import { Project, Page, ViewMode } from '../../types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState, AppDispatch } from '../../store';
@@ -36,6 +36,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
     
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [profileAnchorEl, setProfileAnchorEl] = useState<null | HTMLElement>(null);
+    const [moreAnchorEl, setMoreAnchorEl] = useState<null | HTMLElement>(null);
     const importInputRef = useRef<HTMLInputElement>(null);
     const pageNameInputRef = useRef<HTMLInputElement>(null);
     const { user, logout } = useAuth();
@@ -49,6 +50,8 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
     const profileOpen = Boolean(profileAnchorEl);
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => setAnchorEl(event.currentTarget);
     const handleProfileClick = (event: React.MouseEvent<HTMLButtonElement>) => setProfileAnchorEl(event.currentTarget);
+    const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => setMoreAnchorEl(event.currentTarget);
+    const handleMoreClose = () => setMoreAnchorEl(null);
     const handleClose = () => {
         setAnchorEl(null);
         setEditingPageInfo(null);
@@ -241,16 +244,34 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                 {/* Right Section */}
                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                     <input type="file" accept=".json" ref={importInputRef} style={{ display: 'none' }} onChange={onImport} />
-                    <Tooltip title="Import JSON">
-                        <IconButton size="small" onClick={handleImportClick}><FileUpload /></IconButton>
+
+                    <Tooltip title="More">
+                        <IconButton size="small" onClick={handleMoreClick}><MoreVert /></IconButton>
                     </Tooltip>
-                    <Tooltip title="Export JSON">
-                        <IconButton size="small" onClick={handleExport}><FileDownload /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Download React Project">
-                        <IconButton size="small" onClick={handleDownloadProject}><GetApp /></IconButton>
-                    </Tooltip>
-                     <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
+                    <Menu anchorEl={moreAnchorEl} open={Boolean(moreAnchorEl)} onClose={handleMoreClose} MenuListProps={{ sx: { minWidth: 220 } }}>
+                        <MenuItem onClick={() => { handleImportClick(); handleMoreClose(); }}>
+                            <ListItemIcon><FileUpload fontSize="small" /></ListItemIcon>
+                            <ListItemText primary="Import JSON" />
+                        </MenuItem>
+                        <MenuItem onClick={() => { handleExport(); handleMoreClose(); }}>
+                            <ListItemIcon><FileDownload fontSize="small" /></ListItemIcon>
+                            <ListItemText primary="Export JSON" />
+                        </MenuItem>
+                        <MenuItem onClick={() => { handleDownloadProject(); handleMoreClose(); }}>
+                            <ListItemIcon><GetApp fontSize="small" /></ListItemIcon>
+                            <ListItemText primary="Download React Project" />
+                        </MenuItem>
+                        <MenuItem disableRipple disableTouchRipple onClick={(e) => e.stopPropagation()}>
+                            <ListItemText primary="Auto Save" />
+                            <Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />
+                        </MenuItem>
+                        <Divider />
+                        <MenuItem onClick={() => { setShareOpen(true); handleMoreClose(); }}>
+                            <ListItemIcon><Share fontSize="small" /></ListItemIcon>
+                            <ListItemText primary="Share" />
+                        </MenuItem>
+                    </Menu>
+                    <Divider orientation="vertical" flexItem sx={{ mx: 1 }} />
                      <Tooltip title="Desktop">
                          <IconButton size="small" onClick={() => dispatch(setViewMode('desktop'))} color={viewMode === 'desktop' ? 'primary' : 'default'}><DesktopWindows /></IconButton>
                      </Tooltip>
@@ -264,9 +285,6 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                     <FormControlLabel sx={{ mr: 1 }} control={<Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />} label="Auto Save" />
                     <Tooltip title="Preview">
                         <IconButton size="small" onClick={onTogglePreview}><Visibility /></IconButton>
-                    </Tooltip>
-                    <Tooltip title="Share">
-                        <IconButton size="small" onClick={() => setShareOpen(true)}><Share /></IconButton>
                     </Tooltip>
 
                     {/* Share Dialog */}
@@ -342,7 +360,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
 
                         <MenuItem onClick={handleProfileSettings}>
                             <Person sx={{ mr: 1.5 }} />
-                            <ListItemText primary="Profile Settings" />
+                            <ListItemText primary="My Account" />
                         </MenuItem>
 
                         <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
