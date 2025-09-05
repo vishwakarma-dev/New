@@ -1,10 +1,8 @@
-
-
-
 import React from 'react';
 import { Page, ViewMode, ElementType, Layout, Template, EditorElement } from '../../types';
 import RenderedElement from './RenderedElement';
 import { Box } from '@mui/material';
+import Rulers from './Rulers';
 
 interface CanvasProps {
     page: Page;
