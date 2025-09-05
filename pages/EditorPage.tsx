@@ -70,6 +70,8 @@ const EditorPage: React.FC = () => {
         });
     }, [page?.theme]);
 
+    const outerTheme = useTheme();
+
     // Effect for initializing or re-syncing the editor state
     useEffect(() => {
         if (project && project.pages.length > 0) {
