@@ -3,7 +3,7 @@ import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, Ima
 import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Add as AddIcon, ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { Add as AddIcon, ArrowBackIos, ArrowForwardIos, MoreVert, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
 import CustomDataGrid from './CustomDataGrid';
