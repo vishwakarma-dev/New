@@ -331,13 +331,14 @@ const EditorPage: React.FC = () => {
                             Exit Preview
                         </Button>
                     </Box>
-                    <Canvas 
+                    <Canvas
                         page={page}
                         viewMode={viewMode}
                         selectedElementId={selectedElementId}
                         onSelectElement={handleSelectElement}
                         onMoveElement={handleMoveElement}
                         isPreviewing={true}
+                        showRulers={false}
                     />
                 </Box>
             </ThemeProvider>
