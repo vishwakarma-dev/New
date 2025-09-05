@@ -316,22 +316,22 @@ const EditorPage: React.FC = () => {
 
     if (isPreviewing) {
         return (
-            <ThemeProvider theme={dynamicTheme}>
-                <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative', bgcolor: 'grey.200' }}>
-                    <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 1301 }}>
-                        <Button 
-                            variant="contained" 
-                            onClick={handleTogglePreview}
-                            startIcon={<VisibilityOff />}
-                            sx={{ 
-                                bgcolor: 'rgba(0, 0, 0, 0.6)', 
-                                color: 'white',
-                                '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' } 
-                            }}
-                        >
-                            Exit Preview
-                        </Button>
-                    </Box>
+            <Box sx={{ height: '100vh', width: '100vw', overflow: 'hidden', position: 'relative', bgcolor: 'grey.200' }}>
+                <Box sx={{ position: 'absolute', top: 24, left: '50%', transform: 'translateX(-50%)', zIndex: 1301 }}>
+                    <Button
+                        variant="contained"
+                        onClick={handleTogglePreview}
+                        startIcon={<VisibilityOff />}
+                        sx={{
+                            bgcolor: 'rgba(0, 0, 0, 0.6)',
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.8)' }
+                        }}
+                    >
+                        Exit Preview
+                    </Button>
+                </Box>
+                <ThemeProvider theme={dynamicTheme}>
                     <Canvas
                         page={page}
                         viewMode={viewMode}
@@ -341,8 +341,8 @@ const EditorPage: React.FC = () => {
                         isPreviewing={true}
                         showRulers={false}
                     />
-                </Box>
-            </ThemeProvider>
+                </ThemeProvider>
+            </Box>
         );
     }
 
