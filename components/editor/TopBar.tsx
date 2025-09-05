@@ -360,7 +360,7 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
 
                         <MenuItem onClick={handleProfileSettings}>
                             <Person sx={{ mr: 1.5 }} />
-                            <ListItemText primary="Profile Settings" />
+                            <ListItemText primary="My Account" />
                         </MenuItem>
 
                         <MenuItem onClick={handleLogout} sx={{ color: 'error.main' }}>
