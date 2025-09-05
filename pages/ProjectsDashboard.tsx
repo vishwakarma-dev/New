@@ -231,17 +231,11 @@ const ProjectsDashboard: React.FC = () => {
                 transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                 anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-                <MenuItem onClick={handleUserMenuClose}>
+                <MenuItem onClick={() => { navigate('/profile'); handleUserMenuClose(); }}>
                     <ListItemIcon>
                         <Person fontSize="small" />
                     </ListItemIcon>
-                    <ListItemText>Profile</ListItemText>
-                </MenuItem>
-                <MenuItem onClick={handleUserMenuClose}>
-                    <ListItemIcon>
-                        <Settings fontSize="small" />
-                    </ListItemIcon>
-                    <ListItemText>Settings</ListItemText>
+                    <ListItemText>My Account</ListItemText>
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={handleLogout}>
