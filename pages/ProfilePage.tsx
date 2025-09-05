@@ -60,7 +60,8 @@ const ProfilePage: React.FC = () => {
 
   const [editing, setEditing] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  
+  const [activeTab, setActiveTab] = useState<'appearance' | 'editor' | 'notifications' | 'security'>('appearance');
+
   // User profile data
   const [profile, setProfile] = useState({
     name: user?.name || '',
