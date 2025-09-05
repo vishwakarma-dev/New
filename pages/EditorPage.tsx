@@ -25,10 +25,8 @@ const EditorPage: React.FC = () => {
     const project = projects.find(p => p.id === projectId);
     const topBarHeight = 48; // Dense toolbar height
 
-    const [autoSaveEnabled, setAutoSaveEnabled] = useState<boolean>(() => {
-        const v = localStorage.getItem('autosave:enabled');
-        return v ? v === 'true' : true;
-    });
+    const userSettings = useSelector((state: RootState) => state.userSettings);
+    const autoSaveEnabled = userSettings.autoSave;
 
     const [addMenuAnchorEl, setAddMenuAnchorEl] = useState<null | HTMLElement>(null);
     const [addMenuContainerId, setAddMenuContainerId] = useState<string | null>(null);
