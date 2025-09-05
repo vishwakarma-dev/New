@@ -203,8 +203,17 @@ const PropertiesPanel: React.FC<PropertiesPanelProps> = ({ selectedElement, page
             dispatch(addReusableComponent({ projectId: editorProjectId, component: { name: template.name, template } }));
         };
 
+        const defaultUnit = useSelector((s: RootState) => s.userSettings.defaultUnit);
+        const normalizeUnit = (v: string) => {
+            if (typeof v !== 'string') return v as any;
+            const trimmed = v.trim();
+            if (trimmed === '' || /[a-zA-Z%)]$/.test(trimmed)) return trimmed;
+            if (/^-?\d+(\.\d+)?$/.test(trimmed)) return `${trimmed}${defaultUnit}`;
+            return trimmed;
+        };
         const update = (prop: AnyElementPropKey, value: any) => {
-            onUpdateProps(selectedElement.id, prop, value);
+            const next = typeof value === 'string' ? normalizeUnit(value) : value;
+            onUpdateProps(selectedElement.id, prop, next);
         };
         const props = selectedElement.props;
         const isFlex = props.display === 'flex';
