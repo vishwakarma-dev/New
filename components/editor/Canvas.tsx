@@ -15,6 +15,7 @@ interface CanvasProps {
     onDropNewElement?: (itemType: string, itemData: string, targetContainerId: string, index: number) => void;
     onAddElement?: (parentId: string, element: EditorElement, index: number) => void;
     isPreviewing?: boolean;
+    showRulers?: boolean;
 }
 
 const viewWidths: Record<ViewMode, string> = {
