@@ -332,6 +332,36 @@ const ProfilePage: React.FC = () => {
                       </FormControl>
                     </Grid>
                   </Grid>
+
+                  <Box sx={{ mt: 3 }}>
+                    <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Theme Presets</Typography>
+                    <Grid container spacing={2}>
+                      {[{ name: 'Indigo Purple', p: '#667eea', s: '#764ba2' }, { name: 'Ocean', p: '#0077b6', s: '#00b4d8' }, { name: 'Forest', p: '#2d6a4f', s: '#40916c' }, { name: 'Sunset', p: '#e55934', s: '#fa7921' }].map(preset => (
+                        <Grid key={preset.name} size={{ xs:12, sm:6 }} >
+                          <Card variant="outlined" onClick={() => { handleSettingChange('primaryColor', preset.p); handleSettingChange('secondaryColor', preset.s); }} sx={{ cursor: 'pointer' }}>
+                            <CardContent>
+                              <Typography variant="subtitle2" gutterBottom>{preset.name}</Typography>
+                              <Box display="flex" height={36} borderRadius={1} overflow="hidden">
+                                <Box flex={1} bgcolor={preset.p} />
+                                <Box flex={1} bgcolor={preset.s} />
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </Box>
+
+                  <Box sx={{ mt: 3 }}>
+                    <FormControl fullWidth size="small">
+                      <InputLabel>Global Font Family</InputLabel>
+                      <Select value={settings.fontFamily || 'Inter, Roboto, Helvetica, Arial, sans-serif'} label="Global Font Family" onChange={(e) => handleSettingChange('fontFamily', e.target.value)}>
+                        {['Inter, Roboto, Helvetica, Arial, sans-serif','Roboto, sans-serif','Poppins, sans-serif','Lato, sans-serif','Arial, sans-serif','Verdana, sans-serif','Georgia, serif','Times New Roman, serif','Courier New, monospace'].map(f => (
+                          <MenuItem key={f} value={f} sx={{ fontFamily: f }}>{f.split(',')[0]}</MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Box>
                 </CardContent>
               </Card>
               )}
