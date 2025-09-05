@@ -350,7 +350,7 @@ const EditorPage: React.FC = () => {
     }
 
     return (
-        <ThemeProvider theme={dynamicTheme}>
+        <ThemeProvider theme={outerTheme}>
             <Box sx={{ display: 'flex', flexDirection: 'row', height: '100vh', width: '100vw', overflow: 'hidden' }}>
                  {/* Left Panel */}
                 <Box component="aside" sx={{
