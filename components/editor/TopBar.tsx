@@ -261,6 +261,10 @@ const TopBar: React.FC<TopBarProps> = ({ project, currentPageId, onSwitchPage, o
                             <ListItemIcon><GetApp fontSize="small" /></ListItemIcon>
                             <ListItemText primary="Download React Project" />
                         </MenuItem>
+                        <MenuItem disableRipple disableTouchRipple onClick={(e) => e.stopPropagation()}>
+                            <ListItemText primary="Auto Save" />
+                            <Switch size="small" checked={autoSaveEnabled} onChange={(_, v) => onToggleAutoSave(v)} />
+                        </MenuItem>
                         <Divider />
                         <MenuItem onClick={() => { setShareOpen(true); handleMoreClose(); }}>
                             <ListItemIcon><Share fontSize="small" /></ListItemIcon>
