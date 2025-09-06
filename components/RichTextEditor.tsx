@@ -209,6 +209,9 @@ export default function RichTextEditor({
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [linkText, setLinkText] = useState('');
+  const [imageOpen, setImageOpen] = useState(false);
+  const [imageUrl, setImageUrl] = useState('');
+  const [imageAlt, setImageAlt] = useState('');
   const openLinkDialog = () => { if (!disabled) setLinkOpen(true); };
   const closeLinkDialog = () => setLinkOpen(false);
   const confirmLink = () => {
@@ -345,6 +348,9 @@ export default function RichTextEditor({
             <Tooltip title="Remove link"><span><IconButton size="small" onClick={removeLink} disabled={disabled}><LinkOffIcon /></IconButton></span></Tooltip>
           </>
         )}
+        {toolbar.image && (
+          <Tooltip title="Insert image"><span><IconButton size="small" onClick={() => setImageOpen(true)} disabled={disabled}><ImageIcon /></IconButton></span></Tooltip>
+        )}
         {toolbar.clear && (
           <>
             <Divider orientation="vertical" flexItem className="rte-divider" />
@@ -362,6 +368,25 @@ export default function RichTextEditor({
         <DialogActions>
           <MuiButton onClick={closeLinkDialog}>Cancel</MuiButton>
           <MuiButton variant="contained" onClick={confirmLink}>Insert</MuiButton>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={imageOpen} onClose={() => setImageOpen(false)} fullWidth maxWidth="sm">
+        <DialogTitle>Insert image</DialogTitle>
+        <DialogContent>
+          <TextField label="Image URL" fullWidth sx={{ mt: 1 }} value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+          <TextField label="Alt text" fullWidth sx={{ mt: 2 }} value={imageAlt} onChange={(e) => setImageAlt(e.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <MuiButton onClick={() => setImageOpen(false)}>Cancel</MuiButton>
+          <MuiButton variant="contained" onClick={() => {
+            if (!imageUrl) { setImageOpen(false); return; }
+            editorRef.current?.focus();
+            const html = `<img src="${imageUrl}" alt="${imageAlt}" />`;
+            document.execCommand('insertHTML', false, html);
+            emitChange();
+            setImageOpen(false);
+          }}>Insert</MuiButton>
         </DialogActions>
       </Dialog>
 
