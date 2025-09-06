@@ -50,6 +50,7 @@ import {
     Assignment,
     Tab,
     OpenInNew,
+    Code,
     Menu,
     SwipeUp,
     Add,
