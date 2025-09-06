@@ -45,6 +45,7 @@ export type RichTextToolbarConfig = {
   undo?: boolean;
   redo?: boolean;
   clear?: boolean;
+  image?: boolean;
 };
 
 export type RichTextEditorProps = {
