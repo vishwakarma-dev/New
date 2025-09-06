@@ -253,9 +253,10 @@ export default function RichTextEditor({
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 
+  const getLangLabel = (l: string) => ({ javascript: 'JavaScript', typescript: 'TypeScript', python: 'Python', java: 'Java', c: 'C', cpp: 'C++', bash: 'Bash', json: 'JSON', css: 'CSS', markup: 'HTML/Markup' } as Record<string,string>)[l] || l;
+
   const insertCodeBlock = useCallback((lang: string) => {
     if (disabled) return;
-    const html = `<pre><code class="language-${lang}">/* code */</code></pre>`;
     const editor = editorRef.current;
     if (!editor) return;
     editor.focus();
@@ -264,6 +265,8 @@ export default function RichTextEditor({
     range.collapse(false);
     const sel = window.getSelection();
     if (sel) { sel.removeAllRanges(); sel.addRange(range); }
+    const label = getLangLabel(lang);
+    const html = `<div class="rte-codeblock" data-lang="${lang}"><div class="rte-codeblock-header"><span class="rte-codeblock-lang">${label}</span></div><pre class="language-${lang}"><code class="language-${lang}">/* code */</code></pre></div><p><br></p>`;
     document.execCommand('insertHTML', false, html);
     emitChange();
     setTimeout(() => { Prism.highlightAllUnder(editor); }, 0);
