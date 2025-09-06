@@ -78,6 +78,7 @@ const defaultToolbar: Required<RichTextToolbarConfig> = {
   undo: true,
   redo: true,
   clear: true,
+  image: true,
 };
 
 function isHTMLBlank(html: string) {
