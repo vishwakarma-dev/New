@@ -113,6 +113,7 @@ export default function RichTextEditor({
   });
 
   const editorRef = useRef<HTMLDivElement | null>(null);
+  const [codeLang, setCodeLang] = useState<string>('javascript');
   const lastNotifiedHTML = useRef<string>('');
 
   const getHTML = useCallback(() => {
