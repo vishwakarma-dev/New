@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, SpacerProps, InputProps, DividerProps, StackProps, CardProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, CarouselProps, SlideProps, HeaderProps, DataGridProps } from '../../types';
 import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -6,6 +6,21 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Add as AddIcon, ArrowBackIos, ArrowForwardIos, MoreVert, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
+import RichTextEditor from '../RichTextEditor';
+import { useDispatch } from 'react-redux';
+import { updateElementProp } from '../../store/editorSlice';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
+import 'prismjs/themes/prism.css';
 import CustomDataGrid from './CustomDataGrid';
 
 const mapFontSizeToVariant = (fontSize: string | undefined) => {
@@ -119,6 +134,8 @@ interface RenderedElementProps {
 const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements, page, selectedElementId, onSelectElement, isReadOnly = false, rootElementId, onDeleteElement, onMoveElement, onOpenAddMenu, onDropNewElement, onAddElement }) => {
     const isSelected = element.id === selectedElementId;
     const theme = useTheme();
+    const dispatch = useDispatch();
+    const richPreviewRef = useRef<HTMLDivElement | null>(null);
 
     const [isDragOver, setIsDragOver] = useState(false);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -518,6 +535,12 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         return childNodes.filter(Boolean);
     };
 
+    useEffect(() => {
+        if (isReadOnly && element.type === ElementType.RichText && richPreviewRef.current) {
+            Prism.highlightAllUnder(richPreviewRef.current);
+        }
+    }, [isReadOnly, element.type, (element.props as any)?.content]);
+
     const renderElement = () => {
         switch (element.type) {
             case ElementType.Container:
@@ -604,6 +627,94 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                             {tProps.content}
                         </Typography>
                     </Box>
+                );
+            case ElementType.RichText:
+                const rtProps = props as TextProps;
+                sx.color = rtProps.color;
+                sx.fontWeight = rtProps.fontWeight;
+                sx.textAlign = rtProps.textAlign;
+                sx.lineHeight = rtProps.lineHeight;
+                sx.letterSpacing = rtProps.letterSpacing;
+                sx.fontStyle = rtProps.fontStyle;
+                sx.textDecoration = rtProps.textDecoration;
+                const variantRT = mapFontSizeToVariant(rtProps.fontSize);
+                if(!variantRT) sx.fontSize = rtProps.fontSize;
+
+                return (
+                    <Box position="relative" {...commonEventHandlers}>
+                        {renderOverlayControls()}
+                        {!isReadOnly ? (
+                            <Box sx={{...sx}} className={props.customClass}>
+                                <RichTextEditor
+                                    value={rtProps.content || ''}
+                                    onChange={(html) => dispatch(updateElementProp({ elementId: element.id, prop: 'content', value: html }))}
+                                    placeholder="Enter rich text..."
+                                />
+                            </Box>
+                        ) : (
+                            <Box ref={richPreviewRef} sx={sx} className={props.customClass} dangerouslySetInnerHTML={{ __html: rtProps.content || '' }} />
+                        )}
+                    </Box>
+                );
+            case ElementType.CodeBlock:
+                const cbProps = props as any;
+                const lang = (cbProps.language || 'javascript') as string;
+                const code = cbProps.code || '';
+                const highlighted = (() => {
+                    const grammar = (Prism.languages as any)[lang] || Prism.languages.javascript;
+                    try { return Prism.highlight(code, grammar, lang); } catch { return code; }
+                })();
+                return (
+                    <Box sx={{...sx}} {...commonEventHandlers} className={props.customClass}>
+                        {renderOverlayControls()}
+                        {!isReadOnly ? (
+                            <Stack spacing={1}>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <Typography variant="caption">Language</Typography>
+                                    <TextField select size="small" value={lang} onChange={(e) => dispatch(updateElementProp({ elementId: element.id, prop: 'language', value: e.target.value }))} sx={{ width: 180 }}>
+                                        {['javascript','typescript','python','java','c','cpp','bash','json','css','markup'].map(l => (
+                                            <MenuItem key={l} value={l}>{l}</MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Stack>
+                                <TextField multiline minRows={6} value={code} onChange={(e) => dispatch(updateElementProp({ elementId: element.id, prop: 'code', value: e.target.value }))} fullWidth />
+                                <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1, overflowX: 'auto' }}>
+                                    <pre className={`language-${lang}`} style={{ margin: 0 }}>
+                                        <code dangerouslySetInnerHTML={{ __html: highlighted }} />
+                                    </pre>
+                                </Box>
+                            </Stack>
+                        ) : (
+                            <Box ref={richPreviewRef}>
+                                <pre className={`language-${lang}`} style={{ margin: 0 }}>
+                                    <code dangerouslySetInnerHTML={{ __html: highlighted }} />
+                                </pre>
+                            </Box>
+                        )}
+                    </Box>
+                );
+            case ElementType.LinkPreview:
+                const lpProps = props as any;
+                return (
+                    <Card sx={sx} {...commonEventHandlers} className={props.customClass}>
+                        {renderOverlayControls()}
+                        <CardContent>
+                            <Stack direction="row" spacing={2} alignItems="flex-start">
+                                {lpProps.imageUrl ? (
+                                    <Box component="img" src={lpProps.imageUrl} alt={lpProps.title || lpProps.url} sx={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 1 }} />
+                                ) : null}
+                                <Box sx={{ minWidth: 0 }}>
+                                    <Typography variant="subtitle1" noWrap>{lpProps.title || lpProps.url || 'Link'}</Typography>
+                                    {lpProps.description ? (
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{lpProps.description}</Typography>
+                                    ) : null}
+                                    {lpProps.url ? (
+                                        <Link href={lpProps.url} target="_blank" rel="noopener" sx={{ display: 'inline-block', mt: 1 }}>{lpProps.url}</Link>
+                                    ) : null}
+                                </Box>
+                            </Stack>
+                        </CardContent>
+                    </Card>
                 );
             case ElementType.Button:
                 const bProps = props as ButtonProps;

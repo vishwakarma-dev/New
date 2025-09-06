@@ -157,6 +157,9 @@ export const APP_COMPONENT_CATEGORIES: ComponentCategory[] = [
         order: 7,
         components: [
             ElementType.Text,
+            ElementType.RichText,
+            ElementType.CodeBlock,
+            ElementType.LinkPreview,
             ElementType.Image,
             ElementType.VideoPlayer,
             ElementType.Avatar,

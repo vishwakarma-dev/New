@@ -1,0 +1,100 @@
+.rte-root {
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.rte-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  background: rgba(0,0,0,0.02);
+}
+
+.rte-divider {
+  margin: 0 2px;
+}
+
+.rte-heading-select {
+  min-width: 100px;
+  margin-right: 2px;
+}
+
+.rte-active {
+  color: #1976d2;
+}
+
+.rte-editor {
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.rte-editable {
+  min-height: 140px;
+  line-height: 1.6;
+  outline: none;
+  white-space: pre-wrap;
+  width: 100%;
+}
+
+.rte-editable p,
+.rte-editable h1,
+.rte-editable h2,
+.rte-editable h3,
+.rte-editable h4,
+.rte-editable h5,
+.rte-editable h6,
+.rte-editable blockquote,
+.rte-editable pre,
+.rte-editable ul,
+.rte-editable ol {
+  margin: 0 0 8px;
+}
+
+.rte-editable ul,
+.rte-editable ol {
+  padding-left: 24px;
+}
+
+.rte-editable .rte-codeblock {
+  border: 1px solid rgba(0,0,0,0.12);
+  border-radius: 8px;
+  margin: 8px 0;
+  overflow: hidden;
+}
+.rte-editable .rte-codeblock-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  background: rgba(0,0,0,0.03);
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+}
+.rte-editable .rte-codeblock-lang {
+  font-size: 12px;
+  color: rgba(0,0,0,0.6);
+}
+.rte-editable .rte-codeblock pre {
+  background: transparent;
+  margin: 0;
+  padding: 10px;
+}
+.rte-editable pre code {
+  display: block;
+  overflow-x: auto;
+}
+
+.rte-disabled {
+  background: rgba(0,0,0,0.02);
+}
+
+/* Placeholder */
+.rte-editable.rte-empty:before {
+  content: attr(data-placeholder);
+  color: rgba(0,0,0,0.38);
+}

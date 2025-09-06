@@ -1,6 +1,9 @@
 export enum ElementType {
     Container = 'Container',
     Text = 'Text',
+    RichText = 'RichText',
+    CodeBlock = 'CodeBlock',
+    LinkPreview = 'LinkPreview',
     Button = 'Button',
     Image = 'Image',
     Spacer = 'Spacer',
@@ -444,6 +447,18 @@ export interface LoadingSpinnerProps extends BaseProps {
     variant?: 'circular' | 'linear';
 }
 
+export interface CodeBlockProps extends BaseProps {
+    code?: string;
+    language?: 'javascript' | 'typescript' | 'python' | 'java' | 'c' | 'cpp' | 'bash' | 'json' | 'css' | 'markup';
+}
+
+export interface LinkPreviewProps extends BaseProps {
+    url?: string;
+    title?: string;
+    description?: string;
+    imageUrl?: string;
+}
+
 export interface Layout {
     name: string;
     rows: number;
@@ -463,12 +478,12 @@ export interface AppModule {
     color?: string;
 }
 
-export type ElementProps = ContainerProps | TextProps | ButtonProps | ImageProps | SpacerProps | InputProps | DividerProps | StackProps | CardProps | AccordionProps | AlertProps | GridProps | LinkProps | AvatarProps | ListProps | LinearProgressProps | SwitchProps | CarouselProps | SlideProps | HeaderProps | DataGridProps | ChartProps | FormProps | TabsProps | ModalProps | DrawerProps | BottomSheetProps | FloatingActionButtonProps | SegmentedControlProps | SearchBarProps | AppBarProps | NavigationBarProps | StatusCardProps | TimelineProps | StepperProps | RatingProps | ChipProps | BadgeProps | ToggleProps | SliderProps | DatePickerProps | TimePickerProps | FileUploadProps | MapViewProps | VideoPlayerProps | QRCodeProps | LoadingSpinnerProps;
+export type ElementProps = ContainerProps | TextProps | ButtonProps | ImageProps | SpacerProps | InputProps | DividerProps | StackProps | CardProps | AccordionProps | AlertProps | GridProps | LinkProps | AvatarProps | ListProps | LinearProgressProps | SwitchProps | CarouselProps | SlideProps | HeaderProps | DataGridProps | ChartProps | FormProps | TabsProps | ModalProps | DrawerProps | BottomSheetProps | FloatingActionButtonProps | SegmentedControlProps | SearchBarProps | AppBarProps | NavigationBarProps | StatusCardProps | TimelineProps | StepperProps | RatingProps | ChipProps | BadgeProps | ToggleProps | SliderProps | DatePickerProps | TimePickerProps | FileUploadProps | MapViewProps | VideoPlayerProps | QRCodeProps | LoadingSpinnerProps | CodeBlockProps | LinkPreviewProps;
 
 // A type that combines all possible props by intersecting them.
 // The `keyof` this intersection will be a union of all possible prop keys from each interface.
 // This is used to allow the property editor to update any valid prop for any element type.
-type AllPropsCombined = ContainerProps & TextProps & ButtonProps & ImageProps & SpacerProps & InputProps & DividerProps & StackProps & CardProps & AccordionProps & AlertProps & GridProps & LinkProps & AvatarProps & ListProps & LinearProgressProps & SwitchProps & CarouselProps & SlideProps & HeaderProps & DataGridProps & ChartProps & FormProps & TabsProps & ModalProps & DrawerProps & BottomSheetProps & FloatingActionButtonProps & SegmentedControlProps & SearchBarProps & AppBarProps & NavigationBarProps & StatusCardProps & TimelineProps & StepperProps & RatingProps & ChipProps & BadgeProps & ToggleProps & SliderProps & DatePickerProps & TimePickerProps & FileUploadProps & MapViewProps & VideoPlayerProps & QRCodeProps & LoadingSpinnerProps;
+type AllPropsCombined = ContainerProps & TextProps & ButtonProps & ImageProps & SpacerProps & InputProps & DividerProps & StackProps & CardProps & AccordionProps & AlertProps & GridProps & LinkProps & AvatarProps & ListProps & LinearProgressProps & SwitchProps & CarouselProps & SlideProps & HeaderProps & DataGridProps & ChartProps & FormProps & TabsProps & ModalProps & DrawerProps & BottomSheetProps & FloatingActionButtonProps & SegmentedControlProps & SearchBarProps & AppBarProps & NavigationBarProps & StatusCardProps & TimelineProps & StepperProps & RatingProps & ChipProps & BadgeProps & ToggleProps & SliderProps & DatePickerProps & TimePickerProps & FileUploadProps & MapViewProps & VideoPlayerProps & QRCodeProps & LoadingSpinnerProps & CodeBlockProps & LinkPreviewProps;
 export type AnyElementPropKey = keyof AllPropsCombined;
 
 export interface EditorElement {
