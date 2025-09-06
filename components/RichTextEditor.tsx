@@ -339,16 +339,16 @@ export default function RichTextEditor({
         {toolbar.code && (
           <>
             <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 120 }}>
-              <MenuItem value={'javascript'}>JS</MenuItem>
-              <MenuItem value={'typescript'}>TS</MenuItem>
-              <MenuItem value={'python'}>Py</MenuItem>
+              <MenuItem value={'javascript'}>JavaScript</MenuItem>
+              <MenuItem value={'typescript'}>TypeScript</MenuItem>
+              <MenuItem value={'python'}>Python</MenuItem>
               <MenuItem value={'java'}>Java</MenuItem>
               <MenuItem value={'c'}>C</MenuItem>
               <MenuItem value={'cpp'}>C++</MenuItem>
               <MenuItem value={'bash'}>Bash</MenuItem>
               <MenuItem value={'json'}>JSON</MenuItem>
               <MenuItem value={'css'}>CSS</MenuItem>
-              <MenuItem value={'markup'}>HTML</MenuItem>
+              <MenuItem value={'markup'}>HTML/Markup</MenuItem>
             </Select>
             <Tooltip title="Add code block to bottom"><span><IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
           </>
