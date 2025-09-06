@@ -656,6 +656,66 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                         )}
                     </Box>
                 );
+            case ElementType.CodeBlock:
+                const cbProps = props as any;
+                const lang = (cbProps.language || 'javascript') as string;
+                const code = cbProps.code || '';
+                const highlighted = (() => {
+                    const grammar = (Prism.languages as any)[lang] || Prism.languages.javascript;
+                    try { return Prism.highlight(code, grammar, lang); } catch { return code; }
+                })();
+                return (
+                    <Box sx={{...sx}} {...commonEventHandlers} className={props.customClass}>
+                        {renderOverlayControls()}
+                        {!isReadOnly ? (
+                            <Stack spacing={1}>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <Typography variant="caption">Language</Typography>
+                                    <TextField select size="small" value={lang} onChange={(e) => dispatch(updateElementProp({ elementId: element.id, prop: 'language', value: e.target.value }))} sx={{ width: 180 }}>
+                                        {['javascript','typescript','python','java','c','cpp','bash','json','css','markup'].map(l => (
+                                            <MenuItem key={l} value={l}>{l}</MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Stack>
+                                <TextField multiline minRows={6} value={code} onChange={(e) => dispatch(updateElementProp({ elementId: element.id, prop: 'code', value: e.target.value }))} fullWidth />
+                                <Box sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 1, p: 1, overflowX: 'auto' }}>
+                                    <pre className={`language-${lang}`} style={{ margin: 0 }}>
+                                        <code dangerouslySetInnerHTML={{ __html: highlighted }} />
+                                    </pre>
+                                </Box>
+                            </Stack>
+                        ) : (
+                            <Box ref={richPreviewRef}>
+                                <pre className={`language-${lang}`} style={{ margin: 0 }}>
+                                    <code dangerouslySetInnerHTML={{ __html: highlighted }} />
+                                </pre>
+                            </Box>
+                        )}
+                    </Box>
+                );
+            case ElementType.LinkPreview:
+                const lpProps = props as any;
+                return (
+                    <Card sx={sx} {...commonEventHandlers} className={props.customClass}>
+                        {renderOverlayControls()}
+                        <CardContent>
+                            <Stack direction="row" spacing={2} alignItems="flex-start">
+                                {lpProps.imageUrl ? (
+                                    <Box component="img" src={lpProps.imageUrl} alt={lpProps.title || lpProps.url} sx={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 1 }} />
+                                ) : null}
+                                <Box sx={{ minWidth: 0 }}>
+                                    <Typography variant="subtitle1" noWrap>{lpProps.title || lpProps.url || 'Link'}</Typography>
+                                    {lpProps.description ? (
+                                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>{lpProps.description}</Typography>
+                                    ) : null}
+                                    {lpProps.url ? (
+                                        <Link href={lpProps.url} target="_blank" rel="noopener" sx={{ display: 'inline-block', mt: 1 }}>{lpProps.url}</Link>
+                                    ) : null}
+                                </Box>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                );
             case ElementType.Button:
                 const bProps = props as ButtonProps;
                 return (
