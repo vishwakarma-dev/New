@@ -10,10 +10,11 @@
 .rte-toolbar {
   display: flex;
   align-items: center;
-  gap: 2px;
-  padding: 4px;
+  gap: 6px;
+  padding: 0px;
+  padding-left: 4px ;
+  padding-right: 4px;
   border-bottom: 1px solid rgba(0,0,0,0.08);
-  background: rgba(0,0,0,0.02);
 }
 
 .rte-divider {

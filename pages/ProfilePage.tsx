@@ -342,12 +342,12 @@ const ProfilePage: React.FC = () => {
                     </Grid>
 
                     <Box sx={{ mt: 3 }}>
-                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>Global Theme Presets</Typography>
+                      <Typography variant="overline" color="text.secondary" display="block" mb={1}>Theme Presets</Typography>
                       <Grid container spacing={2}>
                         {[{ name: 'Default MUI', p: '#1976d2', s: '#dc004e' }, { name: 'Indigo Purple', p: '#667eea', s: '#764ba2' }, { name: 'Ocean Blue', p: '#0077b6', s: '#00b4d8' }, { name: 'Forest Green', p: '#2d6a4f', s: '#40916c' }, { name: 'Sunset Orange', p: '#e55934', s: '#fa7921' }, { name: 'Royal Purple', p: '#44355B', s: '#6A5693' }, { name: 'Graphite', p: '#212529', s: '#6c757d' }, { name: 'Teal & Coral', p: '#008080', s: '#FF7F50' }, { name: 'Rose Gold', p: '#B76E79', s: '#D6AD60' }].map(preset => {
                           const isActive = settings.primaryColor === preset.p && settings.secondaryColor === preset.s;
                           return (
-                          <Grid key={preset.name} size={{ xs:12, sm:6, md:4 }} >
+                          <Grid key={preset.name} size={{ xs:12, sm:4, md:3 }} >
                             <Card variant="outlined" onClick={() => { handleSettingChange('primaryColor', preset.p); handleSettingChange('secondaryColor', preset.s); }} sx={{ cursor: 'pointer', position: 'relative', borderColor: isActive ? 'primary.main' : 'divider', borderWidth: isActive ? 2 : 1 }}>
                               <CardContent>
                                 <Typography variant="subtitle2" gutterBottom>{preset.name}</Typography>

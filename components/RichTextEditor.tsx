@@ -278,67 +278,160 @@ export default function RichTextEditor({
 
   return (
     <Box className={`rte-root ${className || ''}`.trim()}>
-      <Box className={`rte-toolbar ${toolbarClassName || ''}`.trim()}>
-        {toolbar.undo && (
-          <Tooltip title="Undo"><span><IconButton size="small" onClick={() => apply('undo')} disabled={disabled}><UndoIcon /></IconButton></span></Tooltip>
-        )}
-        {toolbar.redo && (
-          <Tooltip title="Redo"><span><IconButton size="small" onClick={() => apply('redo')} disabled={disabled}><RedoIcon /></IconButton></span></Tooltip>
-        )}
-        <Divider orientation="vertical" flexItem className="rte-divider" />
+      <Box className={`rte-toolbar ${toolbarClassName || ''}`.trim()} >
+          {toolbar.headings && (
+            <Select
+              variant="outlined"
+              size="small"
+              value={''}
+              displayEmpty
+              renderValue={() => 'Normal'}
+              className="rte-heading-select"
+              disabled={disabled}
+              onChange={(e) => setHeading(e.target.value as any)}
+              sx={{
+                minWidth: 100,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(0, 0, 0, 0.23)', // default outline color
+                },
+                '& .MuiSelect-select': {
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                },
+              }}
+            >
+              <MenuItem value="p">Normal</MenuItem>
+              <MenuItem value="h1">H1</MenuItem>
+              <MenuItem value="h2">H2</MenuItem>
+              <MenuItem value="h3">H3</MenuItem>
+              <MenuItem value="h4">H4</MenuItem>
+              <MenuItem value="h5">H5</MenuItem>
+              <MenuItem value="h6">H6</MenuItem>
+            </Select>
+          )}
+          <Divider orientation="vertical" flexItem className="rte-divider" /> 
         {toolbar.bold && (
-          <Tooltip title="Bold"><span><IconButton size="small" className={selectionState.bold ? 'rte-active' : ''} onClick={() => apply('bold')} disabled={disabled}><FormatBoldIcon /></IconButton></span></Tooltip>
+          <Tooltip title="Bold">
+            <span>
+              <IconButton size="small" className={selectionState.bold ? 'rte-active' : ''} onClick={() => apply('bold')} disabled={disabled}>
+                <FormatBoldIcon fontSize='inherit' />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
         {toolbar.italic && (
-          <Tooltip title="Italic"><span><IconButton size="small" className={selectionState.italic ? 'rte-active' : ''} onClick={() => apply('italic')} disabled={disabled}><FormatItalicIcon /></IconButton></span></Tooltip>
+          <Tooltip title="Italic">
+            <span>
+              <IconButton size="small" className={selectionState.italic ? 'rte-active' : ''} onClick={() => apply('italic')} disabled={disabled}>
+                <FormatItalicIcon fontSize='inherit'/>
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
         {toolbar.underline && (
-          <Tooltip title="Underline"><span><IconButton size="small" className={selectionState.underline ? 'rte-active' : ''} onClick={() => apply('underline')} disabled={disabled}><FormatUnderlinedIcon /></IconButton></span></Tooltip>
+          <Tooltip title="Underline">
+            <span>
+              <IconButton size="small" className={selectionState.underline ? 'rte-active' : ''} onClick={() => apply('underline')} disabled={disabled}>
+                <FormatUnderlinedIcon fontSize='inherit' />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
         {toolbar.strike && (
-          <Tooltip title="Strikethrough"><span><IconButton size="small" className={selectionState.strike ? 'rte-active' : ''} onClick={() => apply('strikeThrough')} disabled={disabled}><StrikethroughSIcon /></IconButton></span></Tooltip>
+          <Tooltip title="Strikethrough">
+            <span>
+              <IconButton size="small" className={selectionState.strike ? 'rte-active' : ''} onClick={() => apply('strikeThrough')} disabled={disabled}>
+                <StrikethroughSIcon fontSize='inherit'/>
+                </IconButton>
+              </span>
+            </Tooltip>
         )}
         <Divider orientation="vertical" flexItem className="rte-divider" />
-        {toolbar.headings && (
-          <Select size="small" value={''} displayEmpty renderValue={() => 'Normal'} className="rte-heading-select" disabled={disabled}
-            onChange={(e) => setHeading((e.target.value as any))}>
-            <MenuItem value={'p'}>Normal</MenuItem>
-            <MenuItem value={'h1'}>H1</MenuItem>
-            <MenuItem value={'h2'}>H2</MenuItem>
-            <MenuItem value={'h3'}>H3</MenuItem>
-            <MenuItem value={'h4'}>H4</MenuItem>
-            <MenuItem value={'h5'}>H5</MenuItem>
-            <MenuItem value={'h6'}>H6</MenuItem>
-          </Select>
-        )}
         {toolbar.lists && (
           <>
-            <Tooltip title="Bulleted list"><span><IconButton size="small" onClick={() => apply('insertUnorderedList')} disabled={disabled}><FormatListBulletedIcon /></IconButton></span></Tooltip>
-            <Tooltip title="Numbered list"><span><IconButton size="small" onClick={() => apply('insertOrderedList')} disabled={disabled}><FormatListNumberedIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Bulleted list">
+              <span>
+                <IconButton size="small" onClick={() => apply('insertUnorderedList')} disabled={disabled}>
+                  <FormatListBulletedIcon fontSize='inherit' />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="Numbered list">
+              <span>
+                <IconButton size="small" onClick={() => apply('insertOrderedList')} disabled={disabled}>
+                  <FormatListNumberedIcon fontSize='inherit'/>
+                </IconButton>
+              </span>
+            </Tooltip>
           </>
         )}
+        <Divider orientation="vertical" flexItem className="rte-divider" />
         {toolbar.align && toolbar.align.length > 0 && (
           <>
             {toolbar.align.includes('left') && (
-              <Tooltip title="Align left"><span><IconButton size="small" className={selectionState.align === 'left' ? 'rte-active' : ''} onClick={() => apply('justifyLeft')} disabled={disabled}><FormatAlignLeftIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Align left">
+                <span>
+                  <IconButton size="small" className={selectionState.align === 'left' ? 'rte-active' : ''} onClick={() => apply('justifyLeft')} disabled={disabled}>
+                    <FormatAlignLeftIcon fontSize='inherit' />
+                  </IconButton></span>
+                </Tooltip>
             )}
             {toolbar.align.includes('center') && (
-              <Tooltip title="Align center"><span><IconButton size="small" className={selectionState.align === 'center' ? 'rte-active' : ''} onClick={() => apply('justifyCenter')} disabled={disabled}><FormatAlignCenterIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Align center">
+                <span>
+                  <IconButton size="small" className={selectionState.align === 'center' ? 'rte-active' : ''} onClick={() => apply('justifyCenter')} disabled={disabled}>
+                    <FormatAlignCenterIcon fontSize='inherit' />
+                  </IconButton>
+                </span>
+              </Tooltip>
             )}
             {toolbar.align.includes('right') && (
-              <Tooltip title="Align right"><span><IconButton size="small" className={selectionState.align === 'right' ? 'rte-active' : ''} onClick={() => apply('justifyRight')} disabled={disabled}><FormatAlignRightIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Align right">
+                <span>
+                  <IconButton size="small" className={selectionState.align === 'right' ? 'rte-active' : ''} onClick={() => apply('justifyRight')} disabled={disabled}>
+                    <FormatAlignRightIcon fontSize='inherit' />
+                  </IconButton>
+                </span>
+              </Tooltip>
             )}
             {toolbar.align.includes('justify') && (
-              <Tooltip title="Justify"><span><IconButton size="small" className={selectionState.align === 'justify' ? 'rte-active' : ''} onClick={() => apply('justifyFull')} disabled={disabled}><FormatAlignJustifyIcon /></IconButton></span></Tooltip>
+              <Tooltip title="Justify">
+                <span>
+                  <IconButton size="small" className={selectionState.align === 'justify' ? 'rte-active' : ''} onClick={() => apply('justifyFull')} disabled={disabled}>
+                    <FormatAlignJustifyIcon fontSize='inherit'/>
+                  </IconButton>
+                </span>
+              </Tooltip>
             )}
           </>
         )}
-        {toolbar.quote && (
-          <Tooltip title="Blockquote"><span><IconButton size="small" onClick={() => apply('formatBlock', 'blockquote')} disabled={disabled}><FormatQuoteIcon /></IconButton></span></Tooltip>
-        )}
+        <Divider orientation="vertical" flexItem className="rte-divider" />
+        {/* {toolbar.quote && (
+          <Tooltip title="Blockquote">
+            <span>
+              <IconButton size="small" onClick={() => apply('formatBlock', 'blockquote')} disabled={disabled}>
+                <FormatQuoteIcon fontSize='inherit'/>
+              </IconButton>
+            </span>
+          </Tooltip>
+        )} */}
         {toolbar.code && (
           <>
-            <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 120 }}>
+            <Select
+              size="small" 
+              value={codeLang} 
+              onChange={(e) => setCodeLang(e.target.value as string)} 
+              sx={{
+                minWidth: 100,
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'rgba(0, 0, 0, 0.23)', // default outline color
+                },
+                '& .MuiSelect-select': {
+                  paddingTop: '4px',
+                  paddingBottom: '4px',
+                },
+              }}
+            >
               <MenuItem value={'javascript'}>JavaScript</MenuItem>
               <MenuItem value={'typescript'}>TypeScript</MenuItem>
               <MenuItem value={'python'}>Python</MenuItem>
@@ -350,22 +443,53 @@ export default function RichTextEditor({
               <MenuItem value={'css'}>CSS</MenuItem>
               <MenuItem value={'markup'}>HTML/Markup</MenuItem>
             </Select>
-            <Tooltip title="Add code block to bottom"><span><IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Add code block to bottom">
+              <span>
+                <IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}>
+                  <CodeIcon fontSize='inherit'/>
+                </IconButton>
+              </span>
+            </Tooltip>
           </>
         )}
+        <Divider orientation="vertical" flexItem className="rte-divider" />
         {toolbar.link && (
           <>
-            <Tooltip title="Add link"><span><IconButton size="small" onClick={openLinkDialog} disabled={disabled}><LinkIcon /></IconButton></span></Tooltip>
-            <Tooltip title="Remove link"><span><IconButton size="small" onClick={removeLink} disabled={disabled}><LinkOffIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Add link">
+              <span>
+                <IconButton size="small" onClick={openLinkDialog} disabled={disabled}>
+                  <LinkIcon fontSize='inherit' />
+                </IconButton>
+              </span>
+            </Tooltip>
+            <Tooltip title="Remove link">
+              <span>
+                <IconButton size="small" onClick={removeLink} disabled={disabled}>
+                  <LinkOffIcon fontSize='inherit' />
+                </IconButton>
+              </span>
+            </Tooltip>
           </>
         )}
         {toolbar.image && (
-          <Tooltip title="Insert image"><span><IconButton size="small" onClick={() => setImageOpen(true)} disabled={disabled}><ImageIcon /></IconButton></span></Tooltip>
+          <Tooltip title="Insert image">
+            <span>
+              <IconButton size="small" onClick={() => setImageOpen(true)} disabled={disabled}>
+                <ImageIcon fontSize='inherit' />
+              </IconButton>
+            </span>
+          </Tooltip>
         )}
         {toolbar.clear && (
           <>
             <Divider orientation="vertical" flexItem className="rte-divider" />
-            <Tooltip title="Clear formatting"><span><IconButton size="small" onClick={() => apply('removeFormat')} disabled={disabled}><FormatClearIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Clear formatting">
+              <span>
+                <IconButton size="small" onClick={() => apply('removeFormat')} disabled={disabled}>
+                  <FormatClearIcon fontSize='inherit' />
+                </IconButton>
+              </span>
+            </Tooltip>
           </>
         )}
       </Box>
