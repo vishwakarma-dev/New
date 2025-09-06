@@ -1,6 +1,7 @@
 export enum ElementType {
     Container = 'Container',
     Text = 'Text',
+    RichText = 'RichText',
     Button = 'Button',
     Image = 'Image',
     Spacer = 'Spacer',
