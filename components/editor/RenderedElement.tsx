@@ -6,6 +6,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { Add as AddIcon, ArrowBackIos, ArrowForwardIos, MoreVert, ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
+import RichTextEditor from '../RichTextEditor';
+import { useDispatch } from 'react-redux';
+import { updateElementProp } from '../../store/editorSlice';
 import CustomDataGrid from './CustomDataGrid';
 
 const mapFontSizeToVariant = (fontSize: string | undefined) => {
@@ -119,6 +122,7 @@ interface RenderedElementProps {
 const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements, page, selectedElementId, onSelectElement, isReadOnly = false, rootElementId, onDeleteElement, onMoveElement, onOpenAddMenu, onDropNewElement, onAddElement }) => {
     const isSelected = element.id === selectedElementId;
     const theme = useTheme();
+    const dispatch = useDispatch();
 
     const [isDragOver, setIsDragOver] = useState(false);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -603,6 +607,34 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                         <Typography variant={variant} sx={sx} className={props.customClass}>
                             {tProps.content}
                         </Typography>
+                    </Box>
+                );
+            case ElementType.RichText:
+                const rtProps = props as TextProps;
+                sx.color = rtProps.color;
+                sx.fontWeight = rtProps.fontWeight;
+                sx.textAlign = rtProps.textAlign;
+                sx.lineHeight = rtProps.lineHeight;
+                sx.letterSpacing = rtProps.letterSpacing;
+                sx.fontStyle = rtProps.fontStyle;
+                sx.textDecoration = rtProps.textDecoration;
+                const variantRT = mapFontSizeToVariant(rtProps.fontSize);
+                if(!variantRT) sx.fontSize = rtProps.fontSize;
+
+                return (
+                    <Box position="relative" {...commonEventHandlers}>
+                        {renderOverlayControls()}
+                        {!isReadOnly ? (
+                            <Box sx={{...sx}} className={props.customClass}>
+                                <RichTextEditor
+                                    value={rtProps.content || ''}
+                                    onChange={(html) => dispatch(updateElementProp({ elementId: element.id, prop: 'content', value: html }))}
+                                    placeholder="Enter rich text..."
+                                />
+                            </Box>
+                        ) : (
+                            <Box sx={sx} className={props.customClass} dangerouslySetInnerHTML={{ __html: rtProps.content || '' }} />
+                        )}
                     </Box>
                 );
             case ElementType.Button:
