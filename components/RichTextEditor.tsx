@@ -308,7 +308,21 @@ export default function RichTextEditor({
           <Tooltip title="Blockquote"><span><IconButton size="small" onClick={() => apply('formatBlock', 'blockquote')} disabled={disabled}><FormatQuoteIcon /></IconButton></span></Tooltip>
         )}
         {toolbar.code && (
-          <Tooltip title="Code"><span><IconButton size="small" onClick={() => apply('formatBlock', 'pre')} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
+          <>
+            <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 140 }}>
+              <MenuItem value={'javascript'}>JavaScript</MenuItem>
+              <MenuItem value={'typescript'}>TypeScript</MenuItem>
+              <MenuItem value={'python'}>Python</MenuItem>
+              <MenuItem value={'java'}>Java</MenuItem>
+              <MenuItem value={'c'}>C</MenuItem>
+              <MenuItem value={'cpp'}>C++</MenuItem>
+              <MenuItem value={'bash'}>Bash</MenuItem>
+              <MenuItem value={'json'}>JSON</MenuItem>
+              <MenuItem value={'css'}>CSS</MenuItem>
+              <MenuItem value={'markup'}>HTML/Markup</MenuItem>
+            </Select>
+            <Tooltip title="Insert code block"><span><IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
+          </>
         )}
         {toolbar.link && (
           <>
