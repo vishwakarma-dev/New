@@ -11,7 +11,7 @@ import 'prismjs/components/prism-json';
 import 'prismjs/components/prism-css';
 import 'prismjs/components/prism-markup';
 import 'prismjs/themes/prism.css';
-import { Box, Divider, IconButton, MenuItem, Select, Tooltip } from '@mui/material';
+import { Box, Divider, IconButton, MenuItem, Select, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button as MuiButton } from '@mui/material';
 import FormatBoldIcon from '@mui/icons-material/FormatBold';
 import FormatItalicIcon from '@mui/icons-material/FormatItalic';
 import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
@@ -206,11 +206,26 @@ export default function RichTextEditor({
 
   const isEmpty = useMemo(() => isHTMLBlank(getHTML()), [internalHTML, value]);
 
-  const makeLink = useCallback(() => {
-    const url = window.prompt('Enter URL');
-    if (!url) return;
-    apply('createLink', url);
-  }, [apply]);
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState('');
+  const [linkText, setLinkText] = useState('');
+  const openLinkDialog = () => { if (!disabled) setLinkOpen(true); };
+  const closeLinkDialog = () => setLinkOpen(false);
+  const confirmLink = () => {
+    if (!linkUrl) { closeLinkDialog(); return; }
+    const sel = window.getSelection();
+    const hasSelection = sel && sel.rangeCount > 0 && !sel.getRangeAt(0).collapsed;
+    editorRef.current?.focus();
+    if (hasSelection && !linkText) {
+      document.execCommand('createLink', false, linkUrl);
+    } else {
+      const text = linkText || linkUrl;
+      const html = `<a href="${linkUrl}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+      document.execCommand('insertHTML', false, html);
+    }
+    emitChange();
+    closeLinkDialog();
+  };
 
   const removeLink = useCallback(() => {
     apply('unlink');
@@ -326,7 +341,7 @@ export default function RichTextEditor({
         )}
         {toolbar.link && (
           <>
-            <Tooltip title="Add link"><span><IconButton size="small" onClick={makeLink} disabled={disabled}><LinkIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Add link"><span><IconButton size="small" onClick={openLinkDialog} disabled={disabled}><LinkIcon /></IconButton></span></Tooltip>
             <Tooltip title="Remove link"><span><IconButton size="small" onClick={removeLink} disabled={disabled}><LinkOffIcon /></IconButton></span></Tooltip>
           </>
         )}
@@ -337,6 +352,18 @@ export default function RichTextEditor({
           </>
         )}
       </Box>
+
+      <Dialog open={linkOpen} onClose={closeLinkDialog} fullWidth maxWidth="sm">
+        <DialogTitle>Insert link</DialogTitle>
+        <DialogContent>
+          <TextField label="URL" fullWidth sx={{ mt: 1 }} value={linkUrl} onChange={(e) => setLinkUrl(e.target.value)} />
+          <TextField label="Text (optional)" fullWidth sx={{ mt: 2 }} value={linkText} onChange={(e) => setLinkText(e.target.value)} />
+        </DialogContent>
+        <DialogActions>
+          <MuiButton onClick={closeLinkDialog}>Cancel</MuiButton>
+          <MuiButton variant="contained" onClick={confirmLink}>Insert</MuiButton>
+        </DialogActions>
+      </Dialog>
 
       <Box className={`rte-editor ${editorClassName || ''} ${disabled ? 'rte-disabled' : ''}`.trim()}>
         <div
