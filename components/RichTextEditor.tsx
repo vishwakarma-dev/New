@@ -29,6 +29,7 @@ import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
 import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 import FormatAlignJustifyIcon from '@mui/icons-material/FormatAlignJustify';
 import FormatClearIcon from '@mui/icons-material/FormatClear';
+import ImageIcon from '@mui/icons-material/Image';
 import './RichTextEditor.css';
 
 export type RichTextToolbarConfig = {
