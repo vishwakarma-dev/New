@@ -129,6 +129,8 @@ export const AVAILABLE_COMPONENTS: ComponentDefinition[] = [
     { name: 'List', type: ElementType.List, icon: <ListIcon />, defaultProps: { ...commonDefaultProps, children: [], dense: false, paddingTop: '8px', paddingBottom: '8px', paddingLeft: '8px', paddingRight: '8px' } },
     { name: 'Text', type: ElementType.Text, icon: <TextFields />, defaultProps: { ...textDefaultProps, content: 'New Text Element', fontSize: '1rem', fontWeight: 'normal', color: 'text.primary' } },
     { name: 'Rich Text', type: ElementType.RichText, icon: <Article />, defaultProps: { ...textDefaultProps, width: '100%', content: '<p>New rich text content</p>' } },
+    { name: 'Code Block', type: ElementType.CodeBlock, icon: <Code />, defaultProps: { ...commonDefaultProps, width: '100%', code: 'console.log("Hello, world!")', language: 'javascript' } },
+    { name: 'Link Preview', type: ElementType.LinkPreview, icon: <OpenInNew />, defaultProps: { ...commonDefaultProps, width: '100%', url: 'https://example.com', title: 'Link title', description: 'Brief description', imageUrl: '' } },
     { name: 'Button', type: ElementType.Button, icon: <SmartButton />, defaultProps: { ...commonDefaultProps, display: 'inline-block', text: 'Click Me', variant: 'contained', color: 'primary', paddingTop: '6px', paddingBottom: '6px', paddingLeft: '16px', paddingRight: '16px', borderRadius: '4px' } },
     { name: 'Link', type: ElementType.Link, icon: <LinkIcon />, defaultProps: { ...textDefaultProps, display: 'inline-block', text: 'Clickable Link', href: '#' } },
     { name: 'Image', type: ElementType.Image, icon: <Image />, defaultProps: { ...commonDefaultProps, width: '100%', src: 'https://picsum.photos/400/200', alt: 'Placeholder image', borderRadius: '8px' } },
