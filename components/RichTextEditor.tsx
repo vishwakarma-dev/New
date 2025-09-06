@@ -227,6 +227,26 @@ export default function RichTextEditor({
     setHTML(initial);
   }, []); // eslint-disable-line
 
+  const escapeHtml = (str: string) => str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  const insertCodeBlock = useCallback((lang: string) => {
+    if (disabled) return;
+    const selection = window.getSelection();
+    const text = selection && selection.toString() ? selection.toString() : '/* code */';
+    const html = `<pre><code class="language-${lang}">${escapeHtml(text)}</code></pre>`;
+    editorRef.current?.focus();
+    document.execCommand('insertHTML', false, html);
+    emitChange();
+    setTimeout(() => { if (editorRef.current) Prism.highlightAllUnder(editorRef.current); }, 0);
+  }, [disabled, emitChange]);
+
+  useEffect(() => {
+    if (editorRef.current) Prism.highlightAllUnder(editorRef.current);
+  }, [internalHTML, value]);
+
   return (
     <Box className={`rte-root ${className || ''}`.trim()}>
       <Box className={`rte-toolbar ${toolbarClassName || ''}`.trim()}>
