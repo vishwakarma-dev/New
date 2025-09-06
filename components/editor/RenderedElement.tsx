@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { EditorElement, ElementType, ContainerProps, TextProps, ButtonProps, ImageProps, SpacerProps, InputProps, DividerProps, StackProps, CardProps, AccordionProps, AlertProps, GridProps, LinkProps, AvatarProps, ListProps, LinearProgressProps, SwitchProps, Page, CarouselProps, SlideProps, HeaderProps, DataGridProps } from '../../types';
 import { Grid, Box, Typography, Button, TextField, Divider, Chip, Stack, Card, CardContent, Accordion, AccordionSummary, AccordionDetails, Alert, Link, Avatar, List, LinearProgress, Switch, IconButton, Fab, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, CircularProgress, AppBar, Toolbar, Menu, MenuItem, ListItemIcon, ListItemText } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -9,6 +9,17 @@ import { SLIDE_COMPONENT_DEFINITION } from '../../constants';
 import RichTextEditor from '../RichTextEditor';
 import { useDispatch } from 'react-redux';
 import { updateElementProp } from '../../store/editorSlice';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-java';
+import 'prismjs/components/prism-c';
+import 'prismjs/components/prism-cpp';
+import 'prismjs/components/prism-bash';
+import 'prismjs/components/prism-json';
+import 'prismjs/components/prism-css';
+import 'prismjs/components/prism-markup';
 import CustomDataGrid from './CustomDataGrid';
 
 const mapFontSizeToVariant = (fontSize: string | undefined) => {
@@ -123,6 +134,7 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
     const isSelected = element.id === selectedElementId;
     const theme = useTheme();
     const dispatch = useDispatch();
+    const richPreviewRef = useRef<HTMLDivElement | null>(null);
 
     const [isDragOver, setIsDragOver] = useState(false);
     const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -522,6 +534,12 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
         return childNodes.filter(Boolean);
     };
 
+    useEffect(() => {
+        if (isReadOnly && element.type === ElementType.RichText && richPreviewRef.current) {
+            Prism.highlightAllUnder(richPreviewRef.current);
+        }
+    }, [isReadOnly, element.type, (element.props as any)?.content]);
+
     const renderElement = () => {
         switch (element.type) {
             case ElementType.Container:
@@ -633,7 +651,7 @@ const RenderedElement: React.FC<RenderedElementProps> = ({ element, allElements,
                                 />
                             </Box>
                         ) : (
-                            <Box sx={sx} className={props.customClass} dangerouslySetInnerHTML={{ __html: rtProps.content || '' }} />
+                            <Box ref={richPreviewRef} sx={sx} className={props.customClass} dangerouslySetInnerHTML={{ __html: rtProps.content || '' }} />
                         )}
                     </Box>
                 );
