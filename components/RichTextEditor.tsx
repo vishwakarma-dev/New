@@ -255,13 +255,18 @@ export default function RichTextEditor({
 
   const insertCodeBlock = useCallback((lang: string) => {
     if (disabled) return;
-    const selection = window.getSelection();
-    const text = selection && selection.toString() ? selection.toString() : '/* code */';
-    const html = `<pre><code class="language-${lang}">${escapeHtml(text)}</code></pre>`;
-    editorRef.current?.focus();
+    const html = `<pre><code class="language-${lang}">/* code */</code></pre>`;
+    const editor = editorRef.current;
+    if (!editor) return;
+    editor.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(false);
+    const sel = window.getSelection();
+    if (sel) { sel.removeAllRanges(); sel.addRange(range); }
     document.execCommand('insertHTML', false, html);
     emitChange();
-    setTimeout(() => { if (editorRef.current) Prism.highlightAllUnder(editorRef.current); }, 0);
+    setTimeout(() => { Prism.highlightAllUnder(editor); }, 0);
   }, [disabled, emitChange]);
 
   useEffect(() => {
@@ -330,19 +335,19 @@ export default function RichTextEditor({
         )}
         {toolbar.code && (
           <>
-            <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 140 }}>
-              <MenuItem value={'javascript'}>JavaScript</MenuItem>
-              <MenuItem value={'typescript'}>TypeScript</MenuItem>
-              <MenuItem value={'python'}>Python</MenuItem>
+            <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 120 }}>
+              <MenuItem value={'javascript'}>JS</MenuItem>
+              <MenuItem value={'typescript'}>TS</MenuItem>
+              <MenuItem value={'python'}>Py</MenuItem>
               <MenuItem value={'java'}>Java</MenuItem>
               <MenuItem value={'c'}>C</MenuItem>
               <MenuItem value={'cpp'}>C++</MenuItem>
               <MenuItem value={'bash'}>Bash</MenuItem>
               <MenuItem value={'json'}>JSON</MenuItem>
               <MenuItem value={'css'}>CSS</MenuItem>
-              <MenuItem value={'markup'}>HTML/Markup</MenuItem>
+              <MenuItem value={'markup'}>HTML</MenuItem>
             </Select>
-            <Tooltip title="Insert code block"><span><IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
+            <Tooltip title="Add code block to bottom"><span><IconButton size="small" onClick={() => insertCodeBlock(codeLang)} disabled={disabled}><CodeIcon /></IconButton></span></Tooltip>
           </>
         )}
         {toolbar.link && (
