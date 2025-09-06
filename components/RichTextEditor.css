@@ -4,6 +4,7 @@
   background: #fff;
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .rte-toolbar {
@@ -30,6 +31,7 @@
 
 .rte-editor {
   padding: 10px 12px;
+  width: 100%;
 }
 
 .rte-editable {
@@ -37,6 +39,7 @@
   line-height: 1.6;
   outline: none;
   white-space: pre-wrap;
+  width: 100%;
 }
 
 .rte-editable p,
@@ -63,6 +66,10 @@
   padding: 8px;
   border-radius: 6px;
   overflow: auto;
+}
+.rte-editable pre code {
+  display: block;
+  overflow-x: auto;
 }
 
 .rte-disabled {
