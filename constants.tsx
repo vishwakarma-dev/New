@@ -60,7 +60,6 @@ import {
     Navigation,
     Assessment,
     Timeline,
-    LinearProgress,
     StarRate,
     LocalOffer,
     Badge,

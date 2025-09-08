@@ -88,6 +88,63 @@ function isHTMLBlank(html: string) {
   return tmp.innerText.trim() === '' && !tmp.querySelector('img, video, iframe, br, hr');
 }
 
+const languages = [
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'typescript', label: 'TypeScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+  { value: 'c', label: 'C' },
+  { value: 'cpp', label: 'C++' },
+  { value: 'bash', label: 'Bash' },
+  { value: 'json', label: 'JSON' },
+  { value: 'css', label: 'CSS' },
+  { value: 'markup', label: 'HTML/Markup' },
+];
+
+export function CodePanel() {
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const [codeLang, setCodeLang] = useState<string>('javascript');
+
+  const insertCodeBlock = useCallback((lang: string) => {
+    if (!editorRef.current) return;
+    editorRef.current.focus();
+    const label = languages.find(l => l.value === lang)?.label || lang;
+    const html = `<div class="rte-codeblock" data-lang="${lang}">
+      <div class="rte-codeblock-header"><span class="rte-codeblock-lang">${label}</span></div>
+      <pre class="language-${lang}"><code class="language-${lang}">/* code */</code></pre>
+    </div><p><br></p>`;
+    document.execCommand('insertHTML', false, html);
+    setTimeout(() => { Prism.highlightAllUnder(editorRef.current!); }, 0);
+  }, []);
+
+  useEffect(() => {
+    if (editorRef.current) Prism.highlightAllUnder(editorRef.current);
+  }, []);
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+        <Select size="small" value={codeLang} onChange={e => setCodeLang(e.target.value)}>
+          {languages.map(lang => (
+            <MenuItem key={lang.value} value={lang.value}>{lang.label}</MenuItem>
+          ))}
+        </Select>
+        <Tooltip title="Insert code block">
+          <IconButton size="small" onClick={() => insertCodeBlock(codeLang)}>
+            <CodeIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
+      <div
+        ref={editorRef}
+        className="rte-editable"
+        contentEditable
+        style={{ minHeight: '200px', border: '1px solid #ccc', padding: '8px', borderRadius: '4px' }}
+      />
+    </Box>
+  );
+}
+
 export default function RichTextEditor({
   value,
   defaultValue,
@@ -256,21 +313,38 @@ export default function RichTextEditor({
   const getLangLabel = (l: string) => ({ javascript: 'JavaScript', typescript: 'TypeScript', python: 'Python', java: 'Java', c: 'C', cpp: 'C++', bash: 'Bash', json: 'JSON', css: 'CSS', markup: 'HTML/Markup' } as Record<string,string>)[l] || l;
 
   const insertCodeBlock = useCallback((lang: string) => {
-    if (disabled) return;
-    const editor = editorRef.current;
-    if (!editor) return;
-    editor.focus();
-    const range = document.createRange();
-    range.selectNodeContents(editor);
-    range.collapse(false);
-    const sel = window.getSelection();
-    if (sel) { sel.removeAllRanges(); sel.addRange(range); }
-    const label = getLangLabel(lang);
-    const html = `<div class="rte-codeblock" data-lang="${lang}"><div class="rte-codeblock-header"><span class="rte-codeblock-lang">${label}</span></div><pre class="language-${lang}"><code class="language-${lang}">/* code */</code></pre></div><p><br></p>`;
-    document.execCommand('insertHTML', false, html);
-    emitChange();
-    setTimeout(() => { Prism.highlightAllUnder(editor); }, 0);
-  }, [disabled, emitChange]);
+  if (disabled) return;
+  const editor = editorRef.current;
+  if (!editor) return;
+
+  // Move cursor to end
+  const range = document.createRange();
+  range.selectNodeContents(editor);
+  range.collapse(false); // collapse to end
+  const sel = window.getSelection();
+  if (sel) {
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  const label = getLangLabel(lang);
+  const html = `
+    <div class="rte-codeblock" data-lang="${lang}">
+      <div class="rte-codeblock-header">
+        <span class="rte-codeblock-lang">${label}</span>
+      </div>
+      <pre class="language-${lang}"><code class="language-${lang}">/* code */</code></pre>
+    </div>
+    <p><br></p>
+  `;
+
+  document.execCommand('insertHTML', false, html);
+  emitChange();
+
+  // Highlight with Prism after insertion
+  setTimeout(() => { Prism.highlightAllUnder(editor); }, 0);
+}, [disabled, emitChange]);
+
 
   useEffect(() => {
     if (editorRef.current) Prism.highlightAllUnder(editorRef.current);
@@ -290,7 +364,7 @@ export default function RichTextEditor({
               disabled={disabled}
               onChange={(e) => setHeading(e.target.value as any)}
               sx={{
-                minWidth: 100,
+                minWidth: 180,
                 '& .MuiOutlinedInput-notchedOutline': {
                   borderColor: 'rgba(0, 0, 0, 0.23)', // default outline color
                 },
@@ -365,7 +439,6 @@ export default function RichTextEditor({
             </Tooltip>
           </>
         )}
-        <Divider orientation="vertical" flexItem className="rte-divider" />
         {toolbar.align && toolbar.align.length > 0 && (
           <>
             {toolbar.align.includes('left') && (
@@ -405,8 +478,7 @@ export default function RichTextEditor({
             )}
           </>
         )}
-        <Divider orientation="vertical" flexItem className="rte-divider" />
-        {/* {toolbar.quote && (
+        {toolbar.quote && (
           <Tooltip title="Blockquote">
             <span>
               <IconButton size="small" onClick={() => apply('formatBlock', 'blockquote')} disabled={disabled}>
@@ -414,24 +486,10 @@ export default function RichTextEditor({
               </IconButton>
             </span>
           </Tooltip>
-        )} */}
+        )}
         {toolbar.code && (
           <>
-            <Select
-              size="small" 
-              value={codeLang} 
-              onChange={(e) => setCodeLang(e.target.value as string)} 
-              sx={{
-                minWidth: 100,
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'rgba(0, 0, 0, 0.23)', // default outline color
-                },
-                '& .MuiSelect-select': {
-                  paddingTop: '4px',
-                  paddingBottom: '4px',
-                },
-              }}
-            >
+            <Select size="small" value={codeLang} onChange={(e) => setCodeLang(e.target.value as string)} sx={{ minWidth: 120 }}>
               <MenuItem value={'javascript'}>JavaScript</MenuItem>
               <MenuItem value={'typescript'}>TypeScript</MenuItem>
               <MenuItem value={'python'}>Python</MenuItem>
@@ -452,7 +510,6 @@ export default function RichTextEditor({
             </Tooltip>
           </>
         )}
-        <Divider orientation="vertical" flexItem className="rte-divider" />
         {toolbar.link && (
           <>
             <Tooltip title="Add link">
@@ -486,7 +543,7 @@ export default function RichTextEditor({
             <Tooltip title="Clear formatting">
               <span>
                 <IconButton size="small" onClick={() => apply('removeFormat')} disabled={disabled}>
-                  <FormatClearIcon fontSize='inherit' />
+                  <FormatClearIcon />
                 </IconButton>
               </span>
             </Tooltip>
